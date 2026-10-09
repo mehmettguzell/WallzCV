@@ -18,5 +18,7 @@
   "projects.pipeline_label": "CI/CD pipeline adımları",
   "skills.title": "Teknik Beceriler",
   "education.title": "Eğitim",
-  "achievements.title": "Başarılar ve Sertifikalar"
+  "achievements.title": "Başarılar ve Sertifikalar",
+  "wallz.label": "Wallz",
+  "wallz.fallen_status": "Wallz düştü ve ağlıyor."
 }

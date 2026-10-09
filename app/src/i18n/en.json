@@ -18,5 +18,7 @@
   "projects.pipeline_label": "CI/CD pipeline steps",
   "skills.title": "Technical Skills",
   "education.title": "Education",
-  "achievements.title": "Achievements & Certifications"
+  "achievements.title": "Achievements & Certifications",
+  "wallz.label": "Wallz",
+  "wallz.fallen_status": "Wallz fell down and is crying."
 }

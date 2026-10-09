@@ -20,7 +20,7 @@ const lang = Astro.params.lang as Language;
 ---
 
 <Layout lang={lang} title={t(lang, 'home.title')}>
-	<World>
+	<World lang={lang}>
 		<Section id="about" title={t(lang, 'about.title')}>
 			<h1>Mehmet Güzel</h1>
 			<p class="tagline">{t(lang, 'about.tagline')}</p>

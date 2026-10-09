@@ -1,7 +1,28 @@
+---
+import Wallz from './Wallz.astro';
+import { t, type Language } from '../i18n';
+
+interface Props {
+	lang: Language;
+}
+
+const { lang } = Astro.props;
+---
+
 <div class="world">
 	<div class="world__track">
 		<slot />
 	</div>
+	<button
+		type="button"
+		class="world__wallz"
+		data-state="running"
+		aria-label={t(lang, 'wallz.label')}
+		data-fallen-status={t(lang, 'wallz.fallen_status')}
+	>
+		<Wallz />
+	</button>
+	<p class="world__wallz-status" role="status"></p>
 </div>
 
 <script>
@@ -12,13 +33,15 @@
 
 	const world = document.querySelector<HTMLElement>('.world');
 	const track = world?.querySelector<HTMLElement>('.world__track');
+	const wallz_button = world?.querySelector<HTMLButtonElement>('.world__wallz');
+	const wallz_status = world?.querySelector<HTMLElement>('.world__wallz-status');
 
-	if (world && track) {
+	if (world && track && wallz_button && wallz_status) {
 		world.classList.add('world--active');
 
 		const scroll_distance = () => track.scrollWidth - world.clientWidth;
 
-		gsap.to(track, {
+		const world_scroll = gsap.to(track, {
 			x: () => -scroll_distance(),
 			ease: 'none',
 			scrollTrigger: {
@@ -30,14 +53,142 @@
 				invalidateOnRefresh: true,
 			},
 		});
+
+		const front_left_and_back_right_legs = ['#wallz-leg-fl', '#wallz-leg-br'];
+		const front_right_and_back_left_legs = ['#wallz-leg-fr', '#wallz-leg-bl'];
+		const bouncing_parts = ['#wallz-body', '#wallz-head', '#wallz-tail'];
+		const leg_swing_degrees = 22;
+		const half_stride_seconds = 0.3;
+		const max_run_speed = 3;
+		const scroll_velocity_for_normal_run = 400;
+
+		gsap.set([...front_left_and_back_right_legs, ...front_right_and_back_left_legs], {
+			transformOrigin: '50% 0%',
+		});
+		gsap.set('#wallz-tail', { transformOrigin: '100% 50%' });
+
+		type WallzState = 'running' | 'falling' | 'crying' | 'getting-up';
+		let wallz_state: WallzState = 'running';
+		const set_wallz_state = (next_state: WallzState) => {
+			wallz_state = next_state;
+			wallz_button.dataset.state = next_state;
+		};
+
+		const run_cycle = gsap.timeline({ repeat: -1, defaults: { ease: 'sine.inOut' } });
+		for (const [half_stride_index, swing] of [leg_swing_degrees, -leg_swing_degrees].entries()) {
+			const start = half_stride_index * half_stride_seconds;
+			run_cycle
+				.fromTo(front_left_and_back_right_legs, { rotation: -swing }, { rotation: swing, duration: half_stride_seconds }, start)
+				.fromTo(front_right_and_back_left_legs, { rotation: swing }, { rotation: -swing, duration: half_stride_seconds }, start)
+				.to(bouncing_parts, { y: -3, duration: half_stride_seconds / 2, yoyo: true, repeat: 1, ease: 'sine.out' }, start)
+				.to('#wallz-tail', { rotation: swing / 2, duration: half_stride_seconds }, start);
+		}
+		run_cycle.timeScale(0);
+
+		const crying_seconds = 2.5;
+		const fall_degrees = 35;
+		const happy_mouth = 'M172 80Q182 94 196 80Z';
+		const sad_mouth = 'M174 92Q184 78 194 92Z';
+		const front_legs = ['#wallz-leg-fl', '#wallz-leg-fr'];
+		const back_legs = ['#wallz-leg-bl', '#wallz-leg-br'];
+
+		// Tipping over backwards onto the haunches keeps the face visible while crying.
+		const fall = gsap.timeline({
+			paused: true,
+			onComplete: start_crying,
+			onReverseComplete: resume_running,
+		});
+		fall
+			.to('.wallz', { rotation: -fall_degrees, transformOrigin: '25% 100%', duration: 0.7, ease: 'bounce.out' }, 0)
+			.to(front_legs, { rotation: -55, duration: 0.4, ease: 'power2.out' }, 0)
+			.to(back_legs, { rotation: -75, duration: 0.4, ease: 'power2.out' }, 0)
+			.to('#wallz-mouth', { attr: { d: sad_mouth }, duration: 0.2 }, 0.3)
+			.to('#wallz-tongue', { opacity: 0, duration: 0.1 }, 0.3)
+			.to('#wallz-eyes', { scaleY: 0.6, transformOrigin: '50% 50%', duration: 0.2 }, 0.3);
+
+		const cry = gsap.timeline({ paused: true, repeat: -1 });
+		cry
+			.fromTo('#wallz-tears path', { y: 0, opacity: 0.9 }, { y: 18, opacity: 0, duration: 0.8, ease: 'power1.in', stagger: 0.4, immediateRender: false }, 0)
+			.to('#wallz-head', { y: 1.5, duration: 0.12, yoyo: true, repeat: 5, ease: 'sine.inOut' }, 0);
+
+		function start_crying() {
+			set_wallz_state('crying');
+			cry.play(0);
+			gsap.delayedCall(crying_seconds, get_up);
+		}
+
+		function get_up() {
+			set_wallz_state('getting-up');
+			cry.pause();
+			gsap.set('#wallz-tears path', { opacity: 0 });
+			gsap.set('#wallz-head', { y: 0 });
+			wallz_status.textContent = '';
+			fall.reverse();
+		}
+
+		function resume_running() {
+			set_wallz_state('running');
+		}
+
+		wallz_button.addEventListener('click', () => {
+			if (wallz_state !== 'running') return;
+			set_wallz_state('falling');
+			run_cycle.timeScale(0);
+			wallz_status.textContent = wallz_button.dataset.fallenStatus ?? '';
+			fall.invalidate().play(0);
+		});
+
+		// Scroll velocity decays on its own when scrolling stops, so Wallz slows to a halt.
+		const world_scroll_trigger = world_scroll.scrollTrigger;
+		gsap.ticker.add(() => {
+			if (wallz_state !== 'running') return;
+			const target_speed = Math.min(
+				Math.abs(world_scroll_trigger?.getVelocity() ?? 0) / scroll_velocity_for_normal_run,
+				max_run_speed,
+			);
+			const eased_speed = run_cycle.timeScale() + (target_speed - run_cycle.timeScale()) * 0.15;
+			run_cycle.timeScale(eased_speed < 0.01 ? 0 : eased_speed);
+		});
 	}
 </script>
 
 <style>
 	/* Without JavaScript the Sections stay a normal vertical page. */
+	.world__wallz {
+		display: none;
+	}
+
+	.world__wallz-status {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
 	.world--active {
+		position: relative;
 		height: 100svh;
 		overflow: hidden;
+	}
+
+	.world--active .world__wallz {
+		display: block;
+		position: absolute;
+		bottom: 0.5rem;
+		left: 1rem;
+		width: 8rem;
+		padding: 0;
+		border: 0;
+		background: none;
+		cursor: pointer;
+	}
+
+	.world--active .world__wallz:focus-visible {
+		outline: 2px solid currentColor;
+		outline-offset: 4px;
+		border-radius: 0.5rem;
 	}
 
 	.world--active .world__track {
