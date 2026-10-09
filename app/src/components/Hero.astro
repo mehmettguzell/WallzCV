@@ -129,6 +129,13 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 		const raised_arm_degrees = 128;
 		const slam_strengths = [1, 1.2, 1.5];
 		const eye_travel_pixels = 2.5;
+		const frowning_brow_drop = 2.5;
+		const frowning_brow_scale = 1.15;
+		const waving_arm_degrees = 140;
+		const wave_swing_degrees = 14;
+		const wave_swing_repeats = 5;
+		const wave_trigger_scroll_pixels = 40;
+		const wave_reset_scroll_pixels = 10;
 		const closed_mouth = 'M108 90Q120 98 132 90Z';
 		const roaring_mouth = 'M104 86Q120 112 136 86Z';
 		const chewing_mouth = 'M110 88Q120 104 130 88Z';
@@ -187,6 +194,42 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 			},
 			{ passive: true },
 		);
+
+		wallz_button.addEventListener('pointerenter', () => {
+			if (is_performing) return;
+			gsap.to('#wallz-brow', { y: frowning_brow_drop, scaleY: frowning_brow_scale, duration: 0.2, overwrite: 'auto' });
+		});
+		wallz_button.addEventListener('pointerleave', () => {
+			if (is_performing) return;
+			gsap.to('#wallz-brow', { y: 0, scaleY: 1, duration: 0.3, overwrite: 'auto' });
+		});
+
+		// Waves once per descent from the top of the page; the breathing sway is paused so it cannot fight the raised arm.
+		const hero_section = wallz_button.closest<HTMLElement>('.hero');
+		let waving: gsap.core.Timeline | null = null;
+		let has_waved_on_this_descent = false;
+		let previous_scroll_y = scrollY;
+		const wave_when_scrolling_down = () => {
+			const is_scrolling_down = scrollY > previous_scroll_y;
+			previous_scroll_y = scrollY;
+			if (scrollY <= wave_reset_scroll_pixels) has_waved_on_this_descent = false;
+			const is_hero_in_view = hero_section !== null && scrollY < hero_section.offsetHeight;
+			if (!is_scrolling_down || !is_hero_in_view || scrollY < wave_trigger_scroll_pixels) return;
+			if (is_performing || waving || has_waved_on_this_descent) return;
+			has_waved_on_this_descent = true;
+			breathing.pause();
+			waving = gsap
+				.timeline({
+					onComplete: () => {
+						breathing.play();
+						waving = null;
+					},
+				})
+				.to(left_arm, { rotation: waving_arm_degrees, duration: 0.4, ease: 'back.out(1.4)' })
+				.to(left_arm, { rotation: waving_arm_degrees + wave_swing_degrees, duration: 0.18, ease: 'sine.inOut', yoyo: true, repeat: wave_swing_repeats })
+				.to(left_arm, { rotation: 0, duration: 0.4, ease: 'power2.inOut' });
+		};
+		addEventListener('scroll', wave_when_scrolling_down, { passive: true });
 
 		const main_content = document.querySelector<HTMLElement>('.site-main');
 		const shake_screen = (strength: number) => {
@@ -315,6 +358,8 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 		wallz_button.addEventListener('click', () => {
 			if (is_performing) return;
 			is_performing = true;
+			waving?.kill();
+			waving = null;
 			wallz_button.dataset.state = 'performing';
 			wallz_status.textContent = wallz_button.dataset.actionStatus ?? '';
 			gsap.to('#wallz-pupils', { x: 0, y: 0, duration: 0.2 });
