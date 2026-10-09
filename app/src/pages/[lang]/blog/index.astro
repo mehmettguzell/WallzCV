@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
+import UpcomingTopics from '../../../components/UpcomingTopics.astro';
 import { languages, t, type Language } from '../../../i18n';
 import { estimate_reading_minutes, get_published_posts_newest_first } from '../../../lib/blog';
 
@@ -12,10 +13,11 @@ const posts = await get_published_posts_newest_first();
 const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 ---
 
-<Layout lang={lang} title={`${t(lang, 'blog.title')} · WallzCV`} description={t(lang, 'meta.blog_description')}>
+<Layout lang={lang} title={`${t(lang, 'blog.title')} · Mehmet Güzel`} description={t(lang, 'meta.blog_description')}>
 	<section class="blog-list container" data-initial-filter={lang}>
 		<p class="eyebrow">{t(lang, 'blog.eyebrow')}</p>
 		<h1 class="section__title">{t(lang, 'blog.heading')}</h1>
+		<UpcomingTopics lang={lang} />
 		<div class="blog-list__filters" role="group" aria-label={t(lang, 'blog.filter_label')} hidden>
 			<button type="button" data-filter="all" aria-pressed="false">{t(lang, 'blog.filter_all')}</button>
 			{languages.map((post_lang) => <button type="button" data-filter={post_lang} aria-pressed="false">{post_lang.toUpperCase()}</button>)}

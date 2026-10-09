@@ -5,7 +5,7 @@ import { get_published_posts_newest_first } from '../lib/blog';
 export async function GET(context: APIContext) {
 	const posts = await get_published_posts_newest_first();
 	return rss({
-		title: 'WallzCV',
+		title: 'Mehmet Güzel',
 		description: 'Posts by Mehmet Güzel',
 		site: context.site!,
 		items: posts.map((post) => ({

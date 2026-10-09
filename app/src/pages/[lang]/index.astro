@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Hero from '../../components/Hero.astro';
+import UpcomingTopics from '../../components/UpcomingTopics.astro';
 import Section from '../../components/Section.astro';
 import ExperienceItem from '../../components/ExperienceItem.astro';
 import SkillGroup from '../../components/SkillGroup.astro';
@@ -117,7 +118,8 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 	{
 		latest_posts.length > 0 && (
 			<Section id="blog" eyebrow={t(lang, 'blog.eyebrow')} title={t(lang, 'blog.heading')} lead={t(lang, 'blog.lead')}>
-				<div class="post-grid">
+				<UpcomingTopics lang={lang} />
+					<div class="post-grid">
 					{latest_posts.map((post, index) => (
 						<a class="post-card glass spot" href={`/${lang}/blog/${post.id}/`} hreflang={post.data.lang} data-reveal style={`--delay: ${index * 90}ms`}>
 							<p class="bento__note">
@@ -139,9 +141,8 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 	<section class="section contact" id="contact" aria-labelledby="contact-title">
 		<div class="container">
 			<div class="contact__card glass" data-reveal>
-				<p class="eyebrow">{t(lang, 'contact.eyebrow')}</p>
-				<h2 class="section__title contact__title" id="contact-title">{t(lang, 'contact.heading')}</h2>
-				<p class="section__lead">{t(lang, 'contact.lead')}</p>
+					<img class="contact__photo" src="/mehmet-guzel.png" alt="Mehmet Güzel" width="128" height="128" loading="lazy" />
+				<h2 class="eyebrow" id="contact-title">{t(lang, 'contact.eyebrow')}</h2>
 				<p class="contact__email">
 					<a href={`mailto:${contact.email}`}>{contact.email}</a>
 				</p>
@@ -347,13 +348,18 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 		position: relative;
 	}
 
-	.contact__card .eyebrow {
-		justify-content: center;
+	.contact__photo {
+		display: block;
+		width: 8rem;
+		height: 8rem;
+		margin: 0 auto 1.5rem;
+		border: 2px solid var(--border);
+		border-radius: 50%;
+		object-fit: cover;
 	}
 
-	.contact__title,
-	.contact__card .section__lead {
-		margin-inline: auto;
+	.contact__card .eyebrow {
+		justify-content: center;
 	}
 
 	.contact__email {

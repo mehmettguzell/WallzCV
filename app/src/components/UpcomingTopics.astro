@@ -1,0 +1,47 @@
+---
+import { t, type Language } from '../i18n';
+
+interface Props {
+	lang: Language;
+}
+
+const { lang } = Astro.props;
+const topics = t(lang, 'upcoming.topics').split('|');
+---
+
+<p class="upcoming">
+	<span class="upcoming__label">{t(lang, 'upcoming.label')}</span>
+	<span class="upcoming__topics">
+		{topics.map((topic) => <span class="upcoming__topic">{topic}</span>)}
+	</span>
+</p>
+
+<style>
+	.upcoming {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem 0.75rem;
+		margin-top: 1.5rem;
+		color: var(--muted);
+		font-size: 0.85rem;
+	}
+
+	.upcoming__label {
+		color: var(--accent);
+		font-family: var(--font-heading);
+		font-weight: 600;
+	}
+
+	.upcoming__topics {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+	}
+
+	.upcoming__topic {
+		padding: 0.15rem 0.7rem;
+		border: 1px dashed var(--border);
+		border-radius: 999px;
+	}
+</style>

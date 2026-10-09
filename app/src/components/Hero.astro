@@ -1,5 +1,6 @@
 ---
 import Wallz from './Wallz.astro';
+import UpcomingTopics from './UpcomingTopics.astro';
 import contact from '../data/contact.json';
 import { t, type Language } from '../i18n';
 
@@ -20,10 +21,6 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 <section class="hero" aria-labelledby="hero-title">
 	<div class="container hero__grid">
 		<div class="hero__copy">
-			<p class="hero__badge glass" data-reveal>
-				<span class="hero__pulse" aria-hidden="true"></span>
-				{t(lang, 'hero.available')}
-			</p>
 			<h1 id="hero-title" class="hero__name" data-reveal style="--delay: 100ms">
 				<span class="gradient-text">Mehmet Güzel</span>
 			</h1>
@@ -33,6 +30,9 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 				<a class="btn btn--primary" href={cv_path} download>{t(lang, 'hero.cta_cv')} <span aria-hidden="true">↓</span></a>
 				<a class="btn" href={`mailto:${contact.email}`}>{t(lang, 'hero.cta_email')}</a>
 				<a class="btn" href={`/${lang}/#projects`}>{t(lang, 'hero.cta_projects')} →</a>
+			</div>
+			<div data-reveal style="--delay: 420ms">
+				<UpcomingTopics lang={lang} />
 			</div>
 		</div>
 
@@ -78,9 +78,10 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 	const idle_prompt = document.querySelector<HTMLElement>('.glance__idle');
 
 	if (typed_elements.length > 0 && !reduced_motion) {
-		const characters_per_second = 55;
-		const start_delay_ms = 600;
-		const pause_between_lines_ms = 120;
+		// Every line takes the same time to type, so long values (experience, projects) do not stretch the total.
+		const typing_time_per_line_ms = 250;
+		const start_delay_ms = 300;
+		const pause_between_lines_ms = 40;
 		const pending_class = 'is-pending';
 
 		// The unrevealed rest stays in the layout (transparent) so the card never grows while typing.
@@ -112,7 +113,7 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 					clearInterval(timer);
 					setTimeout(() => type_next(index + 1), pause_between_lines_ms);
 				}
-			}, 1000 / characters_per_second);
+			}, typing_time_per_line_ms / full_text.length);
 		};
 		setTimeout(() => type_next(0), start_delay_ms);
 	}
@@ -402,33 +403,6 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 		}
 	}
 
-	.hero__badge {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.6rem;
-		padding: 0.4rem 1rem;
-		border-radius: 999px;
-		color: var(--muted);
-		font-size: 0.85rem;
-		box-shadow: none;
-	}
-
-	.hero__pulse {
-		width: 0.55rem;
-		height: 0.55rem;
-		border-radius: 50%;
-		background: var(--accent);
-		box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 70%, transparent);
-		animation: pulse 2s infinite;
-	}
-
-	@keyframes pulse {
-		to {
-			box-shadow: 0 0 0 0.7rem transparent;
-		}
-	}
-
-
 	.hero__name .gradient-text {
 		display: inline-block;
 		animation:
@@ -446,7 +420,6 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 	}
 
 	.hero__name {
-		margin-top: 1.5rem;
 		font-size: clamp(2.8rem, 8.5vw, 6rem);
 		font-weight: 800;
 		letter-spacing: -0.04em;
@@ -662,7 +635,6 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.hero__pulse,
 		.hero__caret,
 		.hero__name .gradient-text {
 			animation: none;

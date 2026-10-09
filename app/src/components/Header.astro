@@ -21,8 +21,8 @@ const section_links = [
 <header class="site-header">
 	<div class="site-header__bar glass">
 		<a class="site-header__brand" href={`/${lang}/`} aria-label="Mehmet Güzel">
-			<span class="site-header__logo">W</span>
-			<span class="site-header__name">Wallz<span class="gradient-text">CV</span></span>
+			<img class="site-header__logo" src="/mehmet-guzel.png" alt="" width="32" height="32" />
+			<span class="site-header__name">Mehmet <span class="gradient-text">Güzel</span></span>
 		</a>
 
 		<nav class="site-header__nav" id="site-nav" aria-label={t(lang, 'nav.label')}>
@@ -148,14 +148,10 @@ const section_links = [
 	}
 
 	.site-header__logo {
-		display: grid;
-		place-items: center;
 		width: 2rem;
 		height: 2rem;
-		border-radius: 0.65rem;
-		background: var(--gradient);
-		color: var(--accent-ink);
-		font-size: 0.95rem;
+		border-radius: 50%;
+		object-fit: cover;
 	}
 
 	.site-header__nav {
