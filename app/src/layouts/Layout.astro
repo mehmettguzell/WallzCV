@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import ThemeToggle from '../components/ThemeToggle.astro';
 
 interface Props {
 	title: string;
@@ -16,10 +17,23 @@ const { title } = Astro.props;
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<script is:inline>
+			(function () {
+				var theme = null;
+				try {
+					theme = localStorage.getItem('theme');
+				} catch (error) {}
+				if (theme !== 'light' && theme !== 'dark') {
+					theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+				}
+				document.documentElement.dataset.theme = theme;
+			})();
+		</script>
 	</head>
 	<body>
 		<header class="site-header">
 			<span class="site-header__brand">WallzCV</span>
+			<ThemeToggle />
 		</header>
 		<main class="site-main">
 			<slot />

@@ -1,0 +1,104 @@
+<button type="button" class="theme-toggle" aria-label="Switch color theme">
+	<svg class="theme-toggle__icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+		<mask id="theme-toggle-moon-mask">
+			<rect x="0" y="0" width="24" height="24" fill="white" />
+			<circle class="theme-toggle__moon-cutout" cx="18" cy="6" r="7" fill="black" />
+		</mask>
+		<circle
+			class="theme-toggle__body"
+			cx="12"
+			cy="12"
+			r="9"
+			fill="currentColor"
+			mask="url(#theme-toggle-moon-mask)"
+		/>
+		<g class="theme-toggle__rays" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+			<line x1="12" y1="1" x2="12" y2="3" />
+			<line x1="12" y1="21" x2="12" y2="23" />
+			<line x1="1" y1="12" x2="3" y2="12" />
+			<line x1="21" y1="12" x2="23" y2="12" />
+			<line x1="4.2" y1="4.2" x2="5.6" y2="5.6" />
+			<line x1="18.4" y1="18.4" x2="19.8" y2="19.8" />
+			<line x1="4.2" y1="19.8" x2="5.6" y2="18.4" />
+			<line x1="18.4" y1="5.6" x2="19.8" y2="4.2" />
+		</g>
+	</svg>
+</button>
+
+<style>
+	.theme-toggle {
+		display: inline-flex;
+		padding: 0.4rem;
+		border: 1px solid var(--color-accent);
+		border-radius: 50%;
+		background: transparent;
+		color: var(--color-text);
+		cursor: pointer;
+	}
+
+	.theme-toggle__icon {
+		transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.theme-toggle__body {
+		transition: r 0.4s ease;
+	}
+
+	.theme-toggle__moon-cutout {
+		transition:
+			cx 0.5s ease,
+			cy 0.5s ease;
+	}
+
+	.theme-toggle__rays {
+		transform-origin: 12px 12px;
+		opacity: 0;
+		transform: rotate(-90deg) scale(0.4);
+		transition:
+			transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+			opacity 0.4s ease;
+	}
+
+	:global(:root[data-theme='light']) .theme-toggle__icon {
+		transform: rotate(90deg);
+	}
+
+	:global(:root[data-theme='light']) .theme-toggle__body {
+		r: 5px;
+	}
+
+	:global(:root[data-theme='light']) .theme-toggle__moon-cutout {
+		cx: 32px;
+		cy: 0px;
+	}
+
+	:global(:root[data-theme='light']) .theme-toggle__rays {
+		opacity: 1;
+		transform: rotate(0) scale(1);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.theme-toggle__icon,
+		.theme-toggle__body,
+		.theme-toggle__moon-cutout,
+		.theme-toggle__rays {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	const theme_storage_key = 'theme';
+	const toggle_button = document.querySelector<HTMLButtonElement>('.theme-toggle');
+
+	toggle_button?.addEventListener('click', () => {
+		const root_element = document.documentElement;
+		const next_theme = root_element.dataset.theme === 'light' ? 'dark' : 'light';
+		root_element.dataset.theme = next_theme;
+		try {
+			localStorage.setItem(theme_storage_key, next_theme);
+		} catch {
+			// Storage can be blocked (private window); the theme still applies for this page view.
+		}
+	});
+</script>
