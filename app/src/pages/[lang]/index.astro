@@ -3,8 +3,10 @@ import Layout from '../../layouts/Layout.astro';
 import Section from '../../components/Section.astro';
 import ExperienceItem from '../../components/ExperienceItem.astro';
 import SkillGroup from '../../components/SkillGroup.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
 import { languages, t, type Language } from '../../i18n';
 import experience from '../../data/experience.json';
+import projects from '../../data/projects.json';
 import skills from '../../data/skills.json';
 import education from '../../data/education.json';
 import contact from '../../data/contact.json';
@@ -40,6 +42,23 @@ const lang = Astro.params.lang as Language;
 				/>
 			))
 		}
+	</Section>
+
+	<Section id="projects" title={t(lang, 'projects.title')}>
+		<div class="project-grid">
+			{
+				projects.map((project) => (
+					<ProjectCard
+						slug={project.slug}
+						name={project.name}
+						summary={project.summary[lang]}
+						technologies={project.technologies}
+						repository={project.repository}
+						highlights={project.highlights.map((highlight) => highlight[lang])}
+					/>
+				))
+			}
+		</div>
 	</Section>
 
 	<Section id="skills" title={t(lang, 'skills.title')}>
@@ -87,6 +106,12 @@ const lang = Astro.params.lang as Language;
 		margin-top: 1rem;
 		padding: 0;
 		list-style: none;
+	}
+
+	.project-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+		gap: 1.5rem;
 	}
 
 	.meta {

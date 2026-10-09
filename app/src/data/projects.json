@@ -1,0 +1,131 @@
+[
+  {
+    "slug": "stop",
+    "name": "STOP",
+    "summary": {
+      "en": "Event-Driven Microservice Platform (B.Sc. graduation project)",
+      "tr": "Event-Driven Microservice Platformu (lisans bitirme projesi)"
+    },
+    "technologies": [
+      "Java 21",
+      "Spring Boot",
+      "Apache Kafka",
+      "PostgreSQL",
+      "Redis",
+      "Docker",
+      "GitHub Actions",
+      "AWS"
+    ],
+    "repository": "https://github.com/mehmettguzell/STOP",
+    "highlights": [
+      {
+        "en": "Built the backend of a football match organization platform as 5 independent Spring Boot services: API Gateway, Identity, Match, Communication, and Notification. Each service has its own PostgreSQL database, and schema changes are managed with Flyway.",
+        "tr": "Futbol maçı organizasyon platformunun backend'ini, API Gateway, Identity, Match, Communication ve Notification olmak üzere 5 bağımsız Spring Boot servisine ayırarak mikroservis mimarisinde geliştirdim. Her servisin kendi PostgreSQL veritabanı var, şema değişiklikleri Flyway ile yönetiliyor."
+      },
+      {
+        "en": "Implemented inter-service communication largely through Kafka events (more than 20 topics); notifications are created when the Notification Service consumes these events.",
+        "tr": "Servisler arası iletişimi büyük ölçüde Kafka event'leriyle kurdum (20'den fazla topic); bildirimler Notification Service'in bu event'leri dinlemesiyle oluşuyor."
+      },
+      {
+        "en": "Each service verifies JWTs with its own RSA public key; the API Gateway provides Redis-backed rate limiting with Bucket4j and a Resilience4j circuit breaker.",
+        "tr": "Her servis JWT'yi kendi RSA public key'iyle doğruluyor; API Gateway'de Bucket4j ile Redis tabanlı rate limiting ve Resilience4j circuit breaker var."
+      },
+      {
+        "en": "CI/CD builds only changed services, pushes them to GHCR tagged with the Git SHA, and deploys to AWS EC2 without SSH via SSM Run Command, with automatic rollback on a failed health check.",
+        "tr": "CI/CD yalnızca değişen servisleri build edip Git SHA etiketiyle GHCR'a gönderiyor, SSH kullanmadan SSM Run Command ile AWS EC2'ye deploy ediyor; health check başarısız olursa otomatik rollback yapılıyor."
+      }
+    ]
+  },
+  {
+    "slug": "devops-todo-app",
+    "name": "DevOps Todo App",
+    "summary": {
+      "en": "End-to-End CI/CD Reference Pipeline",
+      "tr": "Uçtan uca CI/CD referans pipeline'ı"
+    },
+    "technologies": [
+      "GitHub Actions",
+      "Docker",
+      "GHCR",
+      "AWS EC2",
+      "IAM",
+      "SSM",
+      "OIDC",
+      "Python",
+      "TypeScript"
+    ],
+    "repository": "https://github.com/mehmettguzell/Devops-Todo-App",
+    "highlights": [
+      {
+        "en": "GitHub Actions pipeline covering test, release, build, and deployment for a Python/FastAPI backend and a TypeScript frontend; with dorny/paths-filter and a dynamic build matrix, only changed services are tested and built.",
+        "tr": "Python/FastAPI backend ve TypeScript frontend için test, release, build ve deployment süreçlerini kapsayan GitHub Actions pipeline'ı; dorny/paths-filter ve dinamik build matrisi sayesinde yalnızca değişen servisler test ediliyor ve build ediliyor."
+      },
+      {
+        "en": "Deploys to AWS EC2 without SSH using SSM Run Command; a temporary IAM role is obtained via OIDC, so CI holds no static AWS keys.",
+        "tr": "SSH kullanmadan SSM Run Command ile AWS EC2'ye deploy; OIDC ile geçici IAM role alınıyor, CI'da sabit AWS anahtarı yok."
+      },
+      {
+        "en": "Docker Compose with health checks, startup ordering, and resource limits; release-please generates versions and changelogs from Conventional Commits.",
+        "tr": "Docker Compose ile health check, başlatma sırası ve kaynak limitleri; release-please Conventional Commits'ten versiyon ve changelog üretiyor."
+      }
+    ]
+  },
+  {
+    "slug": "order-management",
+    "name": "Event-Driven Order Management Platform",
+    "summary": {
+      "en": "Distributed transactions across a 5-service commerce backend",
+      "tr": "5 servisli bir commerce backend'inde distributed transaction'lar"
+    },
+    "technologies": [
+      "Python",
+      "Django REST Framework",
+      "RabbitMQ",
+      "PostgreSQL",
+      "JWT",
+      "Nginx",
+      "Docker Compose"
+    ],
+    "repository": "https://github.com/mehmettguzell/Event-Driven-Order-Management-Platform",
+    "highlights": [
+      {
+        "en": "Five services (user, product, order, inventory, payment); RabbitMQ for asynchronous stock and payment processing, the Saga pattern with compensating transactions for consistency, and row-level locking for concurrent stock updates.",
+        "tr": "User, product, order, inventory ve payment olmak üzere 5 servis; RabbitMQ üzerinden asynchronous stock ve payment işlemleri, tutarlılık için Saga pattern ve compensating transactions, concurrent stock güncellemeleri için row-level locking."
+      },
+      {
+        "en": "Nginx API Gateway for routing, rate limiting, and JWT authentication; services are isolated with a database-per-service design.",
+        "tr": "Nginx API Gateway ile servis yönlendirme, rate limiting ve JWT authentication; servisler database-per-service olarak izole."
+      }
+    ]
+  },
+  {
+    "slug": "inventory-microservices",
+    "name": "Inventory Management Microservices",
+    "summary": {
+      "en": "Polyglot persistence and an API gateway",
+      "tr": "Polyglot persistence ve API gateway"
+    },
+    "technologies": [
+      "Java",
+      "Spring Boot",
+      "Spring Cloud Gateway",
+      "MongoDB",
+      "MySQL",
+      "Flyway",
+      "Testcontainers",
+      "OpenAPI",
+      "Next.js"
+    ],
+    "repository": "https://github.com/mehmettguzell/mehmettguzell_Microservice_Project",
+    "highlights": [
+      {
+        "en": "Four Spring Boot services (gateway, product, inventory, order); MongoDB for products and MySQL for inventory and order, with routing, CORS, and OAuth2 centralized in Spring Cloud Gateway.",
+        "tr": "Gateway, product, inventory ve order servislerinden oluşan 4 servisli Spring Boot sistemi; ürünler için MongoDB, inventory ve order için MySQL (polyglot persistence), routing, CORS ve OAuth2 Spring Cloud Gateway üzerinde toplandı."
+      },
+      {
+        "en": "Integration tests with Testcontainers + RestAssured against real MySQL and MongoDB instances; OpenAPI documentation and a Next.js + TailwindCSS frontend that works through the gateway.",
+        "tr": "Gerçek MySQL ve MongoDB instance'larına karşı Testcontainers + RestAssured ile integration test; OpenAPI dokümantasyonu ve gateway üzerinden çalışan Next.js + TailwindCSS frontend."
+      }
+    ]
+  }
+]

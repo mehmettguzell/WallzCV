@@ -1,0 +1,132 @@
+---
+interface Props {
+	slug: string;
+	name: string;
+	summary: string;
+	technologies: string[];
+	repository: string;
+	highlights: string[];
+}
+
+const { slug, name, summary, technologies, repository, highlights } = Astro.props;
+---
+
+<article class="project-card">
+	<div class="project-card__bar" aria-hidden="true">
+		<span class="project-card__dot"></span>
+		<span class="project-card__dot"></span>
+		<span class="project-card__dot"></span>
+		<span class="project-card__path">~/projects/{slug}</span>
+	</div>
+	<div class="project-card__body">
+		<h3>{name}</h3>
+		<p class="project-card__summary">{summary}</p>
+		<ul class="project-card__highlights">
+			{highlights.map((highlight) => <li>{highlight}</li>)}
+		</ul>
+		<ul class="project-card__technologies">
+			{technologies.map((technology) => <li>{technology}</li>)}
+		</ul>
+		<a class="project-card__repository" href={repository} rel="noopener">{repository.replace('https://', '')}</a>
+	</div>
+</article>
+
+<style>
+	.project-card {
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		border: 1px solid color-mix(in srgb, var(--color-accent) 50%, transparent);
+		border-radius: 0.75rem;
+		background: color-mix(in srgb, var(--color-bg) 85%, var(--color-text));
+		box-shadow: 0 8px 24px color-mix(in srgb, var(--color-accent) 18%, transparent);
+		font-family: var(--font-heading);
+		font-size: 0.9rem;
+		transition:
+			transform 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+
+	.project-card:hover {
+		transform: translateY(-3px);
+		box-shadow: 0 12px 32px color-mix(in srgb, var(--color-accent) 35%, transparent);
+	}
+
+	.project-card__bar {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.5rem 0.9rem;
+		border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
+		background: color-mix(in srgb, var(--color-accent) 15%, transparent);
+	}
+
+	.project-card__dot {
+		width: 0.65rem;
+		height: 0.65rem;
+		border-radius: 50%;
+		background: var(--color-accent);
+		opacity: 0.7;
+	}
+
+	.project-card__path {
+		margin-left: 0.5rem;
+		opacity: 0.8;
+	}
+
+	.project-card__body {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: 0.75rem;
+		padding: 1rem;
+	}
+
+	.project-card__body h3::before {
+		content: '$ cat ';
+		color: var(--color-accent);
+	}
+
+	.project-card__summary {
+		opacity: 0.8;
+	}
+
+	.project-card__highlights {
+		padding-left: 1.1rem;
+		font-family: var(--font-body);
+	}
+
+	.project-card__highlights li + li {
+		margin-top: 0.4rem;
+	}
+
+	.project-card__technologies {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem;
+		margin-top: auto;
+		padding: 0;
+		list-style: none;
+	}
+
+	.project-card__technologies li {
+		padding: 0 0.6rem;
+		border: 1px solid color-mix(in srgb, var(--color-accent) 50%, transparent);
+		border-radius: 999px;
+		font-size: 0.8rem;
+	}
+
+	.project-card__repository {
+		overflow-wrap: anywhere;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.project-card {
+			transition: none;
+		}
+
+		.project-card:hover {
+			transform: none;
+		}
+	}
+</style>
