@@ -1,25 +1,40 @@
 {
   "degrees": [
     {
-      "institution": { "en": "Maltepe University", "tr": "Maltepe Üniversitesi" },
+      "institution": {
+        "en": "Maltepe University",
+        "tr": "Maltepe Üniversitesi"
+      },
       "program": {
         "en": "B.Sc. in Software Engineering (English) — GPA: 3.11/4.00",
         "tr": "Yazılım Mühendisliği (İngilizce), Lisans — GPA: 3.11/4.00"
       },
-      "location": { "en": "Istanbul, Türkiye", "tr": "İstanbul, Türkiye" },
-      "period": { "en": "September 2021 – June 2026", "tr": "Eylül 2021 – Haziran 2026" }
+      "location": {
+        "en": "Istanbul, Türkiye",
+        "tr": "İstanbul, Türkiye"
+      },
+      "period": {
+        "en": "September 2021 – June 2026",
+        "tr": "Eylül 2021 – Haziran 2026"
+      }
     }
   ],
   "achievements": [
     {
-      "label": { "en": "Competitions", "tr": "Yarışmalar" },
+      "label": {
+        "en": "Competitions",
+        "tr": "Yarışmalar"
+      },
       "text": {
-        "en": "Future Commerce AIdeathon — organized by the Republic of Türkiye Ministry of Trade as part of Türkiye E-Commerce Week; worked on an AI-based stock optimization solution for the dead stock problem.",
-        "tr": "Future Commerce AIdeathon — T.C. Ticaret Bakanlığı tarafından düzenlenen Türkiye E-Ticaret Haftası kapsamında; dead stock problemine yönelik AI tabanlı stok optimizasyonu çözümü üzerine çalıştım."
+        "en": "Future Commerce AIdeathon (Ministry of Trade, Türkiye E-Commerce Week): worked on an AI-based stock optimization solution for the dead-stock problem.",
+        "tr": "Future Commerce AIdeathon (Ticaret Bakanlığı, Türkiye E-Ticaret Haftası): atıl (dead) stok sorununa yönelik yapay zekâ tabanlı stok optimizasyonu çözümü üzerinde çalıştım."
       }
     },
     {
-      "label": { "en": "Certifications", "tr": "Sertifikalar" },
+      "label": {
+        "en": "Certifications",
+        "tr": "Sertifikalar"
+      },
       "text": {
         "en": "CSD Java Programming Course · BTK Akademi Cybersecurity Camp",
         "tr": "CSD Java Programming Course · BTK Akademi Siber Güvenlik Kampı"

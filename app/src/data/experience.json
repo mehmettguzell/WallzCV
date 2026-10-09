@@ -1,46 +1,72 @@
 [
   {
-    "role": { "en": "Backend Developer Intern", "tr": "Backend Developer Stajyeri" },
+    "role": {
+      "en": "Backend Developer Intern",
+      "tr": "Backend Developer Stajyeri"
+    },
     "organization": "Codexist",
-    "location": { "en": "Istanbul, Türkiye", "tr": "İstanbul, Türkiye" },
-    "period": { "en": "August 2026 – September 2026", "tr": "Ağustos 2026 – Eylül 2026" },
+    "location": {
+      "en": "Istanbul, Türkiye",
+      "tr": "İstanbul, Türkiye"
+    },
+    "period": {
+      "en": "August 2026 – September 2026",
+      "tr": "Ağustos 2026 – Eylül 2026"
+    },
     "highlights": [
       {
-        "en": "Researched GEO (Generative Engine Optimization) and designed the architecture of a system that measures how visible companies are in LLM responses relative to their competitors; prompts are sent repeatedly to multiple LLM providers, and results are evaluated with a statistical margin of error.",
-        "tr": "GEO (Generative Engine Optimization) araştırması yaparak, şirketlerin LLM yanıtlarında rakiplerine göre ne ölçüde göründüğünü ölçen sistemin mimarisini tasarladım; promptlar birden fazla LLM provider'a tekrarlı gönderiliyor, sonuçlar istatistiksel hata payıyla değerlendiriliyor."
+        "en": "Designed the architecture of a GEO (Generative Engine Optimization) system: the same prompts are sent repeatedly to several LLM providers, and a company's visibility against its competitors is reported with a statistical margin of error.",
+        "tr": "GEO (Generative Engine Optimization) sisteminin mimarisini tasarladım: aynı promptlar birden fazla LLM sağlayıcıya tekrar tekrar gönderiliyor ve bir şirketin rakiplerine göre görünürlüğü istatistiksel hata payıyla raporlanıyor."
       },
       {
-        "en": "Designed and built an asynchronous task architecture based on Celery and Redis for daily automated crawling and analysis jobs; developed workers and workflows that use a sliding window approach to reduce the margin of error in measurements obtained from repeated LLM queries.",
-        "tr": "Günlük otomatik tarama ve analiz süreçleri için Celery ve Redis tabanlı asynchronous task mimarisi tasarlayıp geliştirdim; sliding window yaklaşımı kullanarak tekrarlı LLM sorgularından elde edilen ölçümlerdeki hata payını azaltmayı hedefleyen worker'ları ve workflow'ları geliştirdim."
+        "en": "Split the daily crawling and analysis into asynchronous Celery + Redis workers, and used a sliding-window approach to reduce the measurement error of repeated LLM queries.",
+        "tr": "Günlük tarama ve analiz işlerini Celery + Redis ile asenkron çalışan worker'lara böldüm; tekrarlı LLM sorgularındaki ölçüm hatasını azaltmak için sliding window yöntemi kullandım."
       },
       {
-        "en": "Turned the analysis pipeline into backend services with Python and FastAPI and integrated it with PostgreSQL; connected the resulting APIs to a TypeScript/React frontend and containerized the application with Docker Compose.",
-        "tr": "Analiz pipeline'ını Python ve FastAPI ile backend servislerine dönüştürerek PostgreSQL ile entegre ettim; geliştirilen API'leri TypeScript/React tabanlı frontend'e bağladım ve uygulamayı Docker Compose ile containerize ettim."
+        "en": "Exposed the analysis pipeline as FastAPI services on PostgreSQL, connected them to a TypeScript/React frontend, and packaged the whole application with Docker Compose.",
+        "tr": "Analiz akışını PostgreSQL üzerinde çalışan FastAPI servislerine dönüştürdüm, TypeScript/React arayüzüne bağladım ve uygulamanın tamamını Docker Compose ile paketledim."
       }
-    ]
+    ],
+    "summary": {
+      "en": "Built the backend of a tool that measures how visible companies are in AI chatbot answers.",
+      "tr": "Şirketlerin yapay zekâ sohbet yanıtlarında ne kadar göründüğünü ölçen aracın backend'ini kurdum."
+    }
   },
   {
-    "role": { "en": "Application Security Long-Term Intern", "tr": "Application Security Uzun Dönem Stajyeri" },
+    "role": {
+      "en": "Application Security Long-Term Intern",
+      "tr": "Application Security Uzun Dönem Stajyeri"
+    },
     "organization": "Privia Security",
-    "location": { "en": "Istanbul, Türkiye", "tr": "İstanbul, Türkiye" },
-    "period": { "en": "June 2024 – July 2025", "tr": "Haziran 2024 – Temmuz 2025" },
+    "location": {
+      "en": "Istanbul, Türkiye",
+      "tr": "İstanbul, Türkiye"
+    },
+    "period": {
+      "en": "June 2024 – July 2025",
+      "tr": "Haziran 2024 – Temmuz 2025"
+    },
     "highlights": [
       {
-        "en": "Analyzed production web applications at the code and API level to identify security vulnerabilities, and took part in web application penetration testing engagements.",
-        "tr": "Production web application'larını code ve API seviyesinde analiz ederek güvenlik açıklarını tespit ettim ve web application pentest çalışmalarında yer aldım."
+        "en": "Reviewed production web applications at the code and API level to find vulnerabilities, and took part in web application penetration tests.",
+        "tr": "Canlıdaki web uygulamalarını kod ve API seviyesinde inceleyerek güvenlik açıkları buldum; web pentest çalışmalarında yer aldım."
       },
       {
-        "en": "Developed internal tools in Python to speed up the team's repetitive security testing processes, contributing to the automation of manual checks.",
-        "tr": "Ekibin tekrarlayan security testing süreçlerini hızlandırmak için Python ile internal araçlar geliştirerek manuel yapılan kontrollerin otomatikleştirilmesine katkı sağladım."
+        "en": "Wrote internal Python tools that automated the team's repetitive security checks.",
+        "tr": "Ekibin tekrarlayan güvenlik kontrollerini otomatikleştiren dahili Python araçları yazdım."
       },
       {
-        "en": "Discovered a stored XSS vulnerability in a commercial product and reported it through responsible disclosure; the finding was officially assigned CVE-2025-1301.",
-        "tr": "Ticari bir üründe stored XSS zafiyeti tespit ederek responsible disclosure süreciyle bildirdim; bulgu resmi olarak CVE-2025-1301 ile ilişkilendirildi."
+        "en": "Found a stored XSS vulnerability in a commercial product and reported it through responsible disclosure; it was officially assigned CVE-2025-1301.",
+        "tr": "Ticari bir üründe stored XSS açığı buldum ve responsible disclosure ile bildirdim; bulgu resmen CVE-2025-1301 olarak kaydedildi."
       },
       {
-        "en": "Worked with development teams to remediate the identified vulnerabilities, proposing actionable code-level fixes and contributing to secure development practices.",
-        "tr": "Tespit edilen güvenlik açıklarının giderilmesi sürecinde development ekipleriyle çalışarak uygulanabilir code-level çözüm önerileri sundum ve güvenli geliştirme süreçlerine katkı sağladım."
+        "en": "Worked with development teams to close the findings, proposing concrete code-level fixes.",
+        "tr": "Bulguların kapatılması için geliştirme ekipleriyle çalışıp somut, kod seviyesinde düzeltmeler önerdim."
       }
-    ]
+    ],
+    "summary": {
+      "en": "Tested real web applications for security holes and worked with developers to fix them.",
+      "tr": "Gerçek web uygulamalarında güvenlik açığı aradım ve geliştiricilerle birlikte kapattım."
+    }
   }
 ]

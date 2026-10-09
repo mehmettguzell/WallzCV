@@ -9,17 +9,12 @@ interface Props {
 
 const { lang } = Astro.props;
 
-const roles = t(lang, 'hero.roles').split('|');
-const stats = [
-	{ value: 2, suffix: '', label: t(lang, 'stats.cve') },
-	{ value: 4, suffix: '', label: t(lang, 'stats.topics') },
-	{ value: 1, suffix: '', label: t(lang, 'stats.services') },
-	{ value: 2026, suffix: '', label: t(lang, 'stats.ssh') },
-];
-const glance_rows = (['looking', 'where', 'edu', 'exp', 'stack', 'langs'] as const).map((key) => ({
+const glance_keys = ['role', 'based', 'education', 'experience', 'proof', 'stack', 'languages'] as const;
+const glance_rows = glance_keys.map((key) => ({
 	label: t(lang, `glance.${key}`),
 	value: t(lang, `glance.${key}_value`),
 }));
+const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pdf';
 ---
 
 <section class="hero" aria-labelledby="hero-title">
@@ -29,18 +24,15 @@ const glance_rows = (['looking', 'where', 'edu', 'exp', 'stack', 'langs'] as con
 				<span class="hero__pulse" aria-hidden="true"></span>
 				{t(lang, 'hero.available')}
 			</p>
-			<p class="hero__greeting" data-reveal style="--delay: 80ms">{t(lang, 'hero.greeting')}</p>
-			<h1 id="hero-title" class="hero__name" data-reveal style="--delay: 140ms">
+			<h1 id="hero-title" class="hero__name" data-reveal style="--delay: 100ms">
 				<span class="gradient-text">Mehmet Güzel</span>
 			</h1>
-			<p class="hero__role" data-reveal style="--delay: 220ms" data-roles={JSON.stringify(roles)}>
-				<span class="hero__role-text">{roles[0]}</span><span class="hero__caret" aria-hidden="true"></span>
-			</p>
-			<p class="hero__lead" data-reveal style="--delay: 300ms">{t(lang, 'hero.lead')}</p>
-			<div class="hero__actions" data-reveal style="--delay: 380ms">
-				<a class="btn btn--primary" href={lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pdf'} download>{t(lang, 'hero.cta_projects')} <span aria-hidden="true">↓</span></a>
-				<a class="btn" href={`mailto:${contact.email}`}>{t(lang, 'hero.cta_contact')}</a>
-				<a class="btn" href={`/${lang}/#projects`}>{t(lang, 'nav.projects')} →</a>
+			<p class="hero__headline" data-reveal style="--delay: 200ms">{t(lang, 'hero.headline')}</p>
+			<p class="hero__lead" data-reveal style="--delay: 280ms">{t(lang, 'hero.lead')}</p>
+			<div class="hero__actions" data-reveal style="--delay: 360ms">
+				<a class="btn btn--primary" href={cv_path} download>{t(lang, 'hero.cta_cv')} <span aria-hidden="true">↓</span></a>
+				<a class="btn" href={`mailto:${contact.email}`}>{t(lang, 'hero.cta_email')}</a>
+				<a class="btn" href={`/${lang}/#projects`}>{t(lang, 'hero.cta_projects')} →</a>
 			</div>
 		</div>
 
@@ -74,21 +66,6 @@ const glance_rows = (['looking', 'where', 'edu', 'exp', 'stack', 'langs'] as con
 		</div>
 	</div>
 
-	<div class="container">
-		<dl class="stats glass" data-reveal>
-			{
-				stats.map((stat) => (
-					<div class="stats__item">
-						<dt>
-							<span class="stats__value" data-count={stat.value}>{stat.value}</span>
-							{stat.suffix}
-						</dt>
-						<dd>{stat.label}</dd>
-					</div>
-				))
-			}
-		</dl>
-	</div>
 
 </section>
 
@@ -96,63 +73,6 @@ const glance_rows = (['looking', 'where', 'edu', 'exp', 'stack', 'langs'] as con
 	import { gsap } from 'gsap';
 
 	const reduced_motion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-	const role_element = document.querySelector<HTMLElement>('.hero__role');
-	const role_text = role_element?.querySelector<HTMLElement>('.hero__role-text');
-	const roles: string[] = JSON.parse(role_element?.dataset.roles ?? '[]');
-
-	if (role_text && roles.length > 1 && !reduced_motion) {
-		const typing_ms = 55;
-		const erasing_ms = 28;
-		const pause_ms = 1700;
-		let role_index = 0;
-		let characters = roles[0].length;
-		let erasing = true;
-
-		const step = () => {
-			const role = roles[role_index];
-			characters += erasing ? -1 : 1;
-			role_text.textContent = role.slice(0, characters);
-			let delay = erasing ? erasing_ms : typing_ms;
-			if (!erasing && characters === role.length) {
-				erasing = true;
-				delay = pause_ms;
-			} else if (erasing && characters === 0) {
-				erasing = false;
-				role_index = (role_index + 1) % roles.length;
-				delay = 250;
-			}
-			setTimeout(step, delay);
-		};
-		setTimeout(step, pause_ms);
-	}
-
-	const stats_values = document.querySelectorAll<HTMLElement>('[data-count]');
-
-	if (!reduced_motion) {
-
-		const count_observer = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					if (!entry.isIntersecting) continue;
-					const element = entry.target as HTMLElement;
-					const counter = { value: 0 };
-					gsap.to(counter, {
-						value: Number(element.dataset.count),
-						duration: 1.6,
-						ease: 'power2.out',
-						onUpdate: () => (element.textContent = String(Math.round(counter.value))),
-					});
-					count_observer.unobserve(element);
-				}
-			},
-			{ threshold: 0.6 },
-		);
-		stats_values.forEach((value) => {
-			value.textContent = '0';
-			count_observer.observe(value);
-		});
-	}
 
 	const typed_elements = [...document.querySelectorAll<HTMLElement>('.glance [data-type]')];
 	const idle_prompt = document.querySelector<HTMLElement>('.glance__idle');
@@ -354,27 +274,31 @@ const glance_rows = (['looking', 'where', 'edu', 'exp', 'stack', 'langs'] as con
 		}
 	}
 
-	.hero__greeting {
-		margin-top: 1.75rem;
-		color: var(--muted);
-		font-family: var(--font-heading);
-		font-size: 1.1rem;
+
+	.hero__name .gradient-text {
+		display: inline-block;
+		animation:
+			name-in 1.3s cubic-bezier(0.2, 0.7, 0.2, 1) 0.15s both,
+			gradient-shift 8s linear infinite;
+	}
+
+	@keyframes name-in {
+		from {
+			opacity: 0;
+			filter: blur(18px);
+			letter-spacing: 0.1em;
+			transform: translateY(0.6rem);
+		}
 	}
 
 	.hero__name {
+		margin-top: 1.5rem;
 		font-size: clamp(2.8rem, 8.5vw, 6rem);
 		font-weight: 800;
 		letter-spacing: -0.04em;
 		line-height: 1.02;
 	}
 
-	.hero__role {
-		min-height: 2.2rem;
-		margin-top: 0.75rem;
-		font-family: var(--font-heading);
-		font-size: clamp(1.15rem, 2.6vw, 1.7rem);
-		font-weight: 500;
-	}
 
 	.hero__caret {
 		display: inline-block;
@@ -392,9 +316,18 @@ const glance_rows = (['looking', 'where', 'edu', 'exp', 'stack', 'langs'] as con
 		}
 	}
 
+	.hero__headline {
+		max-width: 26ch;
+		margin-top: 1.25rem;
+		font-size: clamp(1.35rem, 2.9vw, 2rem);
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		line-height: 1.25;
+	}
+
 	.hero__lead {
-		max-width: 46ch;
-		margin-top: 1.5rem;
+		max-width: 48ch;
+		margin-top: 1.1rem;
 		color: var(--muted);
 		font-size: 1.15rem;
 	}
@@ -570,58 +503,10 @@ const glance_rows = (['looking', 'where', 'edu', 'exp', 'stack', 'langs'] as con
 		font-weight: 700;
 	}
 
-	.stats {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		margin-top: clamp(3rem, 7vw, 5rem);
-		padding: 0;
-	}
-
-	@media (min-width: 48rem) {
-		.stats {
-			grid-template-columns: repeat(4, 1fr);
-		}
-	}
-
-	.stats__item {
-		padding: 1.6rem 1.25rem;
-		text-align: center;
-	}
-
-	.stats__item + .stats__item {
-		border-left: 1px solid var(--border);
-	}
-
-	.stats__item:nth-child(3) {
-		border-left: 0;
-	}
-
-	@media (min-width: 48rem) {
-		.stats__item:nth-child(3) {
-			border-left: 1px solid var(--border);
-		}
-	}
-
-	.stats dt {
-		background: var(--gradient);
-		-webkit-background-clip: text;
-		background-clip: text;
-		color: transparent;
-		font-size: clamp(2.2rem, 5vw, 3.2rem);
-		font-weight: 800;
-		letter-spacing: -0.03em;
-		line-height: 1.1;
-	}
-
-	.stats dd {
-		margin-top: 0.3rem;
-		color: var(--muted);
-		font-size: 0.88rem;
-	}
-
 	@media (prefers-reduced-motion: reduce) {
 		.hero__pulse,
-		.hero__caret {
+		.hero__caret,
+		.hero__name .gradient-text {
 			animation: none;
 		}
 	}

@@ -1,13 +1,14 @@
 ---
 interface Props {
 	role: string;
+	summary: string;
 	organization: string;
 	location: string;
 	period: string;
 	highlights: string[];
 }
 
-const { role, organization, location, period, highlights } = Astro.props;
+const { role, summary, organization, location, period, highlights } = Astro.props;
 ---
 
 <article class="experience glass spot" data-reveal>
@@ -15,6 +16,7 @@ const { role, organization, location, period, highlights } = Astro.props;
 	<p class="experience__period">{period}</p>
 	<h3 class="experience__role">{role}</h3>
 	<p class="experience__org"><strong>{organization}</strong> · {location}</p>
+	<p class="experience__summary">{summary}</p>
 	<ul class="experience__highlights">
 		{highlights.map((highlight) => <li>{highlight}</li>)}
 	</ul>
@@ -57,10 +59,20 @@ const { role, organization, location, period, highlights } = Astro.props;
 		color: var(--text);
 	}
 
+	.experience__summary {
+		margin-top: 1rem;
+		padding: 0.8rem 1rem;
+		border-left: 3px solid var(--accent);
+		border-radius: 0 0.75rem 0.75rem 0;
+		background: var(--surface);
+		font-size: 1.05rem;
+		font-weight: 500;
+	}
+
 	.experience__highlights {
 		display: grid;
 		gap: 0.75rem;
-		margin-top: 1.25rem;
+		margin-top: 1.1rem;
 		padding: 0;
 		list-style: none;
 		color: var(--muted);

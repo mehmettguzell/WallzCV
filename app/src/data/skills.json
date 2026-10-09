@@ -1,10 +1,23 @@
 [
   {
-    "label": { "en": "Languages", "tr": "Diller" },
-    "skills": ["Java 21", "Python", "Go", "TypeScript", "SQL", "Bash"]
+    "label": {
+      "en": "Languages",
+      "tr": "Diller"
+    },
+    "skills": [
+      "Java 21",
+      "Python",
+      "Go",
+      "TypeScript",
+      "SQL",
+      "Bash"
+    ]
   },
   {
-    "label": { "en": "Backend", "tr": "Backend" },
+    "label": {
+      "en": "Backend",
+      "tr": "Backend"
+    },
     "skills": [
       "Spring Boot",
       "Spring Cloud Gateway",
@@ -22,7 +35,10 @@
     ]
   },
   {
-    "label": { "en": "Security", "tr": "Güvenlik" },
+    "label": {
+      "en": "Security",
+      "tr": "Güvenlik"
+    },
     "skills": [
       "OWASP Top 10",
       "Secure code review",
@@ -31,27 +47,76 @@
       "OAuth2/OIDC",
       "Rate limiting",
       "Secret management (Secrets Manager, SSM)",
-      "Responsible disclosure (CVE-2025-1301)"
+      "Responsible disclosure"
     ]
   },
   {
-    "label": { "en": "Messaging & Data", "tr": "Mesajlaşma ve Veri" },
-    "skills": ["Apache Kafka", "RabbitMQ", "Celery", "PostgreSQL", "MySQL", "MongoDB", "Redis", "Flyway"]
+    "label": {
+      "en": "Messaging & Data",
+      "tr": "Mesajlaşma ve Veri"
+    },
+    "skills": [
+      "Apache Kafka",
+      "RabbitMQ",
+      "Celery",
+      "PostgreSQL",
+      "MySQL",
+      "MongoDB",
+      "Redis",
+      "Flyway"
+    ]
   },
   {
-    "label": { "en": "DevOps & CI/CD", "tr": "DevOps ve CI/CD" },
-    "skills": ["GitHub Actions", "Docker", "Docker Compose", "GHCR", "release-please", "Nginx", "Linux (Ubuntu)", "Prometheus"]
+    "label": {
+      "en": "DevOps & CI/CD",
+      "tr": "DevOps ve CI/CD"
+    },
+    "skills": [
+      "GitHub Actions",
+      "Docker",
+      "Docker Compose",
+      "GHCR",
+      "release-please",
+      "Nginx",
+      "Linux (Ubuntu)",
+      "Prometheus"
+    ]
   },
   {
-    "label": { "en": "Cloud", "tr": "Bulut" },
-    "skills": ["AWS EC2", "IAM", "SSM", "Secrets Manager", "OIDC"]
+    "label": {
+      "en": "Cloud",
+      "tr": "Bulut"
+    },
+    "skills": [
+      "AWS EC2",
+      "IAM",
+      "SSM",
+      "Secrets Manager",
+      "OIDC"
+    ]
   },
   {
-    "label": { "en": "Frontend", "tr": "Frontend" },
-    "skills": ["React", "React Native", "Next.js", "TailwindCSS"]
+    "label": {
+      "en": "Frontend",
+      "tr": "Frontend"
+    },
+    "skills": [
+      "React",
+      "React Native",
+      "Next.js",
+      "TailwindCSS"
+    ]
   },
   {
-    "label": { "en": "Testing", "tr": "Test" },
-    "skills": ["JUnit", "Testcontainers", "RestAssured", "pytest"]
+    "label": {
+      "en": "Testing",
+      "tr": "Test"
+    },
+    "skills": [
+      "JUnit",
+      "Testcontainers",
+      "RestAssured",
+      "pytest"
+    ]
   }
 ]

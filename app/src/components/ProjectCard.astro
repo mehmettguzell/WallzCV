@@ -5,48 +5,41 @@ interface Props {
 	slug: string;
 	index: number;
 	name: string;
-	summary: string;
-	plain: string;
-	plain_label: string;
+	tagline: string;
+	points: string[];
 	technologies: string[];
 	repository: string;
-	highlights: string[];
 	pipeline_steps?: string[];
 	pipeline_label?: string;
-	details_label: string;
 	repository_label: string;
 }
 
-const { slug, index, name, summary, plain, plain_label, technologies, repository, highlights, pipeline_steps, pipeline_label, details_label, repository_label } =
+const { slug, index, name, tagline, points, technologies, repository, pipeline_steps, pipeline_label, repository_label } =
 	Astro.props;
 ---
 
 <div class="project-wrap" data-reveal style={`--delay: ${(index % 2) * 90}ms`}>
-<article class="project glass spot" data-tilt>
-	<div class="project__bar" aria-hidden="true">
-		<span></span><span></span><span></span>
-		<code>~/projects/{slug}</code>
-		<b>{String(index + 1).padStart(2, '0')}</b>
-	</div>
-	<div class="project__body">
-		<h3 class="project__name">{name}</h3>
-		<p class="project__summary">{summary}</p>
-		<p class="project__plain"><b>{plain_label}</b>{plain}</p>
-		{pipeline_steps && pipeline_label && <PipelineDiagram steps={pipeline_steps} label={pipeline_label} />}
-		<ul class="project__technologies">
-			{technologies.map((technology) => <li class="chip">{technology}</li>)}
-		</ul>
-		<details class="project__details">
-			<summary>{details_label} <span aria-hidden="true">+</span></summary>
-			<ul class="project__highlights">
-				{highlights.map((highlight) => <li>{highlight}</li>)}
+	<article class="project glass spot" data-tilt>
+		<div class="project__bar" aria-hidden="true">
+			<span></span><span></span><span></span>
+			<code>~/projects/{slug}</code>
+			<b>{String(index + 1).padStart(2, '0')}</b>
+		</div>
+		<div class="project__body">
+			<h3 class="project__name">{name}</h3>
+			<p class="project__tagline">{tagline}</p>
+			<ul class="project__points">
+				{points.map((point) => <li>{point}</li>)}
 			</ul>
-		</details>
-		<a class="btn project__repository" href={repository} rel="noopener" target="_blank">
-			{repository_label} <span aria-hidden="true">↗</span>
-		</a>
-	</div>
-</article>
+			{pipeline_steps && pipeline_label && <PipelineDiagram steps={pipeline_steps} label={pipeline_label} />}
+			<ul class="project__technologies">
+				{technologies.map((technology) => <li class="chip">{technology}</li>)}
+			</ul>
+			<a class="btn project__repository" href={repository} rel="noopener" target="_blank">
+				{repository_label} <span aria-hidden="true">↗</span>
+			</a>
+		</div>
+	</article>
 </div>
 
 <style>
@@ -119,26 +112,22 @@ const { slug, index, name, summary, plain, plain_label, technologies, repository
 		font-weight: 800;
 	}
 
-	.project__summary {
+	.project__tagline {
 		margin-top: -0.5rem;
+		font-size: 1.05rem;
+		font-weight: 500;
+	}
+
+	.project__points {
+		display: grid;
+		gap: 0.7rem;
+		padding-left: 1.1rem;
 		color: var(--muted);
+		font-size: 0.95rem;
 	}
 
-	.project__plain {
-		padding: 0.9rem 1rem;
-		border-left: 3px solid var(--accent);
-		border-radius: 0 0.75rem 0.75rem 0;
-		background: var(--surface);
-		font-size: 1rem;
-	}
-
-	.project__plain b {
-		display: block;
-		margin-bottom: 0.2rem;
+	.project__points li::marker {
 		color: var(--accent);
-		font: 500 0.72rem var(--font-heading);
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
 	}
 
 	.project__technologies {
@@ -149,55 +138,13 @@ const { slug, index, name, summary, plain, plain_label, technologies, repository
 		list-style: none;
 	}
 
-	.project__details {
-		border-top: 1px solid var(--border);
-		padding-top: 0.9rem;
-	}
-
-	.project__details summary {
-		display: flex;
-		justify-content: space-between;
-		color: var(--text);
-		font-weight: 600;
-		cursor: pointer;
-		list-style: none;
-	}
-
-	.project__details summary::-webkit-details-marker {
-		display: none;
-	}
-
-	.project__details summary span {
-		color: var(--accent);
-		font-family: var(--font-heading);
-		transition: transform 0.25s ease;
-	}
-
-	.project__details[open] summary span {
-		transform: rotate(45deg);
-	}
-
-	.project__highlights {
-		display: grid;
-		gap: 0.8rem;
-		margin-top: 1rem;
-		padding-left: 1.1rem;
-		color: var(--muted);
-		font-size: 0.95rem;
-	}
-
-	.project__highlights li::marker {
-		color: var(--accent);
-	}
-
 	.project__repository {
 		align-self: flex-start;
 		margin-top: auto;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.project,
-		.project__details summary span {
+		.project {
 			transition: none;
 		}
 	}

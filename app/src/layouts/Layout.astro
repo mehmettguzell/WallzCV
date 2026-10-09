@@ -57,6 +57,7 @@ const share_image_url = new URL('/og.png', Astro.site);
 			<span class="backdrop__blob backdrop__blob--a"></span>
 			<span class="backdrop__blob backdrop__blob--b"></span>
 			<span class="backdrop__blob backdrop__blob--c"></span>
+			<canvas class="backdrop__network"></canvas>
 			<span class="backdrop__grid"></span>
 		</div>
 		<div class="cursor-glow" aria-hidden="true"></div>
@@ -99,6 +100,112 @@ const share_image_url = new URL('/og.png', Astro.site);
 	};
 	addEventListener('scroll', update_progress, { passive: true });
 	update_progress();
+
+
+	const network_canvas = document.querySelector<HTMLCanvasElement>('.backdrop__network');
+	const network_context = network_canvas?.getContext('2d');
+
+	if (network_canvas && network_context && !reduced_motion) {
+		type Node = { x: number; y: number; vx: number; vy: number };
+		const link_distance = 140;
+		const pointer_distance = 190;
+		const max_nodes = 90;
+		const area_per_node = 17000;
+		const drift_speed = 0.22;
+		let nodes: Node[] = [];
+		let width = 0;
+		let height = 0;
+		let pointer: { x: number; y: number } | null = null;
+		let node_color = '';
+		let running = true;
+
+		const read_colors = () => {
+			node_color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+		};
+
+		const resize = () => {
+			const ratio = Math.min(devicePixelRatio, 2);
+			width = innerWidth;
+			height = innerHeight;
+			network_canvas.width = width * ratio;
+			network_canvas.height = height * ratio;
+			network_context.setTransform(ratio, 0, 0, ratio, 0, 0);
+			const count = Math.min(max_nodes, Math.floor((width * height) / area_per_node));
+			nodes = Array.from({ length: count }, () => ({
+				x: Math.random() * width,
+				y: Math.random() * height,
+				vx: (Math.random() - 0.5) * drift_speed * 2,
+				vy: (Math.random() - 0.5) * drift_speed * 2,
+			}));
+		};
+
+		const draw = () => {
+			if (!running) return;
+			network_context.clearRect(0, 0, width, height);
+			network_context.fillStyle = node_color;
+			network_context.strokeStyle = node_color;
+			for (const [index, node] of nodes.entries()) {
+				node.x += node.vx;
+				node.y += node.vy;
+				if (node.x < 0 || node.x > width) node.vx *= -1;
+				if (node.y < 0 || node.y > height) node.vy *= -1;
+				if (pointer) {
+					const dx = pointer.x - node.x;
+					const dy = pointer.y - node.y;
+					const distance = Math.hypot(dx, dy);
+					if (distance < pointer_distance) {
+						node.x += dx * 0.012;
+						node.y += dy * 0.012;
+						network_context.globalAlpha = (1 - distance / pointer_distance) * 0.55;
+						network_context.beginPath();
+						network_context.moveTo(node.x, node.y);
+						network_context.lineTo(pointer.x, pointer.y);
+						network_context.stroke();
+					}
+				}
+				network_context.globalAlpha = 0.5;
+				network_context.beginPath();
+				network_context.arc(node.x, node.y, 1.6, 0, Math.PI * 2);
+				network_context.fill();
+				for (let other_index = index + 1; other_index < nodes.length; other_index++) {
+					const other = nodes[other_index];
+					const distance = Math.hypot(node.x - other.x, node.y - other.y);
+					if (distance > link_distance) continue;
+					network_context.globalAlpha = (1 - distance / link_distance) * 0.28;
+					network_context.beginPath();
+					network_context.moveTo(node.x, node.y);
+					network_context.lineTo(other.x, other.y);
+					network_context.stroke();
+				}
+			}
+			requestAnimationFrame(draw);
+		};
+
+		read_colors();
+		resize();
+		addEventListener('resize', resize);
+		addEventListener('pointermove', (event) => (pointer = { x: event.clientX, y: event.clientY }), { passive: true });
+		document.addEventListener('pointerleave', () => (pointer = null));
+		new MutationObserver(read_colors).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+		document.addEventListener('visibilitychange', () => {
+			running = !document.hidden;
+			if (running) requestAnimationFrame(draw);
+		});
+		requestAnimationFrame(draw);
+	}
+
+	if (fine_pointer && !reduced_motion) {
+		const magnetic_pull = 0.28;
+		document.querySelectorAll<HTMLElement>('.btn').forEach((button) => {
+			button.addEventListener('pointermove', (event) => {
+				const box = button.getBoundingClientRect();
+				const x = (event.clientX - (box.left + box.width / 2)) * magnetic_pull;
+				const y = (event.clientY - (box.top + box.height / 2)) * magnetic_pull;
+				button.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
+			});
+			button.addEventListener('pointerleave', () => (button.style.transform = ''));
+		});
+	}
 
 	if (fine_pointer) {
 		const cursor_glow = document.querySelector<HTMLElement>('.cursor-glow');
@@ -172,6 +279,13 @@ const share_image_url = new URL('/og.png', Astro.site);
 		background: radial-gradient(circle, var(--accent-3), transparent 65%);
 		opacity: calc(var(--blob-opacity) * 0.6);
 		animation: drift-a 30s ease-in-out infinite alternate-reverse;
+	}
+
+	.backdrop__network {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
 	}
 
 	.backdrop__grid {
