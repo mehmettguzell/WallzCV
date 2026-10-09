@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import World from '../../components/World.astro';
 import Section from '../../components/Section.astro';
 import ExperienceItem from '../../components/ExperienceItem.astro';
 import SkillGroup from '../../components/SkillGroup.astro';
@@ -19,80 +20,82 @@ const lang = Astro.params.lang as Language;
 ---
 
 <Layout lang={lang} title={t(lang, 'home.title')}>
-	<Section id="about" title={t(lang, 'about.title')}>
-		<h1>Mehmet Güzel</h1>
-		<p class="tagline">{t(lang, 'about.tagline')}</p>
-		<p>{t(lang, 'about.summary')}</p>
-		<ul class="contact-links">
-			<li><a href={`mailto:${contact.email}`}>{t(lang, 'about.email')}</a></li>
-			<li><a href={contact.linkedin} rel="noopener">LinkedIn</a></li>
-			<li><a href={contact.github} rel="noopener">GitHub</a></li>
-		</ul>
-	</Section>
+	<World>
+		<Section id="about" title={t(lang, 'about.title')}>
+			<h1>Mehmet Güzel</h1>
+			<p class="tagline">{t(lang, 'about.tagline')}</p>
+			<p>{t(lang, 'about.summary')}</p>
+			<ul class="contact-links">
+				<li><a href={`mailto:${contact.email}`}>{t(lang, 'about.email')}</a></li>
+				<li><a href={contact.linkedin} rel="noopener">LinkedIn</a></li>
+				<li><a href={contact.github} rel="noopener">GitHub</a></li>
+			</ul>
+		</Section>
 
-	<Section id="experience" title={t(lang, 'experience.title')}>
-		{
-			experience.map((item) => (
-				<ExperienceItem
-					role={item.role[lang]}
-					organization={item.organization}
-					location={item.location[lang]}
-					period={item.period[lang]}
-					highlights={item.highlights.map((highlight) => highlight[lang])}
-				/>
-			))
-		}
-	</Section>
-
-	<Section id="projects" title={t(lang, 'projects.title')}>
-		<div class="project-grid">
+		<Section id="experience" title={t(lang, 'experience.title')}>
 			{
-				projects.map((project) => (
-					<ProjectCard
-						slug={project.slug}
-						name={project.name}
-						summary={project.summary[lang]}
-						technologies={project.technologies}
-						repository={project.repository}
-						highlights={project.highlights.map((highlight) => highlight[lang])}
-						pipeline_steps={'pipeline' in project ? project.pipeline[lang] : undefined}
-						pipeline_label={t(lang, 'projects.pipeline_label')}
+				experience.map((item) => (
+					<ExperienceItem
+						role={item.role[lang]}
+						organization={item.organization}
+						location={item.location[lang]}
+						period={item.period[lang]}
+						highlights={item.highlights.map((highlight) => highlight[lang])}
 					/>
 				))
 			}
-		</div>
-	</Section>
+		</Section>
 
-	<Section id="skills" title={t(lang, 'skills.title')}>
-		{skills.map((group) => <SkillGroup label={group.label[lang]} skills={group.skills} />)}
-	</Section>
+		<Section id="projects" title={t(lang, 'projects.title')}>
+			<div class="project-grid">
+				{
+					projects.map((project) => (
+						<ProjectCard
+							slug={project.slug}
+							name={project.name}
+							summary={project.summary[lang]}
+							technologies={project.technologies}
+							repository={project.repository}
+							highlights={project.highlights.map((highlight) => highlight[lang])}
+							pipeline_steps={'pipeline' in project ? project.pipeline[lang] : undefined}
+							pipeline_label={t(lang, 'projects.pipeline_label')}
+						/>
+					))
+				}
+			</div>
+		</Section>
 
-	<Section id="education" title={t(lang, 'education.title')}>
-		{
-			education.degrees.map((degree) => (
-				<article>
-					<h3>{degree.institution[lang]}</h3>
-					<p>{degree.program[lang]}</p>
-					<p class="meta">
-						{degree.period[lang]} · {degree.location[lang]}
-					</p>
-				</article>
-			))
-		}
-	</Section>
+		<Section id="skills" title={t(lang, 'skills.title')}>
+			{skills.map((group) => <SkillGroup label={group.label[lang]} skills={group.skills} />)}
+		</Section>
 
-	<Section id="achievements" title={t(lang, 'achievements.title')}>
-		<dl>
+		<Section id="education" title={t(lang, 'education.title')}>
 			{
-				education.achievements.map((achievement) => (
-					<>
-						<dt>{achievement.label[lang]}</dt>
-						<dd>{achievement.text[lang]}</dd>
-					</>
+				education.degrees.map((degree) => (
+					<article>
+						<h3>{degree.institution[lang]}</h3>
+						<p>{degree.program[lang]}</p>
+						<p class="meta">
+							{degree.period[lang]} · {degree.location[lang]}
+						</p>
+					</article>
 				))
 			}
-		</dl>
-	</Section>
+		</Section>
+
+		<Section id="achievements" title={t(lang, 'achievements.title')}>
+			<dl>
+				{
+					education.achievements.map((achievement) => (
+						<>
+							<dt>{achievement.label[lang]}</dt>
+							<dd>{achievement.text[lang]}</dd>
+						</>
+					))
+				}
+			</dl>
+		</Section>
+	</World>
 </Layout>
 
 <style>

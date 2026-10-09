@@ -1,0 +1,57 @@
+<div class="world">
+	<div class="world__track">
+		<slot />
+	</div>
+</div>
+
+<script>
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+	gsap.registerPlugin(ScrollTrigger);
+
+	const world = document.querySelector<HTMLElement>('.world');
+	const track = world?.querySelector<HTMLElement>('.world__track');
+
+	if (world && track) {
+		world.classList.add('world--active');
+
+		const scroll_distance = () => track.scrollWidth - world.clientWidth;
+
+		gsap.to(track, {
+			x: () => -scroll_distance(),
+			ease: 'none',
+			scrollTrigger: {
+				trigger: world,
+				pin: true,
+				scrub: true,
+				start: 'top top',
+				end: () => `+=${scroll_distance()}`,
+				invalidateOnRefresh: true,
+			},
+		});
+	}
+</script>
+
+<style>
+	/* Without JavaScript the Sections stay a normal vertical page. */
+	.world--active {
+		height: 100svh;
+		overflow: hidden;
+	}
+
+	.world--active .world__track {
+		display: flex;
+		height: 100%;
+		will-change: transform;
+	}
+
+	.world--active .world__track > :global(.cv-section) {
+		flex: 0 0 100%;
+		height: 100%;
+		max-width: none;
+		margin: 0;
+		padding: 5.5rem max(1rem, calc((100% - 52rem) / 2)) 2rem;
+		overflow-y: auto;
+	}
+</style>
