@@ -22,5 +22,10 @@
   "wallz.label": "Wallz",
   "wallz.fallen_status": "Wallz fell down and is crying.",
   "hand.refreshing": "Refreshing…",
-  "hand.error": "Could not refresh. Try again later."
+  "hand.error": "Could not refresh. Try again later.",
+  "blog.title": "Blog",
+  "blog.empty": "No posts yet.",
+  "blog.filter_label": "Filter by language",
+  "blog.filter_all": "All",
+  "blog.reading_minutes": "min read"
 }

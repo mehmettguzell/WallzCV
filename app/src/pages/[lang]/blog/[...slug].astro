@@ -1,0 +1,75 @@
+---
+import { render } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import { languages, t, type Language } from '../../../i18n';
+import { estimate_reading_minutes, get_published_posts_newest_first } from '../../../lib/blog';
+
+export async function getStaticPaths() {
+	const posts = await get_published_posts_newest_first();
+	return languages.flatMap((lang) => posts.map((post) => ({ params: { lang, slug: post.id }, props: { post } })));
+}
+
+const lang = Astro.params.lang as Language;
+const { post } = Astro.props;
+const { Content } = await render(post);
+const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
+---
+
+<Layout lang={lang} title={`${post.data.title} · WallzCV`}>
+	<article class="post" lang={post.data.lang}>
+		<a href={`/${lang}/blog/`}>← {t(lang, 'blog.title')}</a>
+		<h1>{post.data.title}</h1>
+		<p class="post__meta">
+			<time datetime={post.data.date.toISOString()}>{date_format.format(post.data.date)}</time>
+			· {estimate_reading_minutes(post)} {t(lang, 'blog.reading_minutes')}
+			{post.data.tags.length > 0 && <>· {post.data.tags.join(', ')}</>}
+		</p>
+		<div class="post__body">
+			<Content />
+		</div>
+	</article>
+</Layout>
+
+<style>
+	.post {
+		max-width: 44rem;
+		margin: 0 auto;
+		padding: 2rem 0;
+	}
+
+	.post h1 {
+		margin: 1rem 0 0.5rem;
+		color: var(--color-accent);
+	}
+
+	.post__meta {
+		margin-bottom: 2rem;
+		opacity: 0.75;
+		font-size: 0.9rem;
+	}
+
+	.post__body :global(h2),
+	.post__body :global(h3) {
+		margin: 2rem 0 0.75rem;
+	}
+
+	.post__body :global(p),
+	.post__body :global(ul),
+	.post__body :global(ol) {
+		margin-bottom: 1rem;
+	}
+
+	.post__body :global(pre) {
+		margin-bottom: 1rem;
+		padding: 1rem;
+		border-radius: 0.5rem;
+		overflow-x: auto;
+		font-size: 0.875rem;
+	}
+
+	:global(:root[data-theme='dark']) .post__body :global(.astro-code),
+	:global(:root[data-theme='dark']) .post__body :global(.astro-code span) {
+		color: var(--shiki-dark) !important;
+		background-color: var(--shiki-dark-bg) !important;
+	}
+</style>

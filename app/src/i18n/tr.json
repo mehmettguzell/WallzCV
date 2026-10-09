@@ -22,5 +22,10 @@
   "wallz.label": "Wallz",
   "wallz.fallen_status": "Wallz düştü ve ağlıyor.",
   "hand.refreshing": "Yenileniyor…",
-  "hand.error": "Yenilenemedi. Daha sonra tekrar dene."
+  "hand.error": "Yenilenemedi. Daha sonra tekrar dene.",
+  "blog.title": "Blog",
+  "blog.empty": "Henüz yazı yok.",
+  "blog.filter_label": "Dile göre filtrele",
+  "blog.filter_all": "Tümü",
+  "blog.reading_minutes": "dk okuma"
 }

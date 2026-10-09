@@ -1,0 +1,119 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { languages, t, type Language } from '../../../i18n';
+import { estimate_reading_minutes, get_published_posts_newest_first } from '../../../lib/blog';
+
+export function getStaticPaths() {
+	return languages.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Language;
+const posts = await get_published_posts_newest_first();
+const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
+---
+
+<Layout lang={lang} title={`${t(lang, 'blog.title')} · WallzCV`}>
+	<section class="blog-list" data-initial-filter={lang}>
+		<h1>{t(lang, 'blog.title')}</h1>
+		<div class="blog-list__filters" role="group" aria-label={t(lang, 'blog.filter_label')} hidden>
+			<button type="button" data-filter="all" aria-pressed="false">{t(lang, 'blog.filter_all')}</button>
+			{languages.map((post_lang) => <button type="button" data-filter={post_lang} aria-pressed="false">{post_lang.toUpperCase()}</button>)}
+		</div>
+		{posts.length === 0 && <p>{t(lang, 'blog.empty')}</p>}
+		<ul class="blog-list__posts">
+			{
+				posts.map((post) => (
+					<li data-post-lang={post.data.lang}>
+						<h2>
+							<a href={`/${lang}/blog/${post.id}/`} hreflang={post.data.lang}>{post.data.title}</a>
+						</h2>
+						<p class="blog-list__meta">
+							<time datetime={post.data.date.toISOString()}>{date_format.format(post.data.date)}</time>
+							· {post.data.lang.toUpperCase()} · {estimate_reading_minutes(post)} {t(lang, 'blog.reading_minutes')}
+						</p>
+						<p lang={post.data.lang}>{post.data.summary}</p>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+</Layout>
+
+<script>
+	const blog_list = document.querySelector<HTMLElement>('.blog-list');
+	const filters = blog_list?.querySelector<HTMLElement>('.blog-list__filters');
+	const filter_buttons = filters?.querySelectorAll<HTMLButtonElement>('button') ?? [];
+	const post_items = blog_list?.querySelectorAll<HTMLElement>('[data-post-lang]') ?? [];
+
+	const apply_filter = (selected_filter: string) => {
+		for (const button of filter_buttons) {
+			button.setAttribute('aria-pressed', String(button.dataset.filter === selected_filter));
+		}
+		for (const item of post_items) {
+			item.hidden = selected_filter !== 'all' && item.dataset.postLang !== selected_filter;
+		}
+	};
+
+	if (blog_list && filters) {
+		// Without JavaScript the filter bar stays hidden and every Post is listed.
+		filters.hidden = false;
+		for (const button of filter_buttons) {
+			button.addEventListener('click', () => apply_filter(button.dataset.filter ?? 'all'));
+		}
+		apply_filter(blog_list.dataset.initialFilter ?? 'all');
+	}
+</script>
+
+<style>
+	.blog-list {
+		max-width: 52rem;
+		margin: 0 auto;
+		padding: 2rem 0;
+	}
+
+	.blog-list h1 {
+		margin-bottom: 1rem;
+		color: var(--color-accent);
+	}
+
+	.blog-list__filters {
+		display: flex;
+		gap: 0.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.blog-list__filters[hidden] {
+		display: none;
+	}
+
+	.blog-list__filters button {
+		padding: 0.25rem 0.75rem;
+		border: 1px solid var(--color-accent);
+		border-radius: 0.5rem;
+		background: none;
+		color: var(--color-text);
+		font: inherit;
+		cursor: pointer;
+	}
+
+	.blog-list__filters button[aria-pressed='true'] {
+		background: var(--color-accent);
+		color: var(--color-bg);
+	}
+
+	.blog-list__posts {
+		display: grid;
+		gap: 1.5rem;
+		padding: 0;
+		list-style: none;
+	}
+
+	.blog-list__posts h2 {
+		font-size: 1.25rem;
+	}
+
+	.blog-list__meta {
+		opacity: 0.75;
+		font-size: 0.9rem;
+	}
+</style>
