@@ -1,0 +1,31 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+* {
+	margin: 0;
+}
+
+body {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	font-family: system-ui, sans-serif;
+	font-size: 1rem;
+	line-height: 1.6;
+}
+
+.site-header,
+.site-footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem;
+}
+
+.site-main {
+	flex: 1;
+	padding: 1rem;
+}
