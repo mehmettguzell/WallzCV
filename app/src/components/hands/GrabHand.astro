@@ -1,0 +1,62 @@
+---
+import HandShape from './HandShape.astro';
+---
+
+<svg class="grab-hand" viewBox="0 0 80 150" aria-hidden="true" focusable="false">
+	<g class="grab-hand__held">
+		<rect class="grab-hand__arm" x="26" y="-60" width="28" height="140" />
+		<g transform="translate(4 70) scale(1)">
+			<HandShape />
+		</g>
+		<g class="grab-hand__bear">
+			<circle cx="28" cy="116" r="7" />
+			<circle cx="52" cy="116" r="7" />
+			<circle cx="40" cy="128" r="16" />
+			<circle cx="34" cy="126" r="2" class="grab-hand__eye" />
+			<circle cx="46" cy="126" r="2" class="grab-hand__eye" />
+		</g>
+	</g>
+</svg>
+
+<style>
+	.grab-hand {
+		width: 5rem;
+		height: auto;
+		overflow: visible;
+	}
+
+	.grab-hand__arm {
+		fill: #3a5a9a;
+		stroke: #3a2112;
+		stroke-width: 2.5;
+	}
+
+	.grab-hand__bear circle {
+		fill: #b0703f;
+		stroke: #3a2112;
+		stroke-width: 2.5;
+	}
+
+	.grab-hand__bear .grab-hand__eye {
+		fill: #2a160b;
+		stroke: none;
+	}
+
+	.grab-hand__held {
+		transform-origin: 40px 0;
+		transform: translateY(calc((1 - var(--hand-progress, 0)) * -60px));
+	}
+
+	:global(.hand[data-state='refreshing']) .grab-hand__held {
+		animation: grab-hand-shake 0.4s ease-in-out infinite alternate;
+	}
+
+	@keyframes grab-hand-shake {
+		from {
+			transform: rotate(-8deg);
+		}
+		to {
+			transform: rotate(8deg);
+		}
+	}
+</style>

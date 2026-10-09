@@ -20,5 +20,7 @@
   "education.title": "Education",
   "achievements.title": "Achievements & Certifications",
   "wallz.label": "Wallz",
-  "wallz.fallen_status": "Wallz fell down and is crying."
+  "wallz.fallen_status": "Wallz fell down and is crying.",
+  "hand.refreshing": "Refreshing…",
+  "hand.error": "Could not refresh. Try again later."
 }

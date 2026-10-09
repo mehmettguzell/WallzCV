@@ -1,0 +1,129 @@
+---
+import GrabHand from './hands/GrabHand.astro';
+import GitPullTerminal from './hands/GitPullTerminal.astro';
+import BellRope from './hands/BellRope.astro';
+import HoneyHand from './hands/HoneyHand.astro';
+import { t, type Language } from '../i18n';
+
+interface Props {
+	lang: Language;
+	variant: 'grab' | 'git-pull' | 'bell' | 'honey';
+}
+
+const { lang, variant } = Astro.props;
+---
+
+<div
+	class="hand"
+	data-state="idle"
+	data-refreshing-status={t(lang, 'hand.refreshing')}
+	data-error-status={t(lang, 'hand.error')}
+>
+	<div class="hand__figure">
+		{variant === 'grab' && <GrabHand />}
+		{variant === 'git-pull' && <GitPullTerminal />}
+		{variant === 'bell' && <BellRope />}
+		{variant === 'honey' && <HoneyHand />}
+	</div>
+	<p class="hand__status" role="status"></p>
+</div>
+
+<script>
+	import { gsap } from 'gsap';
+	import { attach_pull_to_refresh } from '../scripts/pullToRefresh';
+
+	const hand = document.querySelector<HTMLElement>('.hand');
+	const hand_status = hand?.querySelector<HTMLElement>('.hand__status');
+
+	const motion_allowed = window.matchMedia('(prefers-reduced-motion: no-preference)');
+	const minimum_refresh_ms = 1200;
+	const error_visible_ms = 2500;
+	const hello_peak_progress = 0.6;
+
+	type HandState = 'idle' | 'refreshing' | 'error';
+
+	/** Pages listen for this event and push their data fetches into `tasks`; the Hand stays out until they settle. */
+	interface HandRefreshDetail {
+		tasks: Promise<unknown>[];
+	}
+
+	if (hand && hand_status) {
+		let hand_state: HandState = 'idle';
+
+		const set_hand_state = (next_state: HandState, status_text = '') => {
+			hand_state = next_state;
+			hand.dataset.state = next_state;
+			hand_status.textContent = status_text;
+		};
+
+		const set_progress = (progress: number) => hand.style.setProperty('--hand-progress', String(progress));
+
+		const retract = () => {
+			if (!motion_allowed.matches) return set_progress(0);
+			gsap.to(hand, { '--hand-progress': 0, duration: 0.3, ease: 'power2.in' });
+		};
+
+		const refresh = async () => {
+			if (hand_state !== 'idle') return;
+			set_hand_state('refreshing', hand.dataset.refreshingStatus);
+			set_progress(1);
+
+			const detail: HandRefreshDetail = { tasks: [] };
+			window.dispatchEvent(new CustomEvent('hand:refresh', { detail }));
+			const minimum_wait = new Promise((resolve) => window.setTimeout(resolve, minimum_refresh_ms));
+			const results = await Promise.allSettled([minimum_wait, ...detail.tasks]);
+
+			retract();
+			if (results.some((result) => result.status === 'rejected')) {
+				set_hand_state('error', hand.dataset.errorStatus);
+				window.setTimeout(() => set_hand_state('idle'), error_visible_ms);
+				return;
+			}
+			set_hand_state('idle');
+		};
+
+		attach_pull_to_refresh(document.body, {
+			on_refresh: refresh,
+			on_progress: (progress) => {
+				if (hand_state === 'idle') set_progress(progress);
+			},
+		});
+
+		if (motion_allowed.matches) {
+			gsap.to(hand, { '--hand-progress': hello_peak_progress, duration: 0.6, ease: 'power2.out', yoyo: true, repeat: 1, delay: 0.5 });
+		}
+	}
+</script>
+
+<style>
+	.hand {
+		--hand-progress: 0;
+
+		position: fixed;
+		top: 4rem;
+		left: 50%;
+		z-index: 20;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		translate: -50% 0;
+		pointer-events: none;
+	}
+
+	.hand__figure {
+		opacity: clamp(0, calc(var(--hand-progress) * 3), 1);
+	}
+
+	.hand__status {
+		padding: 0.25rem 0.75rem;
+		border-radius: 0.5rem;
+		background: var(--color-bg);
+		color: var(--color-text);
+		font-family: var(--font-heading);
+		font-size: 0.8rem;
+	}
+
+	.hand__status:empty {
+		display: none;
+	}
+</style>

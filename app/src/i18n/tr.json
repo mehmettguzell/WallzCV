@@ -20,5 +20,7 @@
   "education.title": "Eğitim",
   "achievements.title": "Başarılar ve Sertifikalar",
   "wallz.label": "Wallz",
-  "wallz.fallen_status": "Wallz düştü ve ağlıyor."
+  "wallz.fallen_status": "Wallz düştü ve ağlıyor.",
+  "hand.refreshing": "Yenileniyor…",
+  "hand.error": "Yenilenemedi. Daha sonra tekrar dene."
 }

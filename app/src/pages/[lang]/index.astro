@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import World from '../../components/World.astro';
+import Hand from '../../components/Hand.astro';
 import Section from '../../components/Section.astro';
 import ExperienceItem from '../../components/ExperienceItem.astro';
 import SkillGroup from '../../components/SkillGroup.astro';
@@ -20,6 +21,7 @@ const lang = Astro.params.lang as Language;
 ---
 
 <Layout lang={lang} title={t(lang, 'home.title')}>
+	<Hand lang={lang} variant="honey" />
 	<World lang={lang}>
 		<Section id="about" title={t(lang, 'about.title')}>
 			<h1>Mehmet Güzel</h1>

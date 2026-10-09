@@ -1,0 +1,52 @@
+<svg class="bell-rope" viewBox="0 0 60 150" aria-hidden="true" focusable="false">
+	<g class="bell-rope__swing">
+		<rect class="bell-rope__rope" x="28" y="-80" width="4" height="150" />
+		<path class="bell-rope__bell" d="M14 112 C14 92 22 84 30 84 C38 84 46 92 46 112 L50 118 H10Z" />
+		<circle class="bell-rope__clapper" cx="30" cy="124" r="5" />
+	</g>
+</svg>
+
+<style>
+	.bell-rope {
+		width: 3.5rem;
+		height: auto;
+		overflow: visible;
+	}
+
+	.bell-rope__rope {
+		fill: #c8a46a;
+		stroke: #3a2112;
+		stroke-width: 1.5;
+	}
+
+	.bell-rope__bell {
+		fill: #e8b830;
+		stroke: #3a2112;
+		stroke-width: 2.5;
+		stroke-linejoin: round;
+	}
+
+	.bell-rope__clapper {
+		fill: #8a5230;
+		stroke: #3a2112;
+		stroke-width: 2;
+	}
+
+	.bell-rope__swing {
+		transform-origin: 30px 0;
+		transform: translateY(calc((1 - var(--hand-progress, 0)) * -70px));
+	}
+
+	:global(.hand[data-state='refreshing']) .bell-rope__swing {
+		animation: bell-rope-ring 0.35s ease-in-out infinite alternate;
+	}
+
+	@keyframes bell-rope-ring {
+		from {
+			transform: rotate(-12deg);
+		}
+		to {
+			transform: rotate(12deg);
+		}
+	}
+</style>

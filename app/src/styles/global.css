@@ -28,6 +28,11 @@
   margin: 0;
 }
 
+/* Stops the browser's own pull-to-refresh so the Hand gesture owns the pull. */
+html {
+  overscroll-behavior-y: contain;
+}
+
 body {
   min-height: 100vh;
   display: flex;
