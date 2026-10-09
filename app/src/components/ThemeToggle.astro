@@ -1,4 +1,12 @@
-<button type="button" class="theme-toggle" aria-label="Switch color theme">
+---
+interface Props {
+	label: string;
+}
+
+const { label } = Astro.props;
+---
+
+<button type="button" class="theme-toggle" aria-label={label}>
 	<svg class="theme-toggle__icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
 		<mask id="theme-toggle-moon-mask">
 			<rect x="0" y="0" width="24" height="24" fill="white" />

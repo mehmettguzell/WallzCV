@@ -1,0 +1,15 @@
+---
+import { languages, t, type Language } from '../i18n';
+
+interface Props {
+	lang: Language;
+}
+
+const { lang } = Astro.props;
+const other_language = languages.find((language) => language !== lang) ?? lang;
+const other_language_path = Astro.url.pathname.replace(`/${lang}`, `/${other_language}`);
+---
+
+<a class="language-switch" href={other_language_path} hreflang={other_language} lang={other_language}>
+	{t(lang, 'lang.switch')}
+</a>

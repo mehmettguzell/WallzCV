@@ -66,6 +66,12 @@ a {
   padding: 1rem;
 }
 
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .site-main {
   flex: 1;
   padding: 1rem;

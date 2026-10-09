@@ -1,7 +1,5 @@
 ---
-import Layout from '../layouts/Layout.astro';
----
+import { default_language } from '../i18n';
 
-<Layout title="WallzCV">
-	<h1>WallzCV</h1>
-</Layout>
+return Astro.redirect(`/${default_language}`);
+---
