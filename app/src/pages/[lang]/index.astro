@@ -55,6 +55,8 @@ const lang = Astro.params.lang as Language;
 						technologies={project.technologies}
 						repository={project.repository}
 						highlights={project.highlights.map((highlight) => highlight[lang])}
+						pipeline_steps={'pipeline' in project ? project.pipeline[lang] : undefined}
+						pipeline_label={t(lang, 'projects.pipeline_label')}
 					/>
 				))
 			}

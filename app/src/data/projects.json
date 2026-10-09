@@ -17,6 +17,10 @@
       "AWS"
     ],
     "repository": "https://github.com/mehmettguzell/STOP",
+    "pipeline": {
+      "en": ["push", "paths-filter", "build changed", "GHCR (Git SHA)", "SSM Run Command", "health check", "rollback if fail"],
+      "tr": ["push", "paths-filter", "değişeni build", "GHCR (Git SHA)", "SSM Run Command", "health check", "hata varsa rollback"]
+    },
     "highlights": [
       {
         "en": "Built the backend of a football match organization platform as 5 independent Spring Boot services: API Gateway, Identity, Match, Communication, and Notification. Each service has its own PostgreSQL database, and schema changes are managed with Flyway.",
@@ -55,6 +59,10 @@
       "TypeScript"
     ],
     "repository": "https://github.com/mehmettguzell/Devops-Todo-App",
+    "pipeline": {
+      "en": ["push", "paths-filter", "test", "build matrix", "GHCR", "OIDC → IAM role", "SSM Run Command", "health check"],
+      "tr": ["push", "paths-filter", "test", "build matrisi", "GHCR", "OIDC → IAM role", "SSM Run Command", "health check"]
+    },
     "highlights": [
       {
         "en": "GitHub Actions pipeline covering test, release, build, and deployment for a Python/FastAPI backend and a TypeScript frontend; with dorny/paths-filter and a dynamic build matrix, only changed services are tested and built.",

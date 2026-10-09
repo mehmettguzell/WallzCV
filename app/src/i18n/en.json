@@ -15,6 +15,7 @@
   "about.email": "Email",
   "experience.title": "Experience",
   "projects.title": "Projects",
+  "projects.pipeline_label": "CI/CD pipeline steps",
   "skills.title": "Technical Skills",
   "education.title": "Education",
   "achievements.title": "Achievements & Certifications"

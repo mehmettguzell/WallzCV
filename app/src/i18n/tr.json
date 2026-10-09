@@ -15,6 +15,7 @@
   "about.email": "E-posta",
   "experience.title": "Deneyim",
   "projects.title": "Projeler",
+  "projects.pipeline_label": "CI/CD pipeline adımları",
   "skills.title": "Teknik Beceriler",
   "education.title": "Eğitim",
   "achievements.title": "Başarılar ve Sertifikalar"

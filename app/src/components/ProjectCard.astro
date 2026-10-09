@@ -1,4 +1,6 @@
 ---
+import PipelineDiagram from './PipelineDiagram.astro';
+
 interface Props {
 	slug: string;
 	name: string;
@@ -6,9 +8,12 @@ interface Props {
 	technologies: string[];
 	repository: string;
 	highlights: string[];
+	pipeline_steps?: string[];
+	pipeline_label?: string;
 }
 
-const { slug, name, summary, technologies, repository, highlights } = Astro.props;
+const { slug, name, summary, technologies, repository, highlights, pipeline_steps, pipeline_label } =
+	Astro.props;
 ---
 
 <article class="project-card">
@@ -24,6 +29,7 @@ const { slug, name, summary, technologies, repository, highlights } = Astro.prop
 		<ul class="project-card__highlights">
 			{highlights.map((highlight) => <li>{highlight}</li>)}
 		</ul>
+		{pipeline_steps && pipeline_label && <PipelineDiagram steps={pipeline_steps} label={pipeline_label} />}
 		<ul class="project-card__technologies">
 			{technologies.map((technology) => <li>{technology}</li>)}
 		</ul>

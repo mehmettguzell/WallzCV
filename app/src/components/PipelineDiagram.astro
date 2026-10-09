@@ -1,0 +1,126 @@
+---
+interface Props {
+	steps: string[];
+	label: string;
+}
+
+const { steps, label } = Astro.props;
+
+const columns = 2;
+const box_width = 150;
+const box_height = 40;
+const gap_x = 36;
+const gap_y = 28;
+const arrow_size = 5;
+
+const rows = Math.ceil(steps.length / columns);
+const view_width = columns * box_width + (columns - 1) * gap_x;
+const view_height = rows * box_height + (rows - 1) * gap_y;
+
+// Odd rows run right to left so every connector stays short.
+const boxes = steps.map((text, index) => {
+	const row = Math.floor(index / columns);
+	const position_in_row = index % columns;
+	const column = row % 2 === 0 ? position_in_row : columns - 1 - position_in_row;
+	return {
+		text,
+		row,
+		x: column * (box_width + gap_x),
+		y: row * (box_height + gap_y),
+		direction: row % 2 === 0 ? 1 : -1,
+	};
+});
+
+const connectors = boxes.slice(0, -1).map((from, index) => {
+	const to = boxes[index + 1];
+	const center_x = from.x + box_width / 2;
+	const center_y = from.y + box_height / 2;
+
+	if (from.row === to.row) {
+		const start_x = from.direction === 1 ? from.x + box_width : from.x;
+		const end_x = to.direction === 1 ? to.x : to.x + box_width;
+		const tip_back = end_x - from.direction * arrow_size;
+		return {
+			line: `M${start_x} ${center_y}H${tip_back}`,
+			head: `${end_x},${center_y} ${tip_back},${center_y - arrow_size} ${tip_back},${center_y + arrow_size}`,
+		};
+	}
+
+	const start_y = from.y + box_height;
+	const end_y = to.y;
+	return {
+		line: `M${center_x} ${start_y}V${end_y - arrow_size}`,
+		head: `${center_x},${end_y} ${center_x - arrow_size},${end_y - arrow_size} ${center_x + arrow_size},${end_y - arrow_size}`,
+	};
+});
+
+const accessible_label = `${label} (${steps.length}): ${steps.join(' → ')}`;
+---
+
+<svg
+	class="pipeline-diagram"
+	viewBox={`0 0 ${view_width} ${view_height}`}
+	role="img"
+	aria-label={accessible_label}
+>
+	{
+		connectors.map((connector) => (
+			<>
+				<path class="pipeline-diagram__line" d={connector.line} />
+				<polygon class="pipeline-diagram__head" points={connector.head} />
+			</>
+		))
+	}
+	{
+		boxes.map((box) => (
+			<>
+				<rect
+					class="pipeline-diagram__box"
+					x={box.x}
+					y={box.y}
+					width={box_width}
+					height={box_height}
+					rx="6"
+				/>
+				<text
+					class="pipeline-diagram__text"
+					x={box.x + box_width / 2}
+					y={box.y + box_height / 2}
+				>
+					{box.text}
+				</text>
+			</>
+		))
+	}
+</svg>
+
+<style>
+	.pipeline-diagram {
+		width: 100%;
+		height: auto;
+		font-family: var(--font-heading);
+	}
+
+	.pipeline-diagram__box {
+		fill: color-mix(in srgb, var(--color-accent) 15%, transparent);
+		stroke: var(--color-accent);
+		stroke-width: 1;
+	}
+
+	.pipeline-diagram__text {
+		fill: var(--color-text);
+		font-size: 12px;
+		text-anchor: middle;
+		dominant-baseline: central;
+	}
+
+	.pipeline-diagram__line {
+		fill: none;
+		stroke: var(--color-accent);
+		stroke-width: 1.5;
+	}
+
+	.pipeline-diagram__head {
+		fill: var(--color-accent);
+	}
+</style>
