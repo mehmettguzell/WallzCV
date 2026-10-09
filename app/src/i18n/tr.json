@@ -17,7 +17,7 @@
   "hero.headline": "Fullstack geliştirme, cloud-native DevOps ve LLM tabanlı sistemler.",
   "hero.lead": "Yazılım Mühendisliği mezunuyum ve Java, Python ve Go kullanarak çok sayıda mikroservis projesinde full-stack geliştirme deneyimi kazandım. Stajlarımda üretim ortamlarının gereksinimlerini deneyimledim; şu anda AWS, DevOps, Kubernetes, OpenShift ve LiteLLM üzerine odaklanarak bulut altyapıları ve yapay zekâ destekli sistemler konusundaki yetkinliklerimi geliştiriyorum.",
   "upcoming.label": "Yakında blog yazıları:",
-  "upcoming.topics": "OpenShift|Kubernetes|CI/CD|LLM sistemleri",
+  "upcoming.topics": "OpenShift|Kubernetes|Terraform|CI/CD|LiteLLM|LLM sistemleri",
   "hero.cta_cv": "CV indir",
   "hero.cta_email": "E-posta gönder",
   "hero.cta_projects": "Projeleri gör",

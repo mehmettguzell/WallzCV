@@ -97,6 +97,18 @@
   },
   {
     "label": {
+      "en": "Currently focusing on",
+      "tr": "Şu an odaklandığım"
+    },
+    "skills": [
+      "Kubernetes",
+      "OpenShift",
+      "Terraform",
+      "LiteLLM"
+    ]
+  },
+  {
+    "label": {
       "en": "Frontend",
       "tr": "Frontend"
     },

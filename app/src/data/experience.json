@@ -28,8 +28,8 @@
       }
     ],
     "summary": {
-      "en": "Built the backend of a tool that measures how visible companies are in AI chatbot answers.",
-      "tr": "Şirketlerin yapay zekâ sohbet yanıtlarında ne kadar göründüğünü ölçen aracın backend'ini kurdum."
+      "en": "Designed and developed the architecture of a GEO analysis project that measures how visible companies are in AI chatbot answers.",
+      "tr": "Şirketlerin yapay zekâ sohbet yanıtlarındaki görünürlüğünü ölçen GEO analizi projesinin mimarisini tasarladım ve geliştirdim."
     }
   },
   {
@@ -65,8 +65,8 @@
       }
     ],
     "summary": {
-      "en": "Tested real web applications for security holes and worked with developers to fix them.",
-      "tr": "Gerçek web uygulamalarında güvenlik açığı aradım ve geliştiricilerle birlikte kapattım."
+      "en": "Penetration-tested real web applications for security vulnerabilities and built tools that sped up the process.",
+      "tr": "Gerçek web uygulamalarında pentest yaparak güvenlik açıkları aradım ve bu süreçleri hızlandıran araçlar geliştirdim."
     }
   }
 ]

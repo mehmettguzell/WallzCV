@@ -17,7 +17,7 @@
   "hero.headline": "Fullstack development, cloud-native DevOps and LLM systems.",
   "hero.lead": "Software Engineering graduate with full-stack experience across many microservice projects built in Java, Python and Go. My internships showed me what production environments demand. I'm now focusing on AWS, DevOps, Kubernetes, OpenShift and LiteLLM, building my skills in cloud infrastructure and AI-powered systems.",
   "upcoming.label": "Blog posts coming soon:",
-  "upcoming.topics": "OpenShift|Kubernetes|CI/CD|LLM systems",
+  "upcoming.topics": "OpenShift|Kubernetes|Terraform|CI/CD|LiteLLM|LLM systems",
   "hero.cta_cv": "Download CV",
   "hero.cta_email": "Email me",
   "hero.cta_projects": "See projects",
