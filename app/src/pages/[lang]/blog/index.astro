@@ -14,19 +14,15 @@ const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 ---
 
 <Layout lang={lang} title={`${t(lang, 'blog.title')} · Mehmet Güzel`} description={t(lang, 'meta.blog_description')}>
-	<section class="blog-list container" data-initial-filter={lang}>
+	<section class="blog-list container">
 		<p class="eyebrow">{t(lang, 'blog.eyebrow')}</p>
 		<h1 class="section__title">{t(lang, 'blog.heading')}</h1>
 		<UpcomingTopics lang={lang} />
-		<div class="blog-list__filters" role="group" aria-label={t(lang, 'blog.filter_label')} hidden>
-			<button type="button" data-filter="all" aria-pressed="false">{t(lang, 'blog.filter_all')}</button>
-			{languages.map((post_lang) => <button type="button" data-filter={post_lang} aria-pressed="false">{post_lang.toUpperCase()}</button>)}
-		</div>
 		{posts.length === 0 && <p>{t(lang, 'blog.empty')}</p>}
 		<ul class="blog-list__posts">
 			{
 				posts.map((post) => (
-					<li class="blog-list__post glass spot" data-post-lang={post.data.lang}>
+					<li class="blog-list__post glass spot">
 						<h2>
 							<a href={`/${lang}/blog/${post.id}/`} hreflang={post.data.lang}>{post.data.title}</a>
 						</h2>
@@ -42,65 +38,9 @@ const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 	</section>
 </Layout>
 
-<script>
-	const blog_list = document.querySelector<HTMLElement>('.blog-list');
-	const filters = blog_list?.querySelector<HTMLElement>('.blog-list__filters');
-	const filter_buttons = filters?.querySelectorAll<HTMLButtonElement>('button') ?? [];
-	const post_items = blog_list?.querySelectorAll<HTMLElement>('[data-post-lang]') ?? [];
-
-	const apply_filter = (selected_filter: string) => {
-		for (const button of filter_buttons) {
-			button.setAttribute('aria-pressed', String(button.dataset.filter === selected_filter));
-		}
-		for (const item of post_items) {
-			item.hidden = selected_filter !== 'all' && item.dataset.postLang !== selected_filter;
-		}
-	};
-
-	if (blog_list && filters) {
-		// Without JavaScript the filter bar stays hidden and every Post is listed.
-		filters.hidden = false;
-		for (const button of filter_buttons) {
-			button.addEventListener('click', () => apply_filter(button.dataset.filter ?? 'all'));
-		}
-		apply_filter(blog_list.dataset.initialFilter ?? 'all');
-	}
-</script>
-
 <style>
 	.blog-list {
 		padding-block: clamp(3rem, 7vw, 5rem);
-	}
-
-	.blog-list__filters {
-		display: flex;
-		gap: 0.5rem;
-		margin-block: 2rem;
-	}
-
-	.blog-list__filters[hidden] {
-		display: none;
-	}
-
-	.blog-list__filters button {
-		padding: 0.35rem 1rem;
-		border: 1px solid var(--border);
-		border-radius: 999px;
-		background: var(--surface);
-		color: var(--text);
-		font: 600 0.85rem var(--font-body);
-		cursor: pointer;
-		transition: border-color 0.2s ease;
-	}
-
-	.blog-list__filters button:hover {
-		border-color: var(--accent);
-	}
-
-	.blog-list__filters button[aria-pressed='true'] {
-		border-color: transparent;
-		background: var(--gradient);
-		color: var(--accent-ink);
 	}
 
 	.blog-list__posts {
@@ -114,10 +54,6 @@ const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 	.blog-list__post {
 		padding: 1.75rem;
 		color: var(--muted);
-	}
-
-	.blog-list__post[hidden] {
-		display: none;
 	}
 
 	.blog-list__post h2 {
