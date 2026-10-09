@@ -123,34 +123,43 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 	if (wallz_button && wallz_status && !reduced_motion) {
 		const left_arm = '#wallz-arm-l';
 		const right_arm = '#wallz-arm-r';
+		const both_arms = [left_arm, right_arm];
 		const right_arm_shapes = '#wallz-arm-r .wallz__arm-outline, #wallz-arm-r .wallz__arm-fill';
-		const raised_arm_degrees = 150;
-		const slam_count = 3;
-		const eye_travel_pixels = 3;
+		const fingers_over_banana = '.wallz__grip';
+		const raised_arm_degrees = 128;
+		const slam_strengths = [1, 1.2, 1.5];
+		const eye_travel_pixels = 2.5;
 		const closed_mouth = 'M108 90Q120 98 132 90Z';
 		const roaring_mouth = 'M104 86Q120 112 136 86Z';
 		const chewing_mouth = 'M110 88Q120 104 130 88Z';
-		const smiling_mouth = 'M106 88Q120 108 134 88Z';
 		const resting_arm = 'M174 104C198 120 204 152 196 182';
-		const eating_arm = 'M174 104C214 106 198 72 148 98';
-		const mouth_hand_offset = { x: -50, y: -94 };
-		const banana_scale = 1.35;
-		const banana_bites = [0.72, 0.45, 0.2, 0];
+		const eating_arm = 'M174 104C206 130 198 150 170 112';
+		const mouth_hand_offset = { x: -26, y: -78 };
+		const banana_toward_mouth_degrees = 20;
+		const banana_scale = 1.2;
+		const pause_to_show_the_banana_seconds = 0.3;
+		const banana_drop_height = 170;
+		const bite_edge_x_after_each_bite = [158, 172, 188, 204, 240];
+		const bite_edge_x_untouched = 140;
 
 		let is_performing = false;
 
 		gsap.set(left_arm, { svgOrigin: '66 104' });
 		gsap.set(right_arm, { svgOrigin: '174 104' });
-		gsap.set('#wallz-torso', { svgOrigin: '120 208' });
+		gsap.set('#wallz-torso', { svgOrigin: '120 206' });
 		gsap.set('#wallz-head', { svgOrigin: '120 100' });
 		gsap.set('#wallz-eyes', { svgOrigin: '120 64' });
-		gsap.set('#wallz-banana', { svgOrigin: '206 190', opacity: 0 });
+		gsap.set('#wallz-brow', { svgOrigin: '120 56' });
+		gsap.set('#wallz-shadow', { svgOrigin: '120 219' });
+		gsap.set('#wallz-hand-r', { svgOrigin: '196 190' });
+		gsap.set('#wallz-banana', { svgOrigin: '196 190', scale: banana_scale, opacity: 0 });
+		gsap.set('#wallz-bite-shape', { x: bite_edge_x_untouched });
 		gsap.set('#wallz-dust .wallz__puff', { transformOrigin: '50% 50%' });
 
-		// Idle: breathing, a slight arm sway and an occasional blink.
-		const breathing = gsap.timeline({ repeat: -1, yoyo: true, defaults: { ease: 'sine.inOut', duration: 1.8 } });
+		// Idle: slow breathing, a slight arm sway and an occasional blink.
+		const breathing = gsap.timeline({ repeat: -1, yoyo: true, defaults: { ease: 'sine.inOut', duration: 2.6 } });
 		breathing
-			.to('#wallz-torso', { scaleY: 1.025 }, 0)
+			.to('#wallz-torso', { scaleY: 1.03 }, 0)
 			.to('#wallz-head', { y: -1.5 }, 0)
 			.to(left_arm, { rotation: 2 }, 0)
 			.to(right_arm, { rotation: -2 }, 0);
@@ -170,7 +179,7 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 				const box = wallz_button.getBoundingClientRect();
 				const dx = (event.clientX - (box.left + box.width / 2)) / innerWidth;
 				const dy = (event.clientY - (box.top + box.height * 0.3)) / innerHeight;
-				gsap.to('#wallz-eyes', {
+				gsap.to('#wallz-pupils', {
 					x: gsap.utils.clamp(-1, 1, dx * 3) * eye_travel_pixels,
 					y: gsap.utils.clamp(-1, 1, dy * 3) * eye_travel_pixels,
 					duration: 0.4,
@@ -180,69 +189,127 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 		);
 
 		const main_content = document.querySelector<HTMLElement>('.site-main');
-		const shake_screen = () => {
-			const jolts = 6;
-			const strongest_pixels = 7;
+		const shake_screen = (strength: number) => {
+			const jolts = 9;
+			const first_jolt_pixels = 11 * strength;
 			const shake = gsap.timeline({ onComplete: () => gsap.set(main_content, { clearProps: 'transform' }) });
 			for (let jolt = 0; jolt < jolts; jolt++) {
-				const strength = strongest_pixels * (1 - jolt / jolts);
+				const falloff = (1 - jolt / jolts) ** 1.5;
+				const direction = jolt % 2 === 0 ? 1 : -1;
 				shake.to(main_content, {
-					x: gsap.utils.random(-strength, strength),
-					y: gsap.utils.random(-strength, strength) + (jolt === 0 ? 4 : 0),
-					duration: 0.04,
-					ease: 'none',
+					x: direction * first_jolt_pixels * 0.45 * falloff,
+					y: direction * first_jolt_pixels * falloff,
+					duration: jolt === 0 ? 0.03 : 0.045,
+					ease: jolt === 0 ? 'power2.out' : 'sine.inOut',
 				});
 			}
-			shake.to(main_content, { x: 0, y: 0, duration: 0.05 });
+			shake.to(main_content, { x: 0, y: 0, duration: 0.06 });
 		};
 
-		const kick_up_dust = () => {
+		const kick_up_dust = (strength: number) => {
 			gsap.fromTo(
 				'#wallz-dust .wallz__puff',
 				{ opacity: 0.85, scale: 0.4, y: 0 },
-				{ opacity: 0, scale: 1.7, y: -16, duration: 0.55, ease: 'power2.out', stagger: 0.03, overwrite: true },
+				{ opacity: 0, scale: 1.5 + strength * 0.4, y: -14 * strength, duration: 0.55, ease: 'power2.out', stagger: 0.03, overwrite: true },
 			);
 		};
 
-		const slam_both_fists = (timeline: gsap.core.Timeline) => {
-			timeline
-				.to(left_arm, { rotation: raised_arm_degrees, duration: 0.3, ease: 'power2.out' })
-				.to(right_arm, { rotation: -raised_arm_degrees, duration: 0.3, ease: 'power2.out' }, '<')
-				.to('#wallz-head', { y: -5, duration: 0.3, ease: 'power2.out' }, '<')
-				.to('#wallz-mouth', { attr: { d: roaring_mouth }, duration: 0.2 }, '<0.05')
-				.to([left_arm, right_arm], { rotation: 0, duration: 0.14, ease: 'power4.in' })
-				.to('#wallz-head', { y: 3, duration: 0.14, ease: 'power4.in' }, '<')
-				.add(kick_up_dust)
-				.add(shake_screen, '<')
-				.to(wallz_button, { y: 5, duration: 0.05, yoyo: true, repeat: 1 }, '<');
+		const ground_impact = (strength: number) => {
+			kick_up_dust(strength);
+			shake_screen(strength);
+			gsap.fromTo('#wallz-shadow', { scaleX: 1 }, { scaleX: 1.07, duration: 0.08, yoyo: true, repeat: 1 });
+			gsap.fromTo(wallz_button, { y: 0 }, { y: 7 * strength, duration: 0.06, yoyo: true, repeat: 1, ease: 'power2.out' });
 		};
 
-		const eat_banana = (timeline: gsap.core.Timeline) => {
-			timeline
-				.to('#wallz-mouth', { attr: { d: closed_mouth }, duration: 0.15 })
-				.to('#wallz-head', { y: 0, duration: 0.15 }, '<')
-				.set('#wallz-banana', { opacity: 1, scale: 0 })
-				.to('#wallz-banana', { scale: banana_scale, duration: 0.3, ease: 'back.out(2)' })
-				.to(right_arm_shapes, { attr: { d: eating_arm }, duration: 0.55, ease: 'power2.inOut' }, '+=0.15')
-				.to('#wallz-hand-r', { ...mouth_hand_offset, duration: 0.55, ease: 'power2.inOut' }, '<');
+		// Coil down, rise with overshoot and a roar, tremble at the top, then slam; the last slam hits hardest.
+		const pound_the_ground = (show: gsap.core.Timeline) => {
+			show
+				.to('#wallz-torso', { scaleY: 0.95, duration: 0.22, ease: 'power2.out' })
+				.to('#wallz-head', { y: 5, duration: 0.22, ease: 'power2.out' }, '<')
+				.to(left_arm, { rotation: 10, duration: 0.22, ease: 'power2.out' }, '<')
+				.to(right_arm, { rotation: -10, duration: 0.22, ease: 'power2.out' }, '<');
 
-			for (const remaining of banana_bites) {
-				timeline
-					.to('#wallz-mouth', { attr: { d: chewing_mouth }, duration: 0.12 })
-					.to('#wallz-banana', { scaleX: remaining * banana_scale, duration: 0.12 }, '<')
-					.to('#wallz-mouth', { attr: { d: closed_mouth }, duration: 0.12 })
-					.to('#wallz-head', { y: 1.5, duration: 0.1, yoyo: true, repeat: 3 }, '<');
+			for (const strength of slam_strengths) {
+				show
+					.to(left_arm, { rotation: raised_arm_degrees, duration: 0.36, ease: 'back.out(1.6)' })
+					.to(right_arm, { rotation: -raised_arm_degrees, duration: 0.36, ease: 'back.out(1.6)' }, '<0.04')
+					.to('#wallz-torso', { scaleY: 1.05, duration: 0.36, ease: 'power2.out' }, '<')
+					.to('#wallz-head', { y: -6, rotation: -3, duration: 0.36, ease: 'power2.out' }, '<')
+					.to('#wallz-mouth', { attr: { d: roaring_mouth }, duration: 0.16 }, '<0.08')
+					.to(['#wallz-fangs', '#wallz-tongue'], { opacity: 1, duration: 0.1 }, '<')
+					.to('#wallz-brow', { y: 2.5, duration: 0.16 }, '<')
+					.to(left_arm, { rotation: raised_arm_degrees + 3, duration: 0.04, yoyo: true, repeat: 3 })
+					.to(right_arm, { rotation: -raised_arm_degrees - 3, duration: 0.04, yoyo: true, repeat: 3 }, '<')
+					.to(both_arms, { rotation: 0, duration: 0.09, ease: 'power3.in' })
+					.to('#wallz-head', { y: 5, rotation: 2, duration: 0.09, ease: 'power3.in' }, '<')
+					.to('#wallz-torso', { scaleY: 0.93, duration: 0.09, ease: 'power3.in' }, '<')
+					.add(() => ground_impact(strength), '<0.085')
+					.to('#wallz-torso', { scaleY: 1, duration: 0.3, ease: 'elastic.out(1, 0.5)' })
+					.to('#wallz-head', { y: 0, rotation: 0, duration: 0.25, ease: 'power2.out' }, '<');
 			}
+
+			show
+				.to('#wallz-mouth', { attr: { d: closed_mouth }, duration: 0.2 })
+				.to(['#wallz-fangs', '#wallz-tongue'], { opacity: 0, duration: 0.1 }, '<')
+				.to('#wallz-brow', { y: 0, duration: 0.2 }, '<')
+				.to('#wallz-torso', { scaleY: 1.04, duration: 0.3, ease: 'sine.inOut', yoyo: true, repeat: 1 });
 		};
 
-		const celebrate = (timeline: gsap.core.Timeline) => {
-			timeline
-				.set('#wallz-banana', { opacity: 0 })
-				.to(right_arm_shapes, { attr: { d: resting_arm }, duration: 0.45, ease: 'power2.inOut' })
-				.to('#wallz-hand-r', { x: 0, y: 0, duration: 0.45, ease: 'power2.inOut' }, '<')
-				.to('#wallz-mouth', { attr: { d: smiling_mouth }, duration: 0.2 }, '<')
-				.to(wallz_button, { y: -10, duration: 0.18, ease: 'power2.out', yoyo: true, repeat: 3 })
-				.to('#wallz-mouth', { attr: { d: closed_mouth }, duration: 0.3 }, '+=0.2');
+		// The banana drops in from above and the hand catches it before it is raised to the mouth.
+		const catch_the_banana = (show: gsap.core.Timeline) => {
+			show
+				.set('#wallz-banana', { opacity: 1, y: -banana_drop_height, rotation: 0 })
+				.set('#wallz-bite-shape', { x: bite_edge_x_untouched })
+				.set(fingers_over_banana, { opacity: 0 })
+				.to('#wallz-banana', { y: 0, duration: 0.5, ease: 'power2.in' })
+				.set(fingers_over_banana, { opacity: 1 })
+				.to('#wallz-hand-r', { scale: 0.92, duration: 0.07, yoyo: true, repeat: 1 })
+				.to('#wallz-head', { rotation: 4, y: 2, duration: 0.3, ease: 'power2.out' }, '<')
+				.to('#wallz-pupils', { x: 2.5, y: 2.5, duration: 0.25 }, '<');
+		};
+
+		const raise_banana_to_mouth = (show: gsap.core.Timeline) => {
+			show
+				.to(right_arm_shapes, { attr: { d: eating_arm }, duration: 0.65, ease: 'power2.inOut' }, '+=0.1')
+				.to('#wallz-hand-r', { ...mouth_hand_offset, duration: 0.65, ease: 'power2.inOut' }, '<')
+				.to('#wallz-banana', { rotation: banana_toward_mouth_degrees, duration: 0.65, ease: 'power2.inOut' }, '<')
+				.to('#wallz-head', { rotation: 0, y: 1, duration: 0.4, ease: 'power2.inOut' }, '<0.2')
+				.to('#wallz-pupils', { x: 0, y: 0, duration: 0.3 }, '<');
+		};
+
+		const bite_chew_swallow = (show: gsap.core.Timeline) => {
+			show.addLabel('banana_ready', `+=${pause_to_show_the_banana_seconds}`);
+			for (const [bite_index, bite_edge_x] of bite_edge_x_after_each_bite.entries()) {
+				show
+					.to('#wallz-mouth', { attr: { d: roaring_mouth }, duration: 0.12, ease: 'power2.out' }, bite_index === 0 ? 'banana_ready' : undefined)
+					.to('#wallz-head', { y: -2, rotation: -2, duration: 0.12 }, '<')
+					.to('#wallz-mouth', { attr: { d: closed_mouth }, duration: 0.07, ease: 'power3.in' })
+					.to('#wallz-bite-shape', { x: bite_edge_x, duration: 0.07, ease: 'power2.in' }, '<')
+					.to('#wallz-head', { y: 1.5, rotation: 0, scaleX: 1.02, duration: 0.07 }, '<')
+					.to('#wallz-mouth', { attr: { d: chewing_mouth }, duration: 0.12, ease: 'sine.inOut', yoyo: true, repeat: 1 })
+					.to('#wallz-head', { y: 2.5, duration: 0.12, ease: 'sine.inOut', yoyo: true, repeat: 1 }, '<')
+					.to('#wallz-head', { scaleX: 1, duration: 0.1 });
+			}
+
+			show
+				.to('#wallz-head', { y: -3, duration: 0.22, ease: 'power2.out' })
+				.to('#wallz-torso', { scaleY: 1.03, duration: 0.22 }, '<')
+				.to('#wallz-head', { y: 0, duration: 0.3, ease: 'power2.inOut' })
+				.to('#wallz-torso', { scaleY: 1, duration: 0.3 }, '<');
+		};
+
+		const drop_the_peel_and_settle = (show: gsap.core.Timeline) => {
+			show
+				.to('#wallz-banana', { y: 80, opacity: 0, duration: 0.45, ease: 'power2.in' })
+				.to(right_arm_shapes, { attr: { d: resting_arm }, duration: 0.6, ease: 'power2.inOut' }, '<')
+				.to('#wallz-hand-r', { x: 0, y: 0, duration: 0.6, ease: 'power2.inOut' }, '<')
+				.set('#wallz-banana', { opacity: 0, y: 0, rotation: 0 })
+				.set('#wallz-bite-shape', { x: bite_edge_x_untouched })
+				.set(fingers_over_banana, { opacity: 0 })
+				.to('#wallz-head', { y: -3, duration: 0.6, ease: 'sine.inOut' }, '+=0.05')
+				.to('#wallz-torso', { scaleY: 1.06, duration: 0.6, ease: 'sine.inOut' }, '<')
+				.to('#wallz-head', { y: 0, duration: 0.7, ease: 'sine.inOut' })
+				.to('#wallz-torso', { scaleY: 1, duration: 0.7, ease: 'sine.inOut' }, '<');
 		};
 
 		wallz_button.addEventListener('click', () => {
@@ -250,18 +317,23 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 			is_performing = true;
 			wallz_button.dataset.state = 'performing';
 			wallz_status.textContent = wallz_button.dataset.actionStatus ?? '';
-			gsap.to('#wallz-eyes', { x: 0, y: 0, duration: 0.2 });
+			gsap.to('#wallz-pupils', { x: 0, y: 0, duration: 0.2 });
+			// Idle breathing animates the same arm, torso and head properties, so it must not run during the show.
+			breathing.pause();
 
 			const show = gsap.timeline({
 				onComplete: () => {
+					breathing.time(0).play();
 					is_performing = false;
 					wallz_button.dataset.state = 'idle';
 					wallz_status.textContent = '';
 				},
 			});
-			for (let slam = 0; slam < slam_count; slam++) slam_both_fists(show);
-			eat_banana(show);
-			celebrate(show);
+			pound_the_ground(show);
+			catch_the_banana(show);
+			raise_banana_to_mouth(show);
+			bite_chew_swallow(show);
+			drop_the_peel_and_settle(show);
 		});
 	}
 </script>
