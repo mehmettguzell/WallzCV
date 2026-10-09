@@ -1,6 +1,12 @@
 {
-	"home.title": "WallzCV",
-	"footer.note": "Built with Astro",
-	"theme.toggle": "Switch color theme",
-	"lang.switch": "Türkçe"
+  "home.title": "WallzCV",
+  "footer.note": "Built with Astro",
+  "theme.toggle": "Switch color theme",
+  "lang.switch": "Türkçe",
+  "nav.label": "Main navigation",
+  "nav.projects": "Projects",
+  "nav.blog": "Blog",
+  "nav.cv_download": "Download CV",
+  "nav.cv_english": "English CV",
+  "nav.cv_turkish": "Türkçe CV"
 }

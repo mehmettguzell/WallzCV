@@ -1,0 +1,189 @@
+---
+import LanguageSwitch from './LanguageSwitch.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import { t, type Language } from '../i18n';
+
+interface Props {
+	lang: Language;
+}
+
+const { lang } = Astro.props;
+---
+
+<header class="site-header">
+	<a class="site-header__brand" href={`/${lang}/`}>WallzCV</a>
+	<nav class="site-header__nav" aria-label={t(lang, 'nav.label')}>
+		<a class="site-header__link site-header__link--secondary" href={`/${lang}/#projects`}>
+			{t(lang, 'nav.projects')}
+		</a>
+		<a class="site-header__link site-header__link--secondary" href={`/${lang}/blog/`}>
+			{t(lang, 'nav.blog')}
+		</a>
+		<details class="cv-menu">
+			<summary class="site-header__link site-header__cv">{t(lang, 'nav.cv_download')}</summary>
+			<ul class="cv-menu__list">
+				<li>
+					<a class="cv-menu__option" href="/Mehmet_Guzel_CV_EN.pdf" download hreflang="en">
+						{t(lang, 'nav.cv_english')}
+					</a>
+				</li>
+				<li>
+					<a class="cv-menu__option" href="/Mehmet_Guzel_CV_TR.pdf" download hreflang="tr">
+						{t(lang, 'nav.cv_turkish')}
+					</a>
+				</li>
+			</ul>
+		</details>
+	</nav>
+	<div class="site-header__actions">
+		<LanguageSwitch lang={lang} />
+		<ThemeToggle label={t(lang, 'theme.toggle')} />
+	</div>
+</header>
+
+<script>
+	const cv_menu = document.querySelector<HTMLDetailsElement>('.cv-menu');
+
+	document.addEventListener('click', (event) => {
+		if (cv_menu?.open && !cv_menu.contains(event.target as Node)) cv_menu.open = false;
+	});
+	cv_menu?.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape') {
+			cv_menu.open = false;
+			cv_menu.querySelector('summary')?.focus();
+		}
+	});
+</script>
+
+<style>
+	.site-header {
+		position: sticky;
+		top: 0.75rem;
+		z-index: 10;
+		margin: 0.75rem 0.75rem 0;
+		padding: 0.5rem 0.75rem 0.5rem 1.25rem;
+		gap: 0.75rem;
+		border: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--color-bg) 70%, transparent);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		box-shadow: 0 8px 32px color-mix(in srgb, var(--color-accent) 18%, transparent);
+	}
+
+	.site-header__brand {
+		letter-spacing: 0.02em;
+		text-decoration: none;
+	}
+
+	.site-header__nav {
+		display: flex;
+		align-items: center;
+		gap: 1.25rem;
+		margin-left: auto;
+	}
+
+	.site-header__link {
+		position: relative;
+		color: var(--color-text);
+		text-decoration: none;
+		transition: color 0.2s ease;
+	}
+
+	.site-header__link:hover,
+	.site-header__link:focus-visible {
+		color: var(--color-accent);
+	}
+
+	.site-header__link--secondary::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: -0.2rem;
+		height: 2px;
+		background: var(--color-accent);
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.25s ease;
+	}
+
+	.site-header__link--secondary:hover::after,
+	.site-header__link--secondary:focus-visible::after {
+		transform: scaleX(1);
+	}
+
+	.site-header__cv {
+		padding: 0.35rem 1rem;
+		border: 1px solid var(--color-accent);
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--color-accent) 15%, transparent);
+		transition:
+			background 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+
+	.site-header__cv:hover,
+	.site-header__cv:focus-visible {
+		background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+		box-shadow: 0 0 16px color-mix(in srgb, var(--color-accent) 55%, transparent);
+	}
+
+	.cv-menu {
+		position: relative;
+	}
+
+	.cv-menu summary {
+		list-style: none;
+		cursor: pointer;
+	}
+
+	.cv-menu summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.cv-menu__list {
+		position: absolute;
+		top: calc(100% + 0.75rem);
+		right: 0;
+		min-width: 9rem;
+		margin: 0;
+		padding: 0.4rem;
+		list-style: none;
+		border: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
+		border-radius: 1rem;
+		background: var(--color-bg);
+		box-shadow: 0 8px 32px color-mix(in srgb, var(--color-accent) 18%, transparent);
+	}
+
+	.cv-menu__option {
+		display: block;
+		padding: 0.5rem 0.9rem;
+		border-radius: 0.6rem;
+		color: var(--color-text);
+		text-decoration: none;
+	}
+
+	.cv-menu__option:hover,
+	.cv-menu__option:focus-visible {
+		background: color-mix(in srgb, var(--color-accent) 20%, transparent);
+	}
+
+	.site-header__link--secondary {
+		display: none;
+	}
+
+	@media (min-width: 768px) {
+		.site-header__link--secondary {
+			display: inline;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.site-header__link,
+		.site-header__link--secondary::after,
+		.site-header__cv {
+			transition: none;
+		}
+	}
+</style>

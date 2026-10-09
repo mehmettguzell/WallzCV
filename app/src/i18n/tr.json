@@ -1,6 +1,12 @@
 {
-	"home.title": "WallzCV",
-	"footer.note": "Astro ile yapıldı",
-	"theme.toggle": "Renk temasını değiştir",
-	"lang.switch": "English"
+  "home.title": "WallzCV",
+  "footer.note": "Astro ile yapıldı",
+  "theme.toggle": "Renk temasını değiştir",
+  "lang.switch": "English",
+  "nav.label": "Ana gezinme",
+  "nav.projects": "Projeler",
+  "nav.blog": "Blog",
+  "nav.cv_download": "CV indir",
+  "nav.cv_english": "English CV",
+  "nav.cv_turkish": "Türkçe CV"
 }

@@ -1,7 +1,6 @@
 ---
 import '../styles/global.css';
-import ThemeToggle from '../components/ThemeToggle.astro';
-import LanguageSwitch from '../components/LanguageSwitch.astro';
+import Header from '../components/Header.astro';
 import { t, type Language } from '../i18n';
 
 interface Props {
@@ -34,13 +33,7 @@ const { lang, title } = Astro.props;
 		</script>
 	</head>
 	<body>
-		<header class="site-header">
-			<span class="site-header__brand">WallzCV</span>
-			<div class="site-header__actions">
-				<LanguageSwitch lang={lang} />
-				<ThemeToggle label={t(lang, 'theme.toggle')} />
-			</div>
-		</header>
+		<Header lang={lang} />
 		<main class="site-main">
 			<slot />
 		</main>
