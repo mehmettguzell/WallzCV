@@ -1,0 +1,66 @@
+---
+title: "Deploying to EC2 without SSH: GitHub OIDC + SSM"
+date: 2026-10-09
+tags: [devops, github-actions, aws, oidc, ssm]
+lang: en
+summary: How a CI pipeline can deploy to an EC2 instance with no SSH key and no static AWS credentials, using GitHub OIDC and SSM Run Command.
+draft: false
+---
+
+import PipelineDiagram from '../../components/PipelineDiagram.astro';
+
+## The problem
+
+The classic way to deploy from CI to a server is to put an SSH private key into a repository secret and run `ssh user@host`. It works, but that key is a long-lived credential: it never expires, it can leak through logs or a compromised workflow, and it forces the instance to keep port 22 reachable.
+
+The same goes for AWS itself. Storing an `AWS_ACCESS_KEY_ID` and secret in CI means a permanent key that has to be rotated by hand and that works from anywhere.
+
+## Why it matters
+
+A pipeline runs untrusted-ish code (dependencies, third-party actions) with access to your secrets. The fewer secrets exist, and the shorter they live, the smaller the blast radius when something goes wrong.
+
+## The approach
+
+Two AWS features remove both credentials:
+
+1. **GitHub OIDC.** GitHub Actions can prove its identity to AWS with a signed token. An IAM role trusts that token (for a specific repository), and AWS hands the workflow a **temporary** set of credentials. Nothing static is stored in GitHub.
+2. **SSM Run Command.** The instance runs the SSM agent, which polls AWS for commands. The workflow asks AWS to run a deploy script on the instance, so there is no inbound SSH at all.
+
+<PipelineDiagram
+  steps={['push', 'test', 'build', 'GHCR', 'OIDC → IAM role', 'SSM Run Command', 'health check']}
+  label="Deploy pipeline steps"
+/>
+
+The relevant part of a workflow looks like this:
+
+```yaml
+permissions:
+  id-token: write # lets the job request the OIDC token
+  contents: read
+
+steps:
+  - uses: aws-actions/configure-aws-credentials@v4
+    with:
+      role-to-assume: ${{ vars.DEPLOY_ROLE_ARN }}
+      aws-region: ${{ vars.AWS_REGION }}
+
+  - run: |
+      aws ssm send-command \
+        --instance-ids "${{ vars.INSTANCE_ID }}" \
+        --document-name "AWS-RunShellScript" \
+        --parameters 'commands=["/opt/app/deploy.sh <git-sha>"]'
+```
+
+The deploy script on the instance pulls the image tagged with the Git SHA from the registry and restarts the containers. Tagging by SHA means every deployment is traceable to one commit, and a rollback is just deploying the previous SHA.
+
+## After the deploy
+
+A deploy is not done when the command returns. The pipeline checks the service's health endpoint, and if the check fails, it rolls back to the previous image automatically.
+
+## Result and trade-offs
+
+- No SSH key and no static AWS key live in CI.
+- The instance needs no inbound port for deployments.
+- The cost: more IAM setup up front (the OIDC provider, a role with a tight trust policy, an instance profile for SSM), and debugging happens through SSM command output instead of a shell.
+
+I used this pattern in two projects: a reference CI/CD pipeline for a FastAPI and TypeScript app, and the deployment of a microservice platform.

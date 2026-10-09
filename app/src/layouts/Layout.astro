@@ -1,14 +1,23 @@
 ---
 import '../styles/global.css';
 import Header from '../components/Header.astro';
-import { t, type Language } from '../i18n';
+import { languages, t, type Language } from '../i18n';
 
 interface Props {
 	lang: Language;
 	title: string;
+	description: string;
 }
 
-const { lang, title } = Astro.props;
+const { lang, title, description } = Astro.props;
+
+const path_in_language = Astro.url.pathname.replace(new RegExp(`^/${lang}/`), '/');
+const alternate_links = languages.map((alternate_lang) => ({
+	lang: alternate_lang,
+	href: new URL(`/${alternate_lang}${path_in_language}`, Astro.site),
+}));
+const canonical_url = new URL(Astro.url.pathname, Astro.site);
+const share_image_url = new URL('/og.png', Astro.site);
 ---
 
 <html lang={lang}>
@@ -19,6 +28,15 @@ const { lang, title } = Astro.props;
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical_url} />
+		{alternate_links.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={alternate.href} />)}
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical_url} />
+		<meta property="og:image" content={share_image_url} />
+		<meta name="twitter:card" content="summary_large_image" />
 		<script is:inline>
 			(function () {
 				var theme = null;

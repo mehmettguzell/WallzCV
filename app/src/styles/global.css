@@ -44,6 +44,32 @@ body {
   line-height: 1.6;
 }
 
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  background: var(--color-bg);
+  color: var(--color-text);
+  transform: translateY(-100%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.site-main:focus {
+  outline: none;
+}
+
 h1,
 h2,
 h3,

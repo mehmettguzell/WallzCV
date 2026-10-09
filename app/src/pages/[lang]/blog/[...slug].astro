@@ -15,7 +15,7 @@ const { Content } = await render(post);
 const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
 ---
 
-<Layout lang={lang} title={`${post.data.title} · WallzCV`}>
+<Layout lang={lang} title={`${post.data.title} · WallzCV`} description={post.data.summary}>
 	<article class="post" lang={post.data.lang}>
 		<a href={`/${lang}/blog/`}>← {t(lang, 'blog.title')}</a>
 		<h1>{post.data.title}</h1>

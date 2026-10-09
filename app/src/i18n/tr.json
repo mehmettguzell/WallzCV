@@ -27,5 +27,8 @@
   "blog.empty": "Henüz yazı yok.",
   "blog.filter_label": "Dile göre filtrele",
   "blog.filter_all": "Tümü",
-  "blog.reading_minutes": "dk okuma"
+  "blog.reading_minutes": "dk okuma",
+  "a11y.skip_to_content": "Ana içeriğe geç",
+  "meta.home_description": "Mehmet Güzel, backend, dağıtık sistemler ve DevOps odaklı Yazılım Mühendisi. CV, projeler ve blog.",
+  "meta.blog_description": "Mehmet Güzel'den backend, CI/CD ve DevOps yazıları."
 }

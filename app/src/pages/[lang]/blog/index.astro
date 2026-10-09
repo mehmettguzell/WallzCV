@@ -12,7 +12,7 @@ const posts = await get_published_posts_newest_first();
 const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 ---
 
-<Layout lang={lang} title={`${t(lang, 'blog.title')} · WallzCV`}>
+<Layout lang={lang} title={`${t(lang, 'blog.title')} · WallzCV`} description={t(lang, 'meta.blog_description')}>
 	<section class="blog-list" data-initial-filter={lang}>
 		<h1>{t(lang, 'blog.title')}</h1>
 		<div class="blog-list__filters" role="group" aria-label={t(lang, 'blog.filter_label')} hidden>

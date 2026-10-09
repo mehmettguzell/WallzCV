@@ -27,5 +27,8 @@
   "blog.empty": "No posts yet.",
   "blog.filter_label": "Filter by language",
   "blog.filter_all": "All",
-  "blog.reading_minutes": "min read"
+  "blog.reading_minutes": "min read",
+  "a11y.skip_to_content": "Skip to main content",
+  "meta.home_description": "Mehmet Güzel, Software Engineer focused on backend, distributed systems and DevOps. CV, projects and blog.",
+  "meta.blog_description": "Posts on backend, CI/CD and DevOps by Mehmet Güzel."
 }
