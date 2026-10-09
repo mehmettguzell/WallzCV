@@ -73,9 +73,9 @@
   "contact.copy": "E-postayı kopyala",
   "contact.copied": "Kopyalandı!",
   "wallz.label": "Wallz",
-  "wallz.fallen_status": "Wallz düştü ve ağlıyor.",
-  "wallz.hint": "Pst… ayıya dokun",
+  "wallz.hint": "Pst… gorile dokun",
   "a11y.skip_to_content": "Ana içeriğe geç",
   "meta.home_description": "Mehmet Güzel: junior Backend ya da DevOps rolü arayan 2026 Yazılım Mühendisliği mezunu. Java/Spring Boot, Python/FastAPI, Kafka ve AWS üzerinde CI/CD.",
-  "meta.blog_description": "Mehmet Güzel'den backend, CI/CD ve DevOps yazıları."
+  "meta.blog_description": "Mehmet Güzel'den backend, CI/CD ve DevOps yazıları.",
+  "wallz.action_status": "Goril Wallz yere vuruyor, sonra muz yiyor."
 }

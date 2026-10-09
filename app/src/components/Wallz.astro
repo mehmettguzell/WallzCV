@@ -1,132 +1,201 @@
-<svg class="wallz" viewBox="0 -8 210 138" aria-hidden="true" focusable="false">
-	<!-- Draw order is depth: legs (tops hidden by the body), body, tail, head. The torso group is lifted so the legs show. -->
-	<g id="wallz-leg-bl" class="wallz__leg wallz__leg--far">
-		<path d="M36 90 C33 104 32 114 35 120 C34 127 67 127 66 120 C63 112 62 100 60 90Z" />
-		<path class="wallz__toe" d="M47 122V126M55 122V126" />
-	</g>
-	<g id="wallz-leg-fl" class="wallz__leg wallz__leg--far">
-		<path d="M92 90 C89 104 88 114 91 120 C90 127 123 127 122 120 C119 112 118 100 116 90Z" />
-		<path class="wallz__toe" d="M103 122V126M111 122V126" />
-	</g>
-	<g id="wallz-leg-br" class="wallz__leg wallz__leg--near">
-		<path d="M58 90 C55 104 54 114 57 120 C56 127 89 127 88 120 C85 112 84 100 82 90Z" />
-		<path class="wallz__toe" d="M69 122V126M77 122V126" />
-	</g>
-	<g id="wallz-leg-fr" class="wallz__leg wallz__leg--near">
-		<path d="M112 90 C109 104 108 114 111 120 C110 127 143 127 142 120 C139 112 138 100 136 90Z" />
-		<path class="wallz__toe" d="M123 122V126M131 122V126" />
+<svg class="wallz" viewBox="0 0 240 228" aria-hidden="true" focusable="false">
+	<!-- Draw order is depth: shadow, feet, torso, head, then the arms and banana in front. -->
+	<ellipse class="wallz__shadow" cx="120" cy="218" rx="92" ry="8" />
+
+	<g id="wallz-feet">
+		<ellipse class="wallz__skin" cx="88" cy="208" rx="27" ry="12" />
+		<ellipse class="wallz__skin" cx="152" cy="208" rx="27" ry="12" />
 	</g>
 
-	<g transform="translate(0 -10)">
-	<g id="wallz-body">
-		<path class="wallz__fur" d="M28 78C22 50 52 40 84 42C114 44 138 56 138 82C138 104 116 112 84 112C52 112 32 104 28 78Z" />
-		<path class="wallz__shine" d="M50 56C62 48 80 48 92 52C80 52 62 54 50 56Z" />
+	<g id="wallz-torso">
+		<path class="wallz__fur" d="M50 112C38 78 78 62 120 62C162 62 202 78 190 112C200 154 182 206 150 208L90 208C58 206 40 154 50 112Z" />
+		<path class="wallz__saddle" d="M72 78C88 68 152 68 168 78C150 74 90 74 72 78Z" />
+		<ellipse class="wallz__chest" cx="120" cy="138" rx="40" ry="36" />
+		<path class="wallz__chest-line" d="M120 108V170M104 122Q112 128 120 122Q128 128 136 122" />
 	</g>
-
-	<path id="wallz-tail" class="wallz__fur" d="M34 62C20 56 14 70 22 78C28 84 38 80 38 72Z" />
 
 	<g id="wallz-head">
-		<circle class="wallz__fur" cx="122" cy="26" r="14" />
-		<circle class="wallz__belly" cx="122" cy="27" r="7" />
-		<circle class="wallz__fur" cx="176" cy="18" r="14" />
-		<circle class="wallz__belly" cx="176" cy="19" r="7" />
-		<path class="wallz__fur" d="M110 60C106 30 134 16 160 20C188 24 204 42 202 64C200 88 178 102 150 102C126 102 112 82 110 60Z" />
-		<path class="wallz__shine" d="M126 34C136 26 150 24 160 26C148 28 136 32 126 34Z" />
-		<ellipse class="wallz__blush" cx="136" cy="78" rx="9" ry="6" />
-		<ellipse class="wallz__belly" cx="180" cy="74" rx="20" ry="16" />
-		<ellipse class="wallz__ink" cx="192" cy="64" rx="8" ry="6" />
-		<ellipse class="wallz__shine" cx="194" cy="62" rx="2.5" ry="1.5" />
+		<circle class="wallz__fur" cx="82" cy="64" r="11" />
+		<circle class="wallz__skin" cx="82" cy="64" r="5.5" />
+		<circle class="wallz__fur" cx="158" cy="64" r="11" />
+		<circle class="wallz__skin" cx="158" cy="64" r="5.5" />
+		<path class="wallz__fur" d="M84 62C84 34 100 20 120 20C140 20 156 34 156 62C156 86 142 100 120 100C98 100 84 86 84 62Z" />
+		<path class="wallz__crest" d="M96 30C104 14 136 14 144 30C134 24 106 24 96 30Z" />
+		<ellipse class="wallz__face" cx="120" cy="68" rx="26" ry="24" />
+		<path class="wallz__brow" d="M97 56C104 48 136 48 143 56C141 61 132 58 120 60C108 58 99 61 97 56Z" />
+		<ellipse class="wallz__muzzle" cx="120" cy="84" rx="21" ry="14" />
 		<g id="wallz-eyes">
-			<ellipse class="wallz__eye" cx="152" cy="50" rx="10" ry="12" />
-			<circle class="wallz__ink" cx="155" cy="52" r="6" />
-			<circle class="wallz__shine" cx="157" cy="48" r="2.4" />
-			<ellipse class="wallz__eye" cx="180" cy="46" rx="9" ry="11" />
-			<circle class="wallz__ink" cx="183" cy="48" r="5.5" />
-			<circle class="wallz__shine" cx="185" cy="44" r="2.2" />
+			<circle class="wallz__eye" cx="108" cy="64" r="5.5" />
+			<circle class="wallz__shine" cx="110" cy="62" r="1.8" />
+			<circle class="wallz__eye" cx="132" cy="64" r="5.5" />
+			<circle class="wallz__shine" cx="134" cy="62" r="1.8" />
 		</g>
-		<g id="wallz-tears">
-			<path class="wallz__tear" d="M152 64C149 69 148 72 152 73C156 72 155 69 152 64Z" />
-			<path class="wallz__tear" d="M180 59C177 64 176 67 180 68C184 67 183 64 180 59Z" />
-		</g>
-		<path id="wallz-mouth" class="wallz__mouth" d="M172 80Q182 94 196 80Z" />
-		<path id="wallz-tongue" class="wallz__tongue" d="M180 88Q185 93 190 87Q185 85 180 88Z" />
+		<ellipse class="wallz__nostril" cx="113" cy="80" rx="2.6" ry="3.4" />
+		<ellipse class="wallz__nostril" cx="127" cy="80" rx="2.6" ry="3.4" />
+		<path id="wallz-mouth" class="wallz__mouth" d="M108 90Q120 98 132 90Z" />
 	</g>
+
+	<g id="wallz-arm-l" class="wallz__arm">
+		<path class="wallz__arm-outline" d="M66 104C42 120 36 152 44 182" />
+		<path class="wallz__arm-fill" d="M66 104C42 120 36 152 44 182" />
+		<g id="wallz-hand-l" class="wallz__fist">
+			<circle cx="44" cy="190" r="17" />
+			<path class="wallz__fingers" d="M36 182V192M44 180V192M52 182V192" />
+		</g>
+	</g>
+
+	<g id="wallz-arm-r" class="wallz__arm">
+		<path class="wallz__arm-outline" d="M174 104C198 120 204 152 196 182" />
+		<path class="wallz__arm-fill" d="M174 104C198 120 204 152 196 182" />
+		<g id="wallz-hand-r" class="wallz__fist">
+			<circle cx="196" cy="190" r="17" />
+			<path class="wallz__fingers" d="M188 182V192M196 180V192M204 182V192" />
+			<g id="wallz-banana">
+				<path class="wallz__banana" d="M206 192C200 168 178 160 154 170C170 172 188 180 194 200Z" />
+				<path class="wallz__banana-tip" d="M154 169L159 176L151 176Z" />
+			</g>
+		</g>
+	</g>
+
+	<g id="wallz-dust">
+		<circle class="wallz__puff" cx="30" cy="212" r="8" />
+		<circle class="wallz__puff" cx="52" cy="216" r="6" />
+		<circle class="wallz__puff" cx="210" cy="212" r="8" />
+		<circle class="wallz__puff" cx="188" cy="216" r="6" />
 	</g>
 </svg>
 
 <style>
 	.wallz {
-		--wallz-fur: #b0703f;
-		--wallz-fur-dark: #8a5230;
-		--wallz-belly: #f3d3a4;
-		--wallz-outline: #3a2112;
-		--wallz-ink: #2a160b;
+		--wallz-fur: #343a48;
+		--wallz-fur-light: #4a5264;
+		--wallz-skin: #6b5a55;
+		--wallz-face: #8d766c;
+		--wallz-muzzle: #a68a7d;
+		--wallz-outline: #12151d;
 
 		display: block;
 		width: 100%;
 		height: auto;
+		overflow: visible;
 		stroke-linejoin: round;
 		stroke-linecap: round;
 	}
 
+	.wallz__shadow {
+		fill: rgba(0, 0, 0, 0.28);
+	}
+
 	.wallz__fur,
-	.wallz__belly,
-	.wallz__eye,
-	.wallz__ink,
-	.wallz__mouth,
-	.wallz__leg path:first-child {
+	.wallz__skin,
+	.wallz__chest,
+	.wallz__face,
+	.wallz__muzzle,
+	.wallz__fist circle {
 		stroke: var(--wallz-outline);
 		stroke-width: 3;
 	}
 
-	.wallz__fur,
-	.wallz__leg--near path:first-child {
+	.wallz__fur {
 		fill: var(--wallz-fur);
 	}
 
-	.wallz__leg--far path:first-child {
-		fill: var(--wallz-fur-dark);
+	.wallz__skin {
+		fill: var(--wallz-skin);
 	}
 
-	.wallz__belly {
-		fill: var(--wallz-belly);
+	.wallz__saddle {
+		fill: var(--wallz-fur-light);
 	}
 
-	.wallz__ink {
-		fill: var(--wallz-ink);
+	.wallz__crest {
+		fill: var(--wallz-fur-light);
+		stroke: var(--wallz-outline);
+		stroke-width: 2;
+	}
+
+	.wallz__chest {
+		fill: var(--wallz-skin);
+	}
+
+	.wallz__chest-line {
+		fill: none;
+		stroke: var(--wallz-outline);
+		stroke-width: 2;
+		opacity: 0.5;
+	}
+
+	.wallz__face {
+		fill: var(--wallz-face);
+	}
+
+	.wallz__muzzle {
+		fill: var(--wallz-muzzle);
+	}
+
+	.wallz__brow {
+		fill: var(--wallz-fur);
+		stroke: var(--wallz-outline);
+		stroke-width: 2.5;
 	}
 
 	.wallz__eye {
-		fill: #fff;
+		fill: #14161c;
 	}
 
 	.wallz__shine {
 		fill: #fff;
-		stroke: none;
-		opacity: 0.85;
 	}
 
-	.wallz__blush {
-		fill: #ff8fa0;
-		opacity: 0.6;
+	.wallz__nostril {
+		fill: var(--wallz-outline);
 	}
 
 	.wallz__mouth {
-		fill: #7a1f2b;
+		fill: #3b1c1c;
+		stroke: var(--wallz-outline);
+		stroke-width: 3;
 	}
 
-	.wallz__tongue {
-		fill: #ff8fa0;
+	.wallz__arm-outline {
+		fill: none;
+		stroke: var(--wallz-outline);
+		stroke-width: 34;
 	}
 
-	.wallz__tear {
-		fill: #7ec8ff;
-		opacity: 0;
+	.wallz__arm-fill {
+		fill: none;
+		stroke: var(--wallz-fur);
+		stroke-width: 28;
 	}
 
-	.wallz__toe {
+	.wallz__fist circle {
+		fill: var(--wallz-skin);
+	}
+
+	.wallz__fingers {
 		fill: none;
 		stroke: var(--wallz-outline);
 		stroke-width: 2;
+		opacity: 0.6;
+	}
+
+	.wallz__banana {
+		fill: #ffd84a;
+		stroke: #7a5a12;
+		stroke-width: 2.5;
+	}
+
+	#wallz-banana {
+		opacity: 0;
+	}
+
+	.wallz__banana-tip {
+		fill: #5a3d0a;
+	}
+
+	.wallz__puff {
+		fill: #d8cbb8;
+		opacity: 0;
 	}
 </style>

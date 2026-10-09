@@ -199,6 +199,7 @@ const section_links = [
 	.cv-menu__summary {
 		padding: 0.5rem 1.1rem;
 		font-size: 0.88rem;
+		white-space: nowrap;
 		list-style: none;
 	}
 
@@ -307,6 +308,14 @@ const section_links = [
 	@media (max-width: 520px) {
 		.site-header__name {
 			display: none;
+		}
+
+		.site-header__actions {
+			gap: 0.4rem;
+		}
+
+		.cv-menu__summary {
+			padding-inline: 0.85rem;
 		}
 	}
 

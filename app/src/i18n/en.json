@@ -73,9 +73,9 @@
   "contact.copy": "Copy email",
   "contact.copied": "Copied!",
   "wallz.label": "Wallz",
-  "wallz.fallen_status": "Wallz fell down and is crying.",
-  "wallz.hint": "Psst… poke the bear",
+  "wallz.hint": "Psst… poke the gorilla",
   "a11y.skip_to_content": "Skip to main content",
   "meta.home_description": "Mehmet Güzel: 2026 Software Engineering graduate looking for a junior Backend or DevOps role. Java/Spring Boot, Python/FastAPI, Kafka and CI/CD on AWS.",
-  "meta.blog_description": "Posts on backend, CI/CD and DevOps by Mehmet Güzel."
+  "meta.blog_description": "Posts on backend, CI/CD and DevOps by Mehmet Güzel.",
+  "wallz.action_status": "Wallz the gorilla pounds the ground, then eats a banana."
 }

@@ -37,7 +37,7 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 		</div>
 
 		<div class="hero__visual" data-reveal style="--delay: 260ms">
-			<button type="button" class="hero__wallz" data-state="idle" aria-label={t(lang, 'wallz.label')} data-fallen-status={t(lang, 'wallz.fallen_status')}>
+			<button type="button" class="hero__wallz" data-state="idle" aria-label={t(lang, 'wallz.label')} data-action-status={t(lang, 'wallz.action_status')}>
 				<Wallz />
 			</button>
 			<span class="hero__hint" aria-hidden="true">{t(lang, 'wallz.hint')}</span>
@@ -80,26 +80,37 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 	if (typed_elements.length > 0 && !reduced_motion) {
 		const characters_per_second = 55;
 		const start_delay_ms = 600;
-		const final_texts = typed_elements.map((element) => element.textContent ?? '');
-		const rows = typed_elements.map((element) => element.closest<HTMLElement>('.glance__row'));
-		typed_elements.forEach((element) => (element.textContent = ''));
-		rows.forEach((row) => row?.setAttribute('hidden', ''));
-		idle_prompt?.setAttribute('hidden', '');
+		const pause_between_lines_ms = 120;
+		const pending_class = 'is-pending';
+
+		// The unrevealed rest stays in the layout (transparent) so the card never grows while typing.
+		const typed_parts = typed_elements.map((element) => {
+			const full_text = element.textContent ?? '';
+			const revealed = document.createElement('span');
+			const rest = document.createElement('span');
+			rest.className = 'glance__rest';
+			rest.textContent = full_text;
+			element.replaceChildren(revealed, rest);
+			element.closest('.glance__row')?.classList.add(pending_class);
+			return { full_text, revealed, rest, row: element.closest('.glance__row') };
+		});
+		idle_prompt?.classList.add(pending_class);
 
 		const type_next = (index: number) => {
-			if (index >= typed_elements.length) {
-				idle_prompt?.removeAttribute('hidden');
+			if (index >= typed_parts.length) {
+				idle_prompt?.classList.remove(pending_class);
 				return;
 			}
-			rows[index]?.removeAttribute('hidden');
-			const text = final_texts[index];
+			const { full_text, revealed, rest, row } = typed_parts[index];
+			row?.classList.remove(pending_class);
 			let typed = 0;
 			const timer = setInterval(() => {
 				typed += 1;
-				typed_elements[index].textContent = text.slice(0, typed);
-				if (typed >= text.length) {
+				revealed.textContent = full_text.slice(0, typed);
+				rest.textContent = full_text.slice(typed);
+				if (typed >= full_text.length) {
 					clearInterval(timer);
-					setTimeout(() => type_next(index + 1), 120);
+					setTimeout(() => type_next(index + 1), pause_between_lines_ms);
 				}
 			}, 1000 / characters_per_second);
 		};
@@ -110,71 +121,55 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 	const wallz_status = document.querySelector<HTMLElement>('.hero__wallz-status');
 
 	if (wallz_button && wallz_status && !reduced_motion) {
-		const crying_seconds = 2.5;
-		const fall_degrees = 35;
-		const sad_mouth = 'M174 92Q184 78 194 92Z';
-		const leg_swing_degrees = 22;
-		const half_stride_seconds = 0.3;
-		const max_run_speed = 3;
-		const scroll_pixels_per_second_for_normal_run = 900;
+		const left_arm = '#wallz-arm-l';
+		const right_arm = '#wallz-arm-r';
+		const right_arm_shapes = '#wallz-arm-r .wallz__arm-outline, #wallz-arm-r .wallz__arm-fill';
+		const raised_arm_degrees = 150;
+		const slam_count = 3;
 		const eye_travel_pixels = 3;
-		const diagonal_a = ['#wallz-leg-fl', '#wallz-leg-br'];
-		const diagonal_b = ['#wallz-leg-fr', '#wallz-leg-bl'];
-		const front_legs = ['#wallz-leg-fl', '#wallz-leg-fr'];
-		const back_legs = ['#wallz-leg-bl', '#wallz-leg-br'];
+		const closed_mouth = 'M108 90Q120 98 132 90Z';
+		const roaring_mouth = 'M104 86Q120 112 136 86Z';
+		const chewing_mouth = 'M110 88Q120 104 130 88Z';
+		const smiling_mouth = 'M106 88Q120 108 134 88Z';
+		const resting_arm = 'M174 104C198 120 204 152 196 182';
+		const eating_arm = 'M174 104C214 106 198 72 148 98';
+		const mouth_hand_offset = { x: -50, y: -94 };
+		const banana_scale = 1.35;
+		const banana_bites = [0.72, 0.45, 0.2, 0];
 
-		type WallzState = 'idle' | 'falling' | 'crying' | 'getting-up';
-		let wallz_state: WallzState = 'idle';
-		let get_up_call: gsap.core.Tween | undefined;
+		let is_performing = false;
 
-		gsap.set([...diagonal_a, ...diagonal_b], { transformOrigin: '50% 0%' });
-		gsap.set('#wallz-tail', { transformOrigin: '100% 50%' });
+		gsap.set(left_arm, { svgOrigin: '66 104' });
+		gsap.set(right_arm, { svgOrigin: '174 104' });
+		gsap.set('#wallz-torso', { svgOrigin: '120 208' });
+		gsap.set('#wallz-head', { svgOrigin: '120 100' });
+		gsap.set('#wallz-eyes', { svgOrigin: '120 64' });
+		gsap.set('#wallz-banana', { svgOrigin: '206 190', opacity: 0 });
+		gsap.set('#wallz-dust .wallz__puff', { transformOrigin: '50% 50%' });
 
-		// Wallz trots in place whenever the page is scrolled, then settles.
-		const run_cycle = gsap.timeline({ repeat: -1, defaults: { ease: 'sine.inOut' } });
-		for (const [half_stride_index, swing] of [leg_swing_degrees, -leg_swing_degrees].entries()) {
-			const start = half_stride_index * half_stride_seconds;
-			run_cycle
-				.fromTo(diagonal_a, { rotation: -swing }, { rotation: swing, duration: half_stride_seconds }, start)
-				.fromTo(diagonal_b, { rotation: swing }, { rotation: -swing, duration: half_stride_seconds }, start)
-				.to('#wallz-tail', { rotation: swing / 2, duration: half_stride_seconds }, start);
-		}
-		run_cycle.timeScale(0);
+		// Idle: breathing, a slight arm sway and an occasional blink.
+		const breathing = gsap.timeline({ repeat: -1, yoyo: true, defaults: { ease: 'sine.inOut', duration: 1.8 } });
+		breathing
+			.to('#wallz-torso', { scaleY: 1.025 }, 0)
+			.to('#wallz-head', { y: -1.5 }, 0)
+			.to(left_arm, { rotation: 2 }, 0)
+			.to(right_arm, { rotation: -2 }, 0);
 
-		gsap.to('.hero__wallz', { y: -6, duration: 1.6, ease: 'sine.inOut', yoyo: true, repeat: -1 });
-		gsap.to('#wallz-tail', { rotation: 10, duration: 0.5, ease: 'sine.inOut', yoyo: true, repeat: -1 });
-
-		let last_scroll_y = scrollY;
-		let last_scroll_time = performance.now();
-		let scroll_speed = 0;
-		addEventListener(
-			'scroll',
-			() => {
-				const now = performance.now();
-				const elapsed = Math.max(now - last_scroll_time, 1);
-				scroll_speed = (Math.abs(scrollY - last_scroll_y) / elapsed) * 1000;
-				last_scroll_y = scrollY;
-				last_scroll_time = now;
-			},
-			{ passive: true },
-		);
-
-		const run_with_scroll = () => {
-			if (wallz_state !== 'idle') return;
-			scroll_speed *= 0.9;
-			const target = Math.min(scroll_speed / scroll_pixels_per_second_for_normal_run, max_run_speed);
-			const eased = run_cycle.timeScale() + (target - run_cycle.timeScale()) * 0.15;
-			run_cycle.timeScale(eased < 0.01 ? 0 : eased);
+		const schedule_blink = () => {
+			gsap.delayedCall(gsap.utils.random(2.5, 5), () => {
+				if (!is_performing) gsap.to('#wallz-eyes', { scaleY: 0.1, duration: 0.07, yoyo: true, repeat: 1 });
+				schedule_blink();
+			});
 		};
-		gsap.ticker.add(run_with_scroll);
+		schedule_blink();
 
 		addEventListener(
 			'pointermove',
 			(event) => {
-				if (wallz_state !== 'idle') return;
+				if (is_performing) return;
 				const box = wallz_button.getBoundingClientRect();
-				const dx = (event.clientX - (box.left + box.width * 0.8)) / innerWidth;
-				const dy = (event.clientY - (box.top + box.height * 0.4)) / innerHeight;
+				const dx = (event.clientX - (box.left + box.width / 2)) / innerWidth;
+				const dy = (event.clientY - (box.top + box.height * 0.3)) / innerHeight;
 				gsap.to('#wallz-eyes', {
 					x: gsap.utils.clamp(-1, 1, dx * 3) * eye_travel_pixels,
 					y: gsap.utils.clamp(-1, 1, dy * 3) * eye_travel_pixels,
@@ -184,47 +179,89 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 			{ passive: true },
 		);
 
-		const set_state = (next: WallzState) => {
-			wallz_state = next;
-			wallz_button.dataset.state = next;
+		const main_content = document.querySelector<HTMLElement>('.site-main');
+		const shake_screen = () => {
+			const jolts = 6;
+			const strongest_pixels = 7;
+			const shake = gsap.timeline({ onComplete: () => gsap.set(main_content, { clearProps: 'transform' }) });
+			for (let jolt = 0; jolt < jolts; jolt++) {
+				const strength = strongest_pixels * (1 - jolt / jolts);
+				shake.to(main_content, {
+					x: gsap.utils.random(-strength, strength),
+					y: gsap.utils.random(-strength, strength) + (jolt === 0 ? 4 : 0),
+					duration: 0.04,
+					ease: 'none',
+				});
+			}
+			shake.to(main_content, { x: 0, y: 0, duration: 0.05 });
 		};
 
-		const fall = gsap.timeline({ paused: true, onComplete: start_crying, onReverseComplete: () => set_state('idle') });
-		fall
-			.to('.wallz', { rotation: -fall_degrees, transformOrigin: '25% 100%', duration: 0.7, ease: 'bounce.out' }, 0)
-			.to(front_legs, { rotation: -55, duration: 0.4, ease: 'power2.out' }, 0)
-			.to(back_legs, { rotation: -75, duration: 0.4, ease: 'power2.out' }, 0)
-			.to('#wallz-mouth', { attr: { d: sad_mouth }, duration: 0.2 }, 0.3)
-			.to('#wallz-tongue', { opacity: 0, duration: 0.1 }, 0.3)
-			.to('#wallz-eyes', { scaleY: 0.6, x: 0, y: 0, transformOrigin: '50% 50%', duration: 0.2 }, 0.3);
+		const kick_up_dust = () => {
+			gsap.fromTo(
+				'#wallz-dust .wallz__puff',
+				{ opacity: 0.85, scale: 0.4, y: 0 },
+				{ opacity: 0, scale: 1.7, y: -16, duration: 0.55, ease: 'power2.out', stagger: 0.03, overwrite: true },
+			);
+		};
 
-		const cry = gsap.timeline({ paused: true, repeat: -1 });
-		cry
-			.fromTo('#wallz-tears path', { y: 0, opacity: 0.9 }, { y: 18, opacity: 0, duration: 0.8, ease: 'power1.in', stagger: 0.4, immediateRender: false }, 0)
-			.to('#wallz-head', { y: 1.5, duration: 0.12, yoyo: true, repeat: 5, ease: 'sine.inOut' }, 0);
+		const slam_both_fists = (timeline: gsap.core.Timeline) => {
+			timeline
+				.to(left_arm, { rotation: raised_arm_degrees, duration: 0.3, ease: 'power2.out' })
+				.to(right_arm, { rotation: -raised_arm_degrees, duration: 0.3, ease: 'power2.out' }, '<')
+				.to('#wallz-head', { y: -5, duration: 0.3, ease: 'power2.out' }, '<')
+				.to('#wallz-mouth', { attr: { d: roaring_mouth }, duration: 0.2 }, '<0.05')
+				.to([left_arm, right_arm], { rotation: 0, duration: 0.14, ease: 'power4.in' })
+				.to('#wallz-head', { y: 3, duration: 0.14, ease: 'power4.in' }, '<')
+				.add(kick_up_dust)
+				.add(shake_screen, '<')
+				.to(wallz_button, { y: 5, duration: 0.05, yoyo: true, repeat: 1 }, '<');
+		};
 
-		function start_crying() {
-			set_state('crying');
-			cry.play(0);
-			get_up_call = gsap.delayedCall(crying_seconds, get_up);
-		}
+		const eat_banana = (timeline: gsap.core.Timeline) => {
+			timeline
+				.to('#wallz-mouth', { attr: { d: closed_mouth }, duration: 0.15 })
+				.to('#wallz-head', { y: 0, duration: 0.15 }, '<')
+				.set('#wallz-banana', { opacity: 1, scale: 0 })
+				.to('#wallz-banana', { scale: banana_scale, duration: 0.3, ease: 'back.out(2)' })
+				.to(right_arm_shapes, { attr: { d: eating_arm }, duration: 0.55, ease: 'power2.inOut' }, '+=0.15')
+				.to('#wallz-hand-r', { ...mouth_hand_offset, duration: 0.55, ease: 'power2.inOut' }, '<');
 
-		function get_up() {
-			set_state('getting-up');
-			cry.pause();
-			gsap.set('#wallz-tears path', { opacity: 0 });
-			gsap.set('#wallz-head', { y: 0 });
-			wallz_status.textContent = '';
-			fall.reverse();
-		}
+			for (const remaining of banana_bites) {
+				timeline
+					.to('#wallz-mouth', { attr: { d: chewing_mouth }, duration: 0.12 })
+					.to('#wallz-banana', { scaleX: remaining * banana_scale, duration: 0.12 }, '<')
+					.to('#wallz-mouth', { attr: { d: closed_mouth }, duration: 0.12 })
+					.to('#wallz-head', { y: 1.5, duration: 0.1, yoyo: true, repeat: 3 }, '<');
+			}
+		};
+
+		const celebrate = (timeline: gsap.core.Timeline) => {
+			timeline
+				.set('#wallz-banana', { opacity: 0 })
+				.to(right_arm_shapes, { attr: { d: resting_arm }, duration: 0.45, ease: 'power2.inOut' })
+				.to('#wallz-hand-r', { x: 0, y: 0, duration: 0.45, ease: 'power2.inOut' }, '<')
+				.to('#wallz-mouth', { attr: { d: smiling_mouth }, duration: 0.2 }, '<')
+				.to(wallz_button, { y: -10, duration: 0.18, ease: 'power2.out', yoyo: true, repeat: 3 })
+				.to('#wallz-mouth', { attr: { d: closed_mouth }, duration: 0.3 }, '+=0.2');
+		};
 
 		wallz_button.addEventListener('click', () => {
-			if (wallz_state !== 'idle') return;
-			set_state('falling');
-			run_cycle.timeScale(0);
-			wallz_status.textContent = wallz_button.dataset.fallenStatus ?? '';
-			get_up_call?.kill();
-			fall.invalidate().play(0);
+			if (is_performing) return;
+			is_performing = true;
+			wallz_button.dataset.state = 'performing';
+			wallz_status.textContent = wallz_button.dataset.actionStatus ?? '';
+			gsap.to('#wallz-eyes', { x: 0, y: 0, duration: 0.2 });
+
+			const show = gsap.timeline({
+				onComplete: () => {
+					is_performing = false;
+					wallz_button.dataset.state = 'idle';
+					wallz_status.textContent = '';
+				},
+			});
+			for (let slam = 0; slam < slam_count; slam++) slam_both_fists(show);
+			eat_banana(show);
+			celebrate(show);
 		});
 	}
 </script>
@@ -340,8 +377,9 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 	}
 
 	.hero__visual {
+		--gorilla-width: clamp(9.5rem, 21vw, 13rem);
 		position: relative;
-		padding-top: 5.5rem;
+		padding-top: calc(var(--gorilla-width) * 0.88);
 	}
 
 	.hero__wallz {
@@ -349,7 +387,7 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 		top: 0;
 		right: 8%;
 		z-index: 2;
-		width: clamp(8rem, 18vw, 10.5rem);
+		width: var(--gorilla-width);
 		padding: 0;
 		border: 0;
 		background: none;
@@ -360,7 +398,7 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 	.hero__hint {
 		position: absolute;
 		top: 0.2rem;
-		right: calc(8% + clamp(8rem, 18vw, 10.5rem) + 0.5rem);
+		right: calc(8% + var(--gorilla-width) + 0.5rem);
 		display: none;
 		color: var(--muted);
 		font-family: var(--font-heading);
@@ -418,7 +456,6 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 	}
 
 	.glance {
-		min-height: 22rem;
 		padding: 1.25rem 1.25rem 1.5rem;
 		font: 400 0.88rem/1.6 var(--font-heading);
 	}
@@ -429,9 +466,13 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 		font-weight: 700;
 	}
 
-	.glance__command[hidden],
-	.glance__row[hidden] {
-		display: none;
+	.glance__row.is-pending,
+	.glance__idle.is-pending {
+		visibility: hidden;
+	}
+
+	.glance__rest {
+		color: transparent;
 	}
 
 	.glance__list {
@@ -447,7 +488,7 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 
 	@media (min-width: 36rem) {
 		.glance__row {
-			grid-template-columns: 7.5rem 1fr;
+			grid-template-columns: 9rem 1fr;
 			gap: 1rem;
 		}
 	}
