@@ -1,0 +1,27 @@
+---
+interface Props {
+	id: string;
+	title: string;
+}
+
+const { id, title } = Astro.props;
+---
+
+<section class="cv-section" id={id} aria-labelledby={`${id}-title`}>
+	<h2 id={`${id}-title`}>{title}</h2>
+	<slot />
+</section>
+
+<style>
+	.cv-section {
+		max-width: 52rem;
+		margin: 0 auto;
+		padding: 2rem 0;
+		scroll-margin-top: 5rem;
+	}
+
+	.cv-section h2 {
+		margin-bottom: 1rem;
+		color: var(--color-accent);
+	}
+</style>

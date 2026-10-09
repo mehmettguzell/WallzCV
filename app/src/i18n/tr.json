@@ -8,5 +8,13 @@
   "nav.blog": "Blog",
   "nav.cv_download": "CV indir",
   "nav.cv_english": "English CV",
-  "nav.cv_turkish": "Türkçe CV"
+  "nav.cv_turkish": "Türkçe CV",
+  "about.title": "Hakkımda",
+  "about.tagline": "Yazılım Mühendisi · Backend & DevOps",
+  "about.summary": "2026 mezunu Yazılım Mühendisi. Backend, distributed systems ve DevOps alanlarına odaklanıyorum. Java/Spring Boot ve Python ile backend servisleri ve REST API'ler geliştiriyor; relational ve NoSQL veritabanları, messaging sistemleri ve cloud ortamlarıyla çalışıyorum. Microservices ve event-driven mimariler kurdum. Docker ve GitHub Actions ile CI/CD pipeline'ları yazıyor, uygulamaları cloud üzerinde deploy ediyorum. LLM entegrasyonu ve AI destekli ürün geliştirme deneyimim var. Güvenli, bakımı kolay ve temiz kod yazmaya önem veriyorum.",
+  "about.email": "E-posta",
+  "experience.title": "Deneyim",
+  "skills.title": "Teknik Beceriler",
+  "education.title": "Eğitim",
+  "achievements.title": "Başarılar ve Sertifikalar"
 }

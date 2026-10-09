@@ -8,5 +8,13 @@
   "nav.blog": "Blog",
   "nav.cv_download": "Download CV",
   "nav.cv_english": "English CV",
-  "nav.cv_turkish": "Türkçe CV"
+  "nav.cv_turkish": "Türkçe CV",
+  "about.title": "About",
+  "about.tagline": "Software Engineer · Backend & DevOps",
+  "about.summary": "Software Engineer, class of 2026, focused on backend, distributed systems, and DevOps. I build backend services and REST APIs with Java/Spring Boot and Python, and work with relational and NoSQL databases, messaging systems, and cloud environments. I have built microservices and event-driven architectures. I write CI/CD pipelines with Docker and GitHub Actions and deploy applications to the cloud. I have experience with LLM integration and AI-powered product development. I care about writing secure, maintainable, and clean code.",
+  "about.email": "Email",
+  "experience.title": "Experience",
+  "skills.title": "Technical Skills",
+  "education.title": "Education",
+  "achievements.title": "Achievements & Certifications"
 }

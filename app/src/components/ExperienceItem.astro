@@ -1,0 +1,38 @@
+---
+interface Props {
+	role: string;
+	organization: string;
+	location: string;
+	period: string;
+	highlights: string[];
+}
+
+const { role, organization, location, period, highlights } = Astro.props;
+---
+
+<article class="experience-item">
+	<h3>{role} · {organization}</h3>
+	<p class="experience-item__meta">{period} · {location}</p>
+	<ul>
+		{highlights.map((highlight) => <li>{highlight}</li>)}
+	</ul>
+</article>
+
+<style>
+	.experience-item + .experience-item {
+		margin-top: 2rem;
+	}
+
+	.experience-item__meta {
+		margin-bottom: 0.5rem;
+		opacity: 0.75;
+	}
+
+	ul {
+		padding-left: 1.25rem;
+	}
+
+	li + li {
+		margin-top: 0.5rem;
+	}
+</style>

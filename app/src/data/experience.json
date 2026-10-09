@@ -1,0 +1,46 @@
+[
+  {
+    "role": { "en": "Backend Developer Intern", "tr": "Backend Developer Stajyeri" },
+    "organization": "Codexist",
+    "location": { "en": "Istanbul, Türkiye", "tr": "İstanbul, Türkiye" },
+    "period": { "en": "August 2026 – September 2026", "tr": "Ağustos 2026 – Eylül 2026" },
+    "highlights": [
+      {
+        "en": "Researched GEO (Generative Engine Optimization) and designed the architecture of a system that measures how visible companies are in LLM responses relative to their competitors; prompts are sent repeatedly to multiple LLM providers, and results are evaluated with a statistical margin of error.",
+        "tr": "GEO (Generative Engine Optimization) araştırması yaparak, şirketlerin LLM yanıtlarında rakiplerine göre ne ölçüde göründüğünü ölçen sistemin mimarisini tasarladım; promptlar birden fazla LLM provider'a tekrarlı gönderiliyor, sonuçlar istatistiksel hata payıyla değerlendiriliyor."
+      },
+      {
+        "en": "Designed and built an asynchronous task architecture based on Celery and Redis for daily automated crawling and analysis jobs; developed workers and workflows that use a sliding window approach to reduce the margin of error in measurements obtained from repeated LLM queries.",
+        "tr": "Günlük otomatik tarama ve analiz süreçleri için Celery ve Redis tabanlı asynchronous task mimarisi tasarlayıp geliştirdim; sliding window yaklaşımı kullanarak tekrarlı LLM sorgularından elde edilen ölçümlerdeki hata payını azaltmayı hedefleyen worker'ları ve workflow'ları geliştirdim."
+      },
+      {
+        "en": "Turned the analysis pipeline into backend services with Python and FastAPI and integrated it with PostgreSQL; connected the resulting APIs to a TypeScript/React frontend and containerized the application with Docker Compose.",
+        "tr": "Analiz pipeline'ını Python ve FastAPI ile backend servislerine dönüştürerek PostgreSQL ile entegre ettim; geliştirilen API'leri TypeScript/React tabanlı frontend'e bağladım ve uygulamayı Docker Compose ile containerize ettim."
+      }
+    ]
+  },
+  {
+    "role": { "en": "Application Security Long-Term Intern", "tr": "Application Security Uzun Dönem Stajyeri" },
+    "organization": "Privia Security",
+    "location": { "en": "Istanbul, Türkiye", "tr": "İstanbul, Türkiye" },
+    "period": { "en": "June 2024 – July 2025", "tr": "Haziran 2024 – Temmuz 2025" },
+    "highlights": [
+      {
+        "en": "Analyzed production web applications at the code and API level to identify security vulnerabilities, and took part in web application penetration testing engagements.",
+        "tr": "Production web application'larını code ve API seviyesinde analiz ederek güvenlik açıklarını tespit ettim ve web application pentest çalışmalarında yer aldım."
+      },
+      {
+        "en": "Developed internal tools in Python to speed up the team's repetitive security testing processes, contributing to the automation of manual checks.",
+        "tr": "Ekibin tekrarlayan security testing süreçlerini hızlandırmak için Python ile internal araçlar geliştirerek manuel yapılan kontrollerin otomatikleştirilmesine katkı sağladım."
+      },
+      {
+        "en": "Discovered a stored XSS vulnerability in a commercial product and reported it through responsible disclosure; the finding was officially assigned CVE-2025-1301.",
+        "tr": "Ticari bir üründe stored XSS zafiyeti tespit ederek responsible disclosure süreciyle bildirdim; bulgu resmi olarak CVE-2025-1301 ile ilişkilendirildi."
+      },
+      {
+        "en": "Worked with development teams to remediate the identified vulnerabilities, proposing actionable code-level fixes and contributing to secure development practices.",
+        "tr": "Tespit edilen güvenlik açıklarının giderilmesi sürecinde development ekipleriyle çalışarak uygulanabilir code-level çözüm önerileri sundum ve güvenli geliştirme süreçlerine katkı sağladım."
+      }
+    ]
+  }
+]
