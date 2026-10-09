@@ -3,136 +3,202 @@ import PipelineDiagram from './PipelineDiagram.astro';
 
 interface Props {
 	slug: string;
+	index: number;
 	name: string;
 	summary: string;
+	plain: string;
+	plain_label: string;
 	technologies: string[];
 	repository: string;
 	highlights: string[];
 	pipeline_steps?: string[];
 	pipeline_label?: string;
+	details_label: string;
+	repository_label: string;
 }
 
-const { slug, name, summary, technologies, repository, highlights, pipeline_steps, pipeline_label } =
+const { slug, index, name, summary, plain, plain_label, technologies, repository, highlights, pipeline_steps, pipeline_label, details_label, repository_label } =
 	Astro.props;
 ---
 
-<article class="project-card">
-	<div class="project-card__bar" aria-hidden="true">
-		<span class="project-card__dot"></span>
-		<span class="project-card__dot"></span>
-		<span class="project-card__dot"></span>
-		<span class="project-card__path">~/projects/{slug}</span>
+<div class="project-wrap" data-reveal style={`--delay: ${(index % 2) * 90}ms`}>
+<article class="project glass spot" data-tilt>
+	<div class="project__bar" aria-hidden="true">
+		<span></span><span></span><span></span>
+		<code>~/projects/{slug}</code>
+		<b>{String(index + 1).padStart(2, '0')}</b>
 	</div>
-	<div class="project-card__body">
-		<h3>{name}</h3>
-		<p class="project-card__summary">{summary}</p>
-		<ul class="project-card__highlights">
-			{highlights.map((highlight) => <li>{highlight}</li>)}
-		</ul>
+	<div class="project__body">
+		<h3 class="project__name">{name}</h3>
+		<p class="project__summary">{summary}</p>
+		<p class="project__plain"><b>{plain_label}</b>{plain}</p>
 		{pipeline_steps && pipeline_label && <PipelineDiagram steps={pipeline_steps} label={pipeline_label} />}
-		<ul class="project-card__technologies">
-			{technologies.map((technology) => <li>{technology}</li>)}
+		<ul class="project__technologies">
+			{technologies.map((technology) => <li class="chip">{technology}</li>)}
 		</ul>
-		<a class="project-card__repository" href={repository} rel="noopener">{repository.replace('https://', '')}</a>
+		<details class="project__details">
+			<summary>{details_label} <span aria-hidden="true">+</span></summary>
+			<ul class="project__highlights">
+				{highlights.map((highlight) => <li>{highlight}</li>)}
+			</ul>
+		</details>
+		<a class="btn project__repository" href={repository} rel="noopener" target="_blank">
+			{repository_label} <span aria-hidden="true">↗</span>
+		</a>
 	</div>
 </article>
+</div>
 
 <style>
-	.project-card {
+	.project-wrap {
+		display: flex;
+	}
+
+	.project {
+		flex: 1;
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
-		border: 1px solid color-mix(in srgb, var(--color-accent) 50%, transparent);
-		border-radius: 0.75rem;
-		background: color-mix(in srgb, var(--color-bg) 85%, var(--color-text));
-		box-shadow: 0 8px 24px color-mix(in srgb, var(--color-accent) 18%, transparent);
-		font-family: var(--font-heading);
-		font-size: 0.9rem;
 		transition:
-			transform 0.2s ease,
-			box-shadow 0.2s ease;
+			transform 0.2s ease-out,
+			border-color 0.3s ease,
+			box-shadow 0.3s ease;
 	}
 
-	.project-card:hover {
-		transform: translateY(-3px);
-		box-shadow: 0 12px 32px color-mix(in srgb, var(--color-accent) 35%, transparent);
+	.project:hover {
+		border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+		box-shadow: 0 30px 70px -30px color-mix(in srgb, var(--accent) 45%, transparent);
 	}
 
-	.project-card__bar {
+	.project__bar {
 		display: flex;
 		align-items: center;
 		gap: 0.4rem;
-		padding: 0.5rem 0.9rem;
-		border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
-		background: color-mix(in srgb, var(--color-accent) 15%, transparent);
+		padding: 0.7rem 1.1rem;
+		border-bottom: 1px solid var(--border);
+		background: var(--surface);
 	}
 
-	.project-card__dot {
+	.project__bar span {
 		width: 0.65rem;
 		height: 0.65rem;
 		border-radius: 50%;
-		background: var(--color-accent);
-		opacity: 0.7;
+		background: #ff5f57;
 	}
 
-	.project-card__path {
-		margin-left: 0.5rem;
-		opacity: 0.8;
+	.project__bar span:nth-child(2) {
+		background: #febc2e;
 	}
 
-	.project-card__body {
+	.project__bar span:nth-child(3) {
+		background: #28c840;
+	}
+
+	.project__bar code {
+		margin-left: 0.6rem;
+		color: var(--muted);
+		font: 400 0.78rem var(--font-heading);
+	}
+
+	.project__bar b {
+		margin-left: auto;
+		color: var(--accent);
+		font: 700 0.78rem var(--font-heading);
+	}
+
+	.project__body {
 		display: flex;
 		flex: 1;
 		flex-direction: column;
-		gap: 0.75rem;
-		padding: 1rem;
+		gap: 1.1rem;
+		padding: clamp(1.25rem, 3vw, 1.8rem);
 	}
 
-	.project-card__body h3::before {
-		content: '$ cat ';
-		color: var(--color-accent);
+	.project__name {
+		font-size: clamp(1.5rem, 3vw, 2rem);
+		font-weight: 800;
 	}
 
-	.project-card__summary {
-		opacity: 0.8;
+	.project__summary {
+		margin-top: -0.5rem;
+		color: var(--muted);
 	}
 
-	.project-card__highlights {
-		padding-left: 1.1rem;
-		font-family: var(--font-body);
+	.project__plain {
+		padding: 0.9rem 1rem;
+		border-left: 3px solid var(--accent);
+		border-radius: 0 0.75rem 0.75rem 0;
+		background: var(--surface);
+		font-size: 1rem;
 	}
 
-	.project-card__highlights li + li {
-		margin-top: 0.4rem;
+	.project__plain b {
+		display: block;
+		margin-bottom: 0.2rem;
+		color: var(--accent);
+		font: 500 0.72rem var(--font-heading);
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
 	}
 
-	.project-card__technologies {
+	.project__technologies {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.35rem;
-		margin-top: auto;
+		gap: 0.4rem;
 		padding: 0;
 		list-style: none;
 	}
 
-	.project-card__technologies li {
-		padding: 0 0.6rem;
-		border: 1px solid color-mix(in srgb, var(--color-accent) 50%, transparent);
-		border-radius: 999px;
-		font-size: 0.8rem;
+	.project__details {
+		border-top: 1px solid var(--border);
+		padding-top: 0.9rem;
 	}
 
-	.project-card__repository {
-		overflow-wrap: anywhere;
+	.project__details summary {
+		display: flex;
+		justify-content: space-between;
+		color: var(--text);
+		font-weight: 600;
+		cursor: pointer;
+		list-style: none;
+	}
+
+	.project__details summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.project__details summary span {
+		color: var(--accent);
+		font-family: var(--font-heading);
+		transition: transform 0.25s ease;
+	}
+
+	.project__details[open] summary span {
+		transform: rotate(45deg);
+	}
+
+	.project__highlights {
+		display: grid;
+		gap: 0.8rem;
+		margin-top: 1rem;
+		padding-left: 1.1rem;
+		color: var(--muted);
+		font-size: 0.95rem;
+	}
+
+	.project__highlights li::marker {
+		color: var(--accent);
+	}
+
+	.project__repository {
+		align-self: flex-start;
+		margin-top: auto;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.project-card {
+		.project,
+		.project__details summary span {
 			transition: none;
-		}
-
-		.project-card:hover {
-			transform: none;
 		}
 	}
 </style>

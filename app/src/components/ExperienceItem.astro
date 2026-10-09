@@ -10,29 +10,74 @@ interface Props {
 const { role, organization, location, period, highlights } = Astro.props;
 ---
 
-<article class="experience-item">
-	<h3>{role} · {organization}</h3>
-	<p class="experience-item__meta">{period} · {location}</p>
-	<ul>
+<article class="experience glass spot" data-reveal>
+	<span class="experience__dot" aria-hidden="true"></span>
+	<p class="experience__period">{period}</p>
+	<h3 class="experience__role">{role}</h3>
+	<p class="experience__org"><strong>{organization}</strong> · {location}</p>
+	<ul class="experience__highlights">
 		{highlights.map((highlight) => <li>{highlight}</li>)}
 	</ul>
 </article>
 
 <style>
-	.experience-item + .experience-item {
-		margin-top: 2rem;
+	.experience {
+		padding: clamp(1.4rem, 3vw, 2.2rem);
 	}
 
-	.experience-item__meta {
-		margin-bottom: 0.5rem;
-		opacity: 0.75;
+	.experience__dot {
+		position: absolute;
+		top: 2.15rem;
+		left: calc(-1 * var(--timeline-offset, 2.2rem) - 0.4rem);
+		width: 0.8rem;
+		height: 0.8rem;
+		border: 2px solid var(--accent);
+		border-radius: 50%;
+		background: var(--bg);
+		box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 18%, transparent);
 	}
 
-	ul {
-		padding-left: 1.25rem;
+	.experience__period {
+		color: var(--accent);
+		font-family: var(--font-heading);
+		font-size: 0.82rem;
 	}
 
-	li + li {
-		margin-top: 0.5rem;
+	.experience__role {
+		margin-top: 0.35rem;
+		font-size: clamp(1.3rem, 3vw, 1.7rem);
+	}
+
+	.experience__org {
+		margin-top: 0.2rem;
+		color: var(--muted);
+	}
+
+	.experience__org strong {
+		color: var(--text);
+	}
+
+	.experience__highlights {
+		display: grid;
+		gap: 0.75rem;
+		margin-top: 1.25rem;
+		padding: 0;
+		list-style: none;
+		color: var(--muted);
+	}
+
+	.experience__highlights li {
+		position: relative;
+		padding-left: 1.4rem;
+	}
+
+	.experience__highlights li::before {
+		content: '';
+		position: absolute;
+		top: 0.7em;
+		left: 0;
+		width: 0.6rem;
+		height: 2px;
+		background: var(--gradient);
 	}
 </style>

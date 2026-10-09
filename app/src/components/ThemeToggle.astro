@@ -37,11 +37,16 @@ const { label } = Astro.props;
 	.theme-toggle {
 		display: inline-flex;
 		padding: 0.4rem;
-		border: 1px solid var(--color-accent);
+		border: 1px solid var(--border);
 		border-radius: 50%;
-		background: transparent;
-		color: var(--color-text);
+		background: var(--surface);
+		color: var(--text);
 		cursor: pointer;
+		transition: border-color 0.2s ease;
+	}
+
+	.theme-toggle:hover {
+		border-color: var(--accent);
 	}
 
 	.theme-toggle__icon {

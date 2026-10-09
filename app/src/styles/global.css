@@ -1,21 +1,57 @@
 @import "@fontsource/inter/400.css";
-@import "@fontsource/inter/700.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/800.css";
 @import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
 @import "@fontsource/jetbrains-mono/700.css";
 
 :root {
   --font-body: "Inter", system-ui, sans-serif;
   --font-heading: "JetBrains Mono", ui-monospace, monospace;
 
-  --color-bg: #0e1429;
-  --color-text: #e6e9f2;
-  --color-accent: #0e8a96;
+  --bg: #05070f;
+  --surface: rgba(255, 255, 255, 0.045);
+  --surface-strong: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.1);
+  --text: #e9edf9;
+  --muted: #98a2c3;
+  --accent: #2dd4bf;
+  --accent-2: #818cf8;
+  --accent-3: #f0abfc;
+  --accent-ink: #04201c;
+  --shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.7);
+  --blob-opacity: 0.55;
+  --grid-line: rgba(255, 255, 255, 0.045);
+
+  --gradient: linear-gradient(110deg, var(--accent), var(--accent-2) 55%, var(--accent-3));
+  --radius: 1.25rem;
+  --container: 72rem;
+
+  /* Kept so older components that read these names stay themed. */
+  --color-bg: var(--bg);
+  --color-text: var(--text);
+  --color-accent: var(--accent);
+
+  color-scheme: dark;
 }
 
 :root[data-theme="light"] {
-  --color-bg: #f6f0e1;
-  --color-text: #1b2a5e;
-  --color-accent: #1b2a5e;
+  --bg: #f6f3ea;
+  --surface: rgba(255, 255, 255, 0.65);
+  --surface-strong: rgba(255, 255, 255, 0.9);
+  --border: rgba(17, 26, 69, 0.12);
+  --text: #111a45;
+  --muted: #566089;
+  --accent: #0e8a96;
+  --accent-2: #5b5bd6;
+  --accent-3: #c026d3;
+  --accent-ink: #ffffff;
+  --shadow: 0 24px 50px -28px rgba(17, 26, 69, 0.35);
+  --blob-opacity: 0.35;
+  --grid-line: rgba(17, 26, 69, 0.06);
+
+  color-scheme: light;
 }
 
 *,
@@ -28,27 +64,47 @@
   margin: 0;
 }
 
-/* Stops the browser's own pull-to-refresh so the Hand gesture owns the pull. */
 html {
-  overscroll-behavior-y: contain;
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg);
-  color: var(--color-text);
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--font-body);
   font-size: 1rem;
-  line-height: 1.6;
+  line-height: 1.65;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+a {
+  color: var(--accent);
 }
 
 a:focus-visible,
 button:focus-visible,
 summary:focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
+  border-radius: 0.5rem;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.15;
+  letter-spacing: -0.02em;
 }
 
 .skip-link {
@@ -57,8 +113,8 @@ summary:focus-visible {
   left: 0;
   z-index: 100;
   padding: 0.5rem 1rem;
-  background: var(--color-bg);
-  color: var(--color-text);
+  background: var(--bg);
+  color: var(--text);
   transform: translateY(-100%);
 }
 
@@ -66,44 +122,189 @@ summary:focus-visible {
   transform: translateY(0);
 }
 
+.site-main {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
 .site-main:focus {
   outline: none;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.site-header__brand {
+.container {
+  width: min(100% - 2rem, var(--container));
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: clamp(4rem, 9vw, 7.5rem);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  color: var(--accent);
   font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
-a {
-  color: var(--color-accent);
+.eyebrow::before {
+  content: "";
+  width: 2rem;
+  height: 1px;
+  background: var(--gradient);
 }
 
-.site-header__brand {
-  color: var(--color-accent);
-  font-weight: 700;
+.section__title {
+  max-width: 22ch;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 800;
 }
 
-.site-header,
-.site-footer {
-  display: flex;
-  justify-content: space-between;
+.section__lead {
+  max-width: 52ch;
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.gradient-text {
+  background: var(--gradient);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-shift 8s linear infinite;
+}
+
+@keyframes gradient-shift {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Glass surface with a cursor-following spotlight (--mx/--my set by the pointer script). */
+.glass {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--shadow);
+}
+
+.spot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    28rem circle at var(--mx, 50%) var(--my, 0%),
+    color-mix(in srgb, var(--accent) 16%, transparent),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.spot:hover::after {
+  opacity: 1;
+}
+
+.btn {
+  position: relative;
+  display: inline-flex;
   align-items: center;
-  padding: 1rem;
+  gap: 0.55rem;
+  padding: 0.8rem 1.4rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font: 600 0.95rem var(--font-body);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease;
 }
 
-.site-header__actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+.btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--accent) 60%, transparent);
 }
 
-.site-main {
-  flex: 1;
-  padding: 1rem;
+.btn--primary {
+  border-color: transparent;
+  background: var(--gradient);
+  color: var(--accent-ink);
+}
+
+.btn--primary:hover {
+  border-color: transparent;
+  box-shadow: 0 14px 40px -10px color-mix(in srgb, var(--accent-2) 70%, transparent);
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  white-space: nowrap;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+/* Scroll reveal: only hidden once JS has marked the page, so the content is never lost without it. */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(1.75rem);
+  transition:
+    opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--delay, 0ms);
+}
+
+.js [data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .gradient-text {
+    animation: none;
+  }
 }

@@ -13,8 +13,9 @@ const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 ---
 
 <Layout lang={lang} title={`${t(lang, 'blog.title')} · WallzCV`} description={t(lang, 'meta.blog_description')}>
-	<section class="blog-list" data-initial-filter={lang}>
-		<h1>{t(lang, 'blog.title')}</h1>
+	<section class="blog-list container" data-initial-filter={lang}>
+		<p class="eyebrow">{t(lang, 'blog.eyebrow')}</p>
+		<h1 class="section__title">{t(lang, 'blog.heading')}</h1>
 		<div class="blog-list__filters" role="group" aria-label={t(lang, 'blog.filter_label')} hidden>
 			<button type="button" data-filter="all" aria-pressed="false">{t(lang, 'blog.filter_all')}</button>
 			{languages.map((post_lang) => <button type="button" data-filter={post_lang} aria-pressed="false">{post_lang.toUpperCase()}</button>)}
@@ -23,7 +24,7 @@ const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 		<ul class="blog-list__posts">
 			{
 				posts.map((post) => (
-					<li data-post-lang={post.data.lang}>
+					<li class="blog-list__post glass spot" data-post-lang={post.data.lang}>
 						<h2>
 							<a href={`/${lang}/blog/${post.id}/`} hreflang={post.data.lang}>{post.data.title}</a>
 						</h2>
@@ -66,20 +67,13 @@ const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 
 <style>
 	.blog-list {
-		max-width: 52rem;
-		margin: 0 auto;
-		padding: 2rem 0;
-	}
-
-	.blog-list h1 {
-		margin-bottom: 1rem;
-		color: var(--color-accent);
+		padding-block: clamp(3rem, 7vw, 5rem);
 	}
 
 	.blog-list__filters {
 		display: flex;
 		gap: 0.5rem;
-		margin-bottom: 1.5rem;
+		margin-block: 2rem;
 	}
 
 	.blog-list__filters[hidden] {
@@ -87,33 +81,66 @@ const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 	}
 
 	.blog-list__filters button {
-		padding: 0.25rem 0.75rem;
-		border: 1px solid var(--color-accent);
-		border-radius: 0.5rem;
-		background: none;
-		color: var(--color-text);
-		font: inherit;
+		padding: 0.35rem 1rem;
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		background: var(--surface);
+		color: var(--text);
+		font: 600 0.85rem var(--font-body);
 		cursor: pointer;
+		transition: border-color 0.2s ease;
+	}
+
+	.blog-list__filters button:hover {
+		border-color: var(--accent);
 	}
 
 	.blog-list__filters button[aria-pressed='true'] {
-		background: var(--color-accent);
-		color: var(--color-bg);
+		border-color: transparent;
+		background: var(--gradient);
+		color: var(--accent-ink);
 	}
 
 	.blog-list__posts {
 		display: grid;
-		gap: 1.5rem;
+		gap: 1.1rem;
+		margin-top: 2rem;
 		padding: 0;
 		list-style: none;
 	}
 
-	.blog-list__posts h2 {
-		font-size: 1.25rem;
+	.blog-list__post {
+		padding: 1.75rem;
+		color: var(--muted);
+	}
+
+	.blog-list__post[hidden] {
+		display: none;
+	}
+
+	.blog-list__post h2 {
+		margin-bottom: 0.4rem;
+		font-size: 1.5rem;
+	}
+
+	.blog-list__post h2 a {
+		color: var(--text);
+		text-decoration: none;
+	}
+
+	.blog-list__post h2 a::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+	}
+
+	.blog-list__post:hover h2 a {
+		color: var(--accent);
 	}
 
 	.blog-list__meta {
-		opacity: 0.75;
-		font-size: 0.9rem;
+		margin-bottom: 0.6rem;
+		font-family: var(--font-heading);
+		font-size: 0.8rem;
 	}
 </style>

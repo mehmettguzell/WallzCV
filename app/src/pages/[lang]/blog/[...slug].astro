@@ -17,8 +17,8 @@ const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
 
 <Layout lang={lang} title={`${post.data.title} · WallzCV`} description={post.data.summary}>
 	<article class="post" lang={post.data.lang}>
-		<a href={`/${lang}/blog/`}>← {t(lang, 'blog.title')}</a>
-		<h1>{post.data.title}</h1>
+		<a class="post__back" href={`/${lang}/blog/`}>← {t(lang, 'blog.title')}</a>
+		<h1 class="gradient-text">{post.data.title}</h1>
 		<p class="post__meta">
 			<time datetime={post.data.date.toISOString()}>{date_format.format(post.data.date)}</time>
 			· {estimate_reading_minutes(post)} {t(lang, 'blog.reading_minutes')}
@@ -32,39 +32,77 @@ const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
 
 <style>
 	.post {
-		max-width: 44rem;
+		width: min(100% - 2rem, 46rem);
 		margin: 0 auto;
-		padding: 2rem 0;
+		padding-block: clamp(3rem, 7vw, 5rem);
+	}
+
+	.post__back {
+		font-family: var(--font-heading);
+		font-size: 0.85rem;
+		text-decoration: none;
 	}
 
 	.post h1 {
-		margin: 1rem 0 0.5rem;
-		color: var(--color-accent);
+		margin: 1.25rem 0 0.75rem;
+		font-size: clamp(2rem, 5.5vw, 3.2rem);
+		font-weight: 800;
 	}
 
 	.post__meta {
-		margin-bottom: 2rem;
-		opacity: 0.75;
-		font-size: 0.9rem;
+		margin-bottom: 2.5rem;
+		padding-bottom: 1.5rem;
+		border-bottom: 1px solid var(--border);
+		color: var(--muted);
+		font-family: var(--font-heading);
+		font-size: 0.82rem;
+	}
+
+	.post__body {
+		color: color-mix(in srgb, var(--text) 88%, var(--muted));
+		font-size: 1.08rem;
+		line-height: 1.8;
 	}
 
 	.post__body :global(h2),
 	.post__body :global(h3) {
-		margin: 2rem 0 0.75rem;
+		margin: 2.6rem 0 0.9rem;
+		color: var(--text);
 	}
 
 	.post__body :global(p),
 	.post__body :global(ul),
 	.post__body :global(ol) {
-		margin-bottom: 1rem;
+		margin-bottom: 1.2rem;
+	}
+
+	.post__body :global(ul),
+	.post__body :global(ol) {
+		padding-left: 1.4rem;
+	}
+
+	.post__body :global(code:not(pre code)) {
+		padding: 0.1em 0.4em;
+		border: 1px solid var(--border);
+		border-radius: 0.4rem;
+		background: var(--surface);
+		font-family: var(--font-heading);
+		font-size: 0.88em;
 	}
 
 	.post__body :global(pre) {
-		margin-bottom: 1rem;
-		padding: 1rem;
-		border-radius: 0.5rem;
+		margin-bottom: 1.5rem;
+		padding: 1.2rem;
+		border: 1px solid var(--border);
+		border-radius: 1rem;
 		overflow-x: auto;
 		font-size: 0.875rem;
+		line-height: 1.6;
+	}
+
+	.post__body :global(.pipeline-diagram) {
+		max-width: 28rem;
+		margin-bottom: 1.5rem;
 	}
 
 	:global(:root[data-theme='dark']) .post__body :global(.astro-code),

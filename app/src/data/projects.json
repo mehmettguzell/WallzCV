@@ -18,8 +18,24 @@
     ],
     "repository": "https://github.com/mehmettguzell/STOP",
     "pipeline": {
-      "en": ["push", "paths-filter", "build changed", "GHCR (Git SHA)", "SSM Run Command", "health check", "rollback if fail"],
-      "tr": ["push", "paths-filter", "değişeni build", "GHCR (Git SHA)", "SSM Run Command", "health check", "hata varsa rollback"]
+      "en": [
+        "push",
+        "paths-filter",
+        "build changed",
+        "GHCR (Git SHA)",
+        "SSM Run Command",
+        "health check",
+        "rollback if fail"
+      ],
+      "tr": [
+        "push",
+        "paths-filter",
+        "değişeni build",
+        "GHCR (Git SHA)",
+        "SSM Run Command",
+        "health check",
+        "hata varsa rollback"
+      ]
     },
     "highlights": [
       {
@@ -38,7 +54,11 @@
         "en": "CI/CD builds only changed services, pushes them to GHCR tagged with the Git SHA, and deploys to AWS EC2 without SSH via SSM Run Command, with automatic rollback on a failed health check.",
         "tr": "CI/CD yalnızca değişen servisleri build edip Git SHA etiketiyle GHCR'a gönderiyor, SSH kullanmadan SSM Run Command ile AWS EC2'ye deploy ediyor; health check başarısız olursa otomatik rollback yapılıyor."
       }
-    ]
+    ],
+    "plain": {
+      "en": "A football match organizing app. Players create and join matches, get notifications and chat. I built the whole server side as 5 small cooperating services.",
+      "tr": "Halı saha maç organizasyon uygulaması: oyuncular maç kurar, katılır, bildirim alır ve yazışır. Sunucu tarafının tamamını birbiriyle konuşan 5 küçük servis olarak yazdım."
+    }
   },
   {
     "slug": "devops-todo-app",
@@ -60,8 +80,26 @@
     ],
     "repository": "https://github.com/mehmettguzell/Devops-Todo-App",
     "pipeline": {
-      "en": ["push", "paths-filter", "test", "build matrix", "GHCR", "OIDC → IAM role", "SSM Run Command", "health check"],
-      "tr": ["push", "paths-filter", "test", "build matrisi", "GHCR", "OIDC → IAM role", "SSM Run Command", "health check"]
+      "en": [
+        "push",
+        "paths-filter",
+        "test",
+        "build matrix",
+        "GHCR",
+        "OIDC → IAM role",
+        "SSM Run Command",
+        "health check"
+      ],
+      "tr": [
+        "push",
+        "paths-filter",
+        "test",
+        "build matrisi",
+        "GHCR",
+        "OIDC → IAM role",
+        "SSM Run Command",
+        "health check"
+      ]
     },
     "highlights": [
       {
@@ -76,7 +114,11 @@
         "en": "Docker Compose with health checks, startup ordering, and resource limits; release-please generates versions and changelogs from Conventional Commits.",
         "tr": "Docker Compose ile health check, başlatma sırası ve kaynak limitleri; release-please Conventional Commits'ten versiyon ve changelog üretiyor."
       }
-    ]
+    ],
+    "plain": {
+      "en": "A simple to-do app used to show a full automated release flow: when code is pushed, it is tested, packaged and put online by itself, safely.",
+      "tr": "Basit bir yapılacaklar uygulaması üzerinden tam otomatik yayın hattı: kod gönderildiğinde kendiliğinden test edilir, paketlenir ve güvenle yayına alınır."
+    }
   },
   {
     "slug": "order-management",
@@ -104,7 +146,11 @@
         "en": "Nginx API Gateway for routing, rate limiting, and JWT authentication; services are isolated with a database-per-service design.",
         "tr": "Nginx API Gateway ile servis yönlendirme, rate limiting ve JWT authentication; servisler database-per-service olarak izole."
       }
-    ]
+    ],
+    "plain": {
+      "en": "The server side of an online shop: users, products, orders, stock and payment work as separate services that stay consistent with each other.",
+      "tr": "Online mağazanın sunucu tarafı: kullanıcı, ürün, sipariş, stok ve ödeme ayrı servisler olarak çalışıyor ve birbiriyle tutarlı kalıyor."
+    }
   },
   {
     "slug": "inventory-microservices",
@@ -134,6 +180,10 @@
         "en": "Integration tests with Testcontainers + RestAssured against real MySQL and MongoDB instances; OpenAPI documentation and a Next.js + TailwindCSS frontend that works through the gateway.",
         "tr": "Gerçek MySQL ve MongoDB instance'larına karşı Testcontainers + RestAssured ile integration test; OpenAPI dokümantasyonu ve gateway üzerinden çalışan Next.js + TailwindCSS frontend."
       }
-    ]
+    ],
+    "plain": {
+      "en": "A stock-tracking system split into small services, each using the database type that suits it best, with automated tests on real databases.",
+      "tr": "Küçük servislere bölünmüş stok takip sistemi; her servis kendine uygun veritabanını kullanıyor ve testler gerçek veritabanlarında çalışıyor."
+    }
   }
 ]

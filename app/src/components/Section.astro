@@ -1,27 +1,27 @@
 ---
 interface Props {
 	id: string;
+	eyebrow: string;
 	title: string;
+	lead?: string;
 }
 
-const { id, title } = Astro.props;
+const { id, eyebrow, title, lead } = Astro.props;
 ---
 
-<section class="cv-section" id={id} aria-labelledby={`${id}-title`}>
-	<h2 id={`${id}-title`}>{title}</h2>
-	<slot />
+<section class="section" id={id} aria-labelledby={`${id}-title`}>
+	<div class="container">
+		<header class="section__header" data-reveal>
+			<p class="eyebrow">{eyebrow}</p>
+			<h2 class="section__title" id={`${id}-title`}>{title}</h2>
+			{lead && <p class="section__lead">{lead}</p>}
+		</header>
+		<slot />
+	</div>
 </section>
 
 <style>
-	.cv-section {
-		max-width: 52rem;
-		margin: 0 auto;
-		padding: 2rem 0;
-		scroll-margin-top: 5rem;
-	}
-
-	.cv-section h2 {
-		margin-bottom: 1rem;
-		color: var(--color-accent);
+	.section__header {
+		margin-bottom: clamp(2rem, 5vw, 3.5rem);
 	}
 </style>

@@ -64,18 +64,19 @@ const accessible_label = `${label} (${steps.length}): ${steps.join(' → ')}`;
 	aria-label={accessible_label}
 >
 	{
-		connectors.map((connector) => (
+		connectors.map((connector, index) => (
 			<>
-				<path class="pipeline-diagram__line" d={connector.line} />
+				<path class="pipeline-diagram__line" d={connector.line} style={`--i:${index}`} />
 				<polygon class="pipeline-diagram__head" points={connector.head} />
 			</>
 		))
 	}
 	{
-		boxes.map((box) => (
+		boxes.map((box, index) => (
 			<>
 				<rect
 					class="pipeline-diagram__box"
+					style={`--i:${index}`}
 					x={box.x}
 					y={box.y}
 					width={box_width}
@@ -102,13 +103,15 @@ const accessible_label = `${label} (${steps.length}): ${steps.join(' → ')}`;
 	}
 
 	.pipeline-diagram__box {
-		fill: color-mix(in srgb, var(--color-accent) 15%, transparent);
-		stroke: var(--color-accent);
+		fill: color-mix(in srgb, var(--accent) 10%, transparent);
+		stroke: color-mix(in srgb, var(--accent) 55%, transparent);
 		stroke-width: 1;
+		animation: stage-glow 6s ease-in-out infinite;
+		animation-delay: calc(var(--i) * 0.6s);
 	}
 
 	.pipeline-diagram__text {
-		fill: var(--color-text);
+		fill: var(--text);
 		font-size: 12px;
 		text-anchor: middle;
 		dominant-baseline: central;
@@ -116,11 +119,37 @@ const accessible_label = `${label} (${steps.length}): ${steps.join(' → ')}`;
 
 	.pipeline-diagram__line {
 		fill: none;
-		stroke: var(--color-accent);
+		stroke: var(--accent);
 		stroke-width: 1.5;
+		stroke-dasharray: 4 4;
+		animation: flow 1s linear infinite;
 	}
 
 	.pipeline-diagram__head {
-		fill: var(--color-accent);
+		fill: var(--accent);
+	}
+
+	@keyframes flow {
+		to {
+			stroke-dashoffset: -8;
+		}
+	}
+
+	@keyframes stage-glow {
+		0%,
+		12%,
+		100% {
+			fill: color-mix(in srgb, var(--accent) 10%, transparent);
+		}
+		5% {
+			fill: color-mix(in srgb, var(--accent) 45%, transparent);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.pipeline-diagram__box,
+		.pipeline-diagram__line {
+			animation: none;
+		}
 	}
 </style>

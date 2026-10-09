@@ -20,7 +20,7 @@ const canonical_url = new URL(Astro.url.pathname, Astro.site);
 const share_image_url = new URL('/og.png', Astro.site);
 ---
 
-<html lang={lang}>
+<html lang={lang} id="top">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -47,16 +47,240 @@ const share_image_url = new URL('/og.png', Astro.site);
 					theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
 				}
 				document.documentElement.dataset.theme = theme;
+				document.documentElement.classList.add('js');
 			})();
 		</script>
 	</head>
 	<body>
+		<a class="skip-link" href="#main">{t(lang, 'a11y.skip_to_content')}</a>
+		<div class="backdrop" aria-hidden="true">
+			<span class="backdrop__blob backdrop__blob--a"></span>
+			<span class="backdrop__blob backdrop__blob--b"></span>
+			<span class="backdrop__blob backdrop__blob--c"></span>
+			<span class="backdrop__grid"></span>
+		</div>
+		<div class="cursor-glow" aria-hidden="true"></div>
+		<div class="scroll-progress" aria-hidden="true"></div>
 		<Header lang={lang} />
-		<main class="site-main">
+		<main class="site-main" id="main" tabindex="-1">
 			<slot />
 		</main>
 		<footer class="site-footer">
-			<small>&copy; WallzCV · {t(lang, 'footer.note')}</small>
+			<div class="container site-footer__inner">
+				<span class="site-footer__brand">Mehmet Güzel</span>
+				<small>&copy; {new Date().getFullYear()} · {t(lang, 'footer.note')}</small>
+				<a href="#top" class="site-footer__top">↑</a>
+			</div>
 		</footer>
 	</body>
 </html>
+
+<script>
+	const reduced_motion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const fine_pointer = matchMedia('(pointer: fine)').matches;
+
+	const reveal_observer = new IntersectionObserver(
+		(entries) => {
+			for (const entry of entries) {
+				if (!entry.isIntersecting) continue;
+				entry.target.classList.add('is-visible');
+				reveal_observer.unobserve(entry.target);
+			}
+		},
+		{ threshold: 0.12, rootMargin: '0px 0px -6% 0px' },
+	);
+	document.querySelectorAll('[data-reveal]').forEach((element) => reveal_observer.observe(element));
+
+	const progress_bar = document.querySelector<HTMLElement>('.scroll-progress');
+	const update_progress = () => {
+		const scrollable = document.documentElement.scrollHeight - innerHeight;
+		const fraction = scrollable > 0 ? scrollY / scrollable : 0;
+		progress_bar?.style.setProperty('--progress', fraction.toFixed(4));
+	};
+	addEventListener('scroll', update_progress, { passive: true });
+	update_progress();
+
+	if (fine_pointer) {
+		const cursor_glow = document.querySelector<HTMLElement>('.cursor-glow');
+		addEventListener(
+			'pointermove',
+			(event) => {
+				cursor_glow?.style.setProperty('transform', `translate(${event.clientX}px, ${event.clientY}px)`);
+				cursor_glow?.classList.add('is-active');
+				const spot = (event.target as Element | null)?.closest<HTMLElement>('.spot');
+				if (spot) {
+					const box = spot.getBoundingClientRect();
+					spot.style.setProperty('--mx', `${event.clientX - box.left}px`);
+					spot.style.setProperty('--my', `${event.clientY - box.top}px`);
+				}
+			},
+			{ passive: true },
+		);
+
+		if (!reduced_motion) {
+			document.querySelectorAll<HTMLElement>('[data-tilt]').forEach((card) => {
+				card.addEventListener('pointermove', (event) => {
+					const box = card.getBoundingClientRect();
+					const x = (event.clientX - box.left) / box.width - 0.5;
+					const y = (event.clientY - box.top) / box.height - 0.5;
+					card.style.transform = `perspective(900px) rotateX(${(-y * 5).toFixed(2)}deg) rotateY(${(x * 6).toFixed(2)}deg) translateY(-4px)`;
+				});
+				card.addEventListener('pointerleave', () => {
+					card.style.transform = '';
+				});
+			});
+		}
+	}
+</script>
+
+<style is:global>
+	.backdrop {
+		position: fixed;
+		inset: 0;
+		z-index: 0;
+		overflow: hidden;
+		pointer-events: none;
+	}
+
+	.backdrop__blob {
+		position: absolute;
+		width: 46vmax;
+		height: 46vmax;
+		border-radius: 50%;
+		filter: blur(90px);
+		opacity: var(--blob-opacity);
+		will-change: transform;
+	}
+
+	.backdrop__blob--a {
+		top: -18vmax;
+		left: -12vmax;
+		background: radial-gradient(circle, var(--accent), transparent 65%);
+		animation: drift-a 22s ease-in-out infinite alternate;
+	}
+
+	.backdrop__blob--b {
+		top: 18vmax;
+		right: -20vmax;
+		background: radial-gradient(circle, var(--accent-2), transparent 65%);
+		animation: drift-b 26s ease-in-out infinite alternate;
+	}
+
+	.backdrop__blob--c {
+		bottom: -24vmax;
+		left: 18vmax;
+		background: radial-gradient(circle, var(--accent-3), transparent 65%);
+		opacity: calc(var(--blob-opacity) * 0.6);
+		animation: drift-a 30s ease-in-out infinite alternate-reverse;
+	}
+
+	.backdrop__grid {
+		position: absolute;
+		inset: 0;
+		background-image:
+			linear-gradient(var(--grid-line) 1px, transparent 1px),
+			linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+		background-size: 56px 56px;
+		mask-image: radial-gradient(ellipse at 50% 30%, #000 20%, transparent 75%);
+		-webkit-mask-image: radial-gradient(ellipse at 50% 30%, #000 20%, transparent 75%);
+	}
+
+	@keyframes drift-a {
+		to {
+			transform: translate(12vmax, 8vmax) scale(1.15);
+		}
+	}
+
+	@keyframes drift-b {
+		to {
+			transform: translate(-14vmax, 6vmax) scale(0.9);
+		}
+	}
+
+	.cursor-glow {
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 0;
+		width: 0;
+		height: 0;
+		pointer-events: none;
+	}
+
+	.cursor-glow::before {
+		content: '';
+		position: absolute;
+		width: 30rem;
+		height: 30rem;
+		margin: -15rem 0 0 -15rem;
+		border-radius: 50%;
+		background: radial-gradient(circle, color-mix(in srgb, var(--accent) 14%, transparent), transparent 65%);
+		opacity: 0;
+		transition: opacity 0.4s ease;
+	}
+
+	.cursor-glow.is-active::before {
+		opacity: 1;
+	}
+
+	.scroll-progress {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 60;
+		height: 3px;
+		background: var(--gradient);
+		transform: scaleX(var(--progress, 0));
+		transform-origin: left;
+	}
+
+	.site-footer {
+		position: relative;
+		z-index: 1;
+		border-top: 1px solid var(--border);
+		color: var(--muted);
+	}
+
+	.site-footer__inner {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding-block: 2rem;
+	}
+
+	.site-footer__brand {
+		color: var(--text);
+		font-family: var(--font-heading);
+		font-weight: 700;
+	}
+
+	.site-footer__top {
+		display: grid;
+		place-items: center;
+		width: 2.5rem;
+		height: 2.5rem;
+		border: 1px solid var(--border);
+		border-radius: 50%;
+		color: var(--text);
+		text-decoration: none;
+		transition: border-color 0.2s ease, transform 0.2s ease;
+	}
+
+	.site-footer__top:hover {
+		border-color: var(--accent);
+		transform: translateY(-3px);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.backdrop__blob {
+			animation: none;
+		}
+
+		.scroll-progress {
+			transition: none;
+		}
+	}
+</style>

@@ -1,0 +1,628 @@
+---
+import Wallz from './Wallz.astro';
+import contact from '../data/contact.json';
+import { t, type Language } from '../i18n';
+
+interface Props {
+	lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const roles = t(lang, 'hero.roles').split('|');
+const stats = [
+	{ value: 2, suffix: '', label: t(lang, 'stats.cve') },
+	{ value: 4, suffix: '', label: t(lang, 'stats.topics') },
+	{ value: 1, suffix: '', label: t(lang, 'stats.services') },
+	{ value: 2026, suffix: '', label: t(lang, 'stats.ssh') },
+];
+const glance_rows = (['looking', 'where', 'edu', 'exp', 'stack', 'langs'] as const).map((key) => ({
+	label: t(lang, `glance.${key}`),
+	value: t(lang, `glance.${key}_value`),
+}));
+---
+
+<section class="hero" aria-labelledby="hero-title">
+	<div class="container hero__grid">
+		<div class="hero__copy">
+			<p class="hero__badge glass" data-reveal>
+				<span class="hero__pulse" aria-hidden="true"></span>
+				{t(lang, 'hero.available')}
+			</p>
+			<p class="hero__greeting" data-reveal style="--delay: 80ms">{t(lang, 'hero.greeting')}</p>
+			<h1 id="hero-title" class="hero__name" data-reveal style="--delay: 140ms">
+				<span class="gradient-text">Mehmet Güzel</span>
+			</h1>
+			<p class="hero__role" data-reveal style="--delay: 220ms" data-roles={JSON.stringify(roles)}>
+				<span class="hero__role-text">{roles[0]}</span><span class="hero__caret" aria-hidden="true"></span>
+			</p>
+			<p class="hero__lead" data-reveal style="--delay: 300ms">{t(lang, 'hero.lead')}</p>
+			<div class="hero__actions" data-reveal style="--delay: 380ms">
+				<a class="btn btn--primary" href={lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pdf'} download>{t(lang, 'hero.cta_projects')} <span aria-hidden="true">↓</span></a>
+				<a class="btn" href={`mailto:${contact.email}`}>{t(lang, 'hero.cta_contact')}</a>
+				<a class="btn" href={`/${lang}/#projects`}>{t(lang, 'nav.projects')} →</a>
+			</div>
+		</div>
+
+		<div class="hero__visual" data-reveal style="--delay: 260ms">
+			<button type="button" class="hero__wallz" data-state="idle" aria-label={t(lang, 'wallz.label')} data-fallen-status={t(lang, 'wallz.fallen_status')}>
+				<Wallz />
+			</button>
+			<span class="hero__hint" aria-hidden="true">{t(lang, 'wallz.hint')}</span>
+			<p class="hero__wallz-status" role="status"></p>
+
+			<div class="terminal glass" data-tilt>
+				<div class="terminal__bar" aria-hidden="true">
+					<span></span><span></span><span></span>
+					<b>{t(lang, 'glance.title')}</b>
+				</div>
+				<div class="glance">
+					<p class="glance__command"><span class="terminal__prompt">$</span><span data-type>cat profile.txt</span></p>
+					<dl class="glance__list">
+						{
+							glance_rows.map((row) => (
+								<div class="glance__row">
+									<dt>{row.label}</dt>
+									<dd data-type>{row.value}</dd>
+								</div>
+							))
+						}
+					</dl>
+					<p class="glance__command glance__idle"><span class="terminal__prompt">$</span><span class="hero__caret" aria-hidden="true"></span></p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+		<dl class="stats glass" data-reveal>
+			{
+				stats.map((stat) => (
+					<div class="stats__item">
+						<dt>
+							<span class="stats__value" data-count={stat.value}>{stat.value}</span>
+							{stat.suffix}
+						</dt>
+						<dd>{stat.label}</dd>
+					</div>
+				))
+			}
+		</dl>
+	</div>
+
+</section>
+
+<script>
+	import { gsap } from 'gsap';
+
+	const reduced_motion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	const role_element = document.querySelector<HTMLElement>('.hero__role');
+	const role_text = role_element?.querySelector<HTMLElement>('.hero__role-text');
+	const roles: string[] = JSON.parse(role_element?.dataset.roles ?? '[]');
+
+	if (role_text && roles.length > 1 && !reduced_motion) {
+		const typing_ms = 55;
+		const erasing_ms = 28;
+		const pause_ms = 1700;
+		let role_index = 0;
+		let characters = roles[0].length;
+		let erasing = true;
+
+		const step = () => {
+			const role = roles[role_index];
+			characters += erasing ? -1 : 1;
+			role_text.textContent = role.slice(0, characters);
+			let delay = erasing ? erasing_ms : typing_ms;
+			if (!erasing && characters === role.length) {
+				erasing = true;
+				delay = pause_ms;
+			} else if (erasing && characters === 0) {
+				erasing = false;
+				role_index = (role_index + 1) % roles.length;
+				delay = 250;
+			}
+			setTimeout(step, delay);
+		};
+		setTimeout(step, pause_ms);
+	}
+
+	const stats_values = document.querySelectorAll<HTMLElement>('[data-count]');
+
+	if (!reduced_motion) {
+
+		const count_observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (!entry.isIntersecting) continue;
+					const element = entry.target as HTMLElement;
+					const counter = { value: 0 };
+					gsap.to(counter, {
+						value: Number(element.dataset.count),
+						duration: 1.6,
+						ease: 'power2.out',
+						onUpdate: () => (element.textContent = String(Math.round(counter.value))),
+					});
+					count_observer.unobserve(element);
+				}
+			},
+			{ threshold: 0.6 },
+		);
+		stats_values.forEach((value) => {
+			value.textContent = '0';
+			count_observer.observe(value);
+		});
+	}
+
+	const typed_elements = [...document.querySelectorAll<HTMLElement>('.glance [data-type]')];
+	const idle_prompt = document.querySelector<HTMLElement>('.glance__idle');
+
+	if (typed_elements.length > 0 && !reduced_motion) {
+		const characters_per_second = 55;
+		const start_delay_ms = 600;
+		const final_texts = typed_elements.map((element) => element.textContent ?? '');
+		const rows = typed_elements.map((element) => element.closest<HTMLElement>('.glance__row'));
+		typed_elements.forEach((element) => (element.textContent = ''));
+		rows.forEach((row) => row?.setAttribute('hidden', ''));
+		idle_prompt?.setAttribute('hidden', '');
+
+		const type_next = (index: number) => {
+			if (index >= typed_elements.length) {
+				idle_prompt?.removeAttribute('hidden');
+				return;
+			}
+			rows[index]?.removeAttribute('hidden');
+			const text = final_texts[index];
+			let typed = 0;
+			const timer = setInterval(() => {
+				typed += 1;
+				typed_elements[index].textContent = text.slice(0, typed);
+				if (typed >= text.length) {
+					clearInterval(timer);
+					setTimeout(() => type_next(index + 1), 120);
+				}
+			}, 1000 / characters_per_second);
+		};
+		setTimeout(() => type_next(0), start_delay_ms);
+	}
+
+	const wallz_button = document.querySelector<HTMLButtonElement>('.hero__wallz');
+	const wallz_status = document.querySelector<HTMLElement>('.hero__wallz-status');
+
+	if (wallz_button && wallz_status && !reduced_motion) {
+		const crying_seconds = 2.5;
+		const fall_degrees = 35;
+		const sad_mouth = 'M174 92Q184 78 194 92Z';
+		const leg_swing_degrees = 22;
+		const half_stride_seconds = 0.3;
+		const max_run_speed = 3;
+		const scroll_pixels_per_second_for_normal_run = 900;
+		const eye_travel_pixels = 3;
+		const diagonal_a = ['#wallz-leg-fl', '#wallz-leg-br'];
+		const diagonal_b = ['#wallz-leg-fr', '#wallz-leg-bl'];
+		const front_legs = ['#wallz-leg-fl', '#wallz-leg-fr'];
+		const back_legs = ['#wallz-leg-bl', '#wallz-leg-br'];
+
+		type WallzState = 'idle' | 'falling' | 'crying' | 'getting-up';
+		let wallz_state: WallzState = 'idle';
+		let get_up_call: gsap.core.Tween | undefined;
+
+		gsap.set([...diagonal_a, ...diagonal_b], { transformOrigin: '50% 0%' });
+		gsap.set('#wallz-tail', { transformOrigin: '100% 50%' });
+
+		// Wallz trots in place whenever the page is scrolled, then settles.
+		const run_cycle = gsap.timeline({ repeat: -1, defaults: { ease: 'sine.inOut' } });
+		for (const [half_stride_index, swing] of [leg_swing_degrees, -leg_swing_degrees].entries()) {
+			const start = half_stride_index * half_stride_seconds;
+			run_cycle
+				.fromTo(diagonal_a, { rotation: -swing }, { rotation: swing, duration: half_stride_seconds }, start)
+				.fromTo(diagonal_b, { rotation: swing }, { rotation: -swing, duration: half_stride_seconds }, start)
+				.to('#wallz-tail', { rotation: swing / 2, duration: half_stride_seconds }, start);
+		}
+		run_cycle.timeScale(0);
+
+		gsap.to('.hero__wallz', { y: -6, duration: 1.6, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+		gsap.to('#wallz-tail', { rotation: 10, duration: 0.5, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+
+		let last_scroll_y = scrollY;
+		let last_scroll_time = performance.now();
+		let scroll_speed = 0;
+		addEventListener(
+			'scroll',
+			() => {
+				const now = performance.now();
+				const elapsed = Math.max(now - last_scroll_time, 1);
+				scroll_speed = (Math.abs(scrollY - last_scroll_y) / elapsed) * 1000;
+				last_scroll_y = scrollY;
+				last_scroll_time = now;
+			},
+			{ passive: true },
+		);
+
+		const run_with_scroll = () => {
+			if (wallz_state !== 'idle') return;
+			scroll_speed *= 0.9;
+			const target = Math.min(scroll_speed / scroll_pixels_per_second_for_normal_run, max_run_speed);
+			const eased = run_cycle.timeScale() + (target - run_cycle.timeScale()) * 0.15;
+			run_cycle.timeScale(eased < 0.01 ? 0 : eased);
+		};
+		gsap.ticker.add(run_with_scroll);
+
+		addEventListener(
+			'pointermove',
+			(event) => {
+				if (wallz_state !== 'idle') return;
+				const box = wallz_button.getBoundingClientRect();
+				const dx = (event.clientX - (box.left + box.width * 0.8)) / innerWidth;
+				const dy = (event.clientY - (box.top + box.height * 0.4)) / innerHeight;
+				gsap.to('#wallz-eyes', {
+					x: gsap.utils.clamp(-1, 1, dx * 3) * eye_travel_pixels,
+					y: gsap.utils.clamp(-1, 1, dy * 3) * eye_travel_pixels,
+					duration: 0.4,
+				});
+			},
+			{ passive: true },
+		);
+
+		const set_state = (next: WallzState) => {
+			wallz_state = next;
+			wallz_button.dataset.state = next;
+		};
+
+		const fall = gsap.timeline({ paused: true, onComplete: start_crying, onReverseComplete: () => set_state('idle') });
+		fall
+			.to('.wallz', { rotation: -fall_degrees, transformOrigin: '25% 100%', duration: 0.7, ease: 'bounce.out' }, 0)
+			.to(front_legs, { rotation: -55, duration: 0.4, ease: 'power2.out' }, 0)
+			.to(back_legs, { rotation: -75, duration: 0.4, ease: 'power2.out' }, 0)
+			.to('#wallz-mouth', { attr: { d: sad_mouth }, duration: 0.2 }, 0.3)
+			.to('#wallz-tongue', { opacity: 0, duration: 0.1 }, 0.3)
+			.to('#wallz-eyes', { scaleY: 0.6, x: 0, y: 0, transformOrigin: '50% 50%', duration: 0.2 }, 0.3);
+
+		const cry = gsap.timeline({ paused: true, repeat: -1 });
+		cry
+			.fromTo('#wallz-tears path', { y: 0, opacity: 0.9 }, { y: 18, opacity: 0, duration: 0.8, ease: 'power1.in', stagger: 0.4, immediateRender: false }, 0)
+			.to('#wallz-head', { y: 1.5, duration: 0.12, yoyo: true, repeat: 5, ease: 'sine.inOut' }, 0);
+
+		function start_crying() {
+			set_state('crying');
+			cry.play(0);
+			get_up_call = gsap.delayedCall(crying_seconds, get_up);
+		}
+
+		function get_up() {
+			set_state('getting-up');
+			cry.pause();
+			gsap.set('#wallz-tears path', { opacity: 0 });
+			gsap.set('#wallz-head', { y: 0 });
+			wallz_status.textContent = '';
+			fall.reverse();
+		}
+
+		wallz_button.addEventListener('click', () => {
+			if (wallz_state !== 'idle') return;
+			set_state('falling');
+			run_cycle.timeScale(0);
+			wallz_status.textContent = wallz_button.dataset.fallenStatus ?? '';
+			get_up_call?.kill();
+			fall.invalidate().play(0);
+		});
+	}
+</script>
+
+<style>
+	.hero {
+		position: relative;
+		padding-top: clamp(3rem, 8vw, 6rem);
+		padding-bottom: 3rem;
+	}
+
+	.hero__grid {
+		display: grid;
+		align-items: center;
+		gap: clamp(2.5rem, 6vw, 5rem);
+	}
+
+	@media (min-width: 62rem) {
+		.hero__grid {
+			grid-template-columns: 1.1fr 0.9fr;
+		}
+	}
+
+	.hero__badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.4rem 1rem;
+		border-radius: 999px;
+		color: var(--muted);
+		font-size: 0.85rem;
+		box-shadow: none;
+	}
+
+	.hero__pulse {
+		width: 0.55rem;
+		height: 0.55rem;
+		border-radius: 50%;
+		background: var(--accent);
+		box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 70%, transparent);
+		animation: pulse 2s infinite;
+	}
+
+	@keyframes pulse {
+		to {
+			box-shadow: 0 0 0 0.7rem transparent;
+		}
+	}
+
+	.hero__greeting {
+		margin-top: 1.75rem;
+		color: var(--muted);
+		font-family: var(--font-heading);
+		font-size: 1.1rem;
+	}
+
+	.hero__name {
+		font-size: clamp(2.8rem, 8.5vw, 6rem);
+		font-weight: 800;
+		letter-spacing: -0.04em;
+		line-height: 1.02;
+	}
+
+	.hero__role {
+		min-height: 2.2rem;
+		margin-top: 0.75rem;
+		font-family: var(--font-heading);
+		font-size: clamp(1.15rem, 2.6vw, 1.7rem);
+		font-weight: 500;
+	}
+
+	.hero__caret {
+		display: inline-block;
+		width: 0.6ch;
+		height: 1.1em;
+		margin-left: 2px;
+		vertical-align: text-bottom;
+		background: var(--accent);
+		animation: blink 1s steps(1) infinite;
+	}
+
+	@keyframes blink {
+		50% {
+			opacity: 0;
+		}
+	}
+
+	.hero__lead {
+		max-width: 46ch;
+		margin-top: 1.5rem;
+		color: var(--muted);
+		font-size: 1.15rem;
+	}
+
+	.hero__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.9rem;
+		margin-top: 2.2rem;
+	}
+
+	.hero__visual {
+		position: relative;
+		padding-top: 5.5rem;
+	}
+
+	.hero__wallz {
+		position: absolute;
+		top: 0;
+		right: 8%;
+		z-index: 2;
+		width: clamp(8rem, 18vw, 10.5rem);
+		padding: 0;
+		border: 0;
+		background: none;
+		cursor: pointer;
+		filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.35));
+	}
+
+	.hero__hint {
+		position: absolute;
+		top: 0.2rem;
+		right: calc(8% + clamp(8rem, 18vw, 10.5rem) + 0.5rem);
+		display: none;
+		color: var(--muted);
+		font-family: var(--font-heading);
+		font-size: 0.75rem;
+		white-space: nowrap;
+	}
+
+	@media (min-width: 40rem) {
+		.hero__hint {
+			display: block;
+		}
+	}
+
+	.hero__wallz-status {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+	}
+
+	.terminal {
+		overflow: hidden;
+		transition: transform 0.2s ease-out;
+		background: color-mix(in srgb, var(--bg) 70%, transparent);
+	}
+
+	.terminal__bar {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+		padding: 0.75rem 1rem;
+		border-bottom: 1px solid var(--border);
+	}
+
+	.terminal__bar span {
+		width: 0.7rem;
+		height: 0.7rem;
+		border-radius: 50%;
+		background: #ff5f57;
+	}
+
+	.terminal__bar span:nth-child(2) {
+		background: #febc2e;
+	}
+
+	.terminal__bar span:nth-child(3) {
+		background: #28c840;
+	}
+
+	.terminal__bar b {
+		margin-left: auto;
+		color: var(--muted);
+		font: 500 0.75rem var(--font-heading);
+	}
+
+	.glance {
+		min-height: 22rem;
+		padding: 1.25rem 1.25rem 1.5rem;
+		font: 400 0.88rem/1.6 var(--font-heading);
+	}
+
+	.glance__command {
+		display: flex;
+		align-items: center;
+		font-weight: 700;
+	}
+
+	.glance__command[hidden],
+	.glance__row[hidden] {
+		display: none;
+	}
+
+	.glance__list {
+		display: grid;
+		gap: 0.7rem;
+		margin: 1rem 0;
+	}
+
+	.glance__row {
+		display: grid;
+		gap: 0.1rem;
+	}
+
+	@media (min-width: 36rem) {
+		.glance__row {
+			grid-template-columns: 7.5rem 1fr;
+			gap: 1rem;
+		}
+	}
+
+	.glance dt {
+		color: var(--accent-2);
+	}
+
+	.glance dt::after {
+		content: ' ›';
+		color: var(--muted);
+	}
+
+	.glance dd {
+		color: var(--text);
+		overflow-wrap: anywhere;
+	}
+
+	.terminal__body {
+		display: grid;
+		gap: 0.55rem;
+		min-height: 15.5rem;
+		padding: 1.25rem 1.25rem 1.5rem;
+		list-style: none;
+		font: 400 0.85rem/1.5 var(--font-heading);
+	}
+
+	.terminal__line {
+		overflow-wrap: anywhere;
+	}
+
+	.terminal__prompt {
+		margin-right: 0.6rem;
+		color: var(--accent-2);
+	}
+
+	.terminal__tick {
+		margin-right: 0.6rem;
+		color: var(--accent);
+	}
+
+	.terminal__line--command {
+		color: var(--text);
+		font-weight: 700;
+	}
+
+	.terminal__line--ok {
+		color: var(--muted);
+	}
+
+	.terminal__line--done {
+		color: var(--accent);
+		font-weight: 700;
+	}
+
+	.stats {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		margin-top: clamp(3rem, 7vw, 5rem);
+		padding: 0;
+	}
+
+	@media (min-width: 48rem) {
+		.stats {
+			grid-template-columns: repeat(4, 1fr);
+		}
+	}
+
+	.stats__item {
+		padding: 1.6rem 1.25rem;
+		text-align: center;
+	}
+
+	.stats__item + .stats__item {
+		border-left: 1px solid var(--border);
+	}
+
+	.stats__item:nth-child(3) {
+		border-left: 0;
+	}
+
+	@media (min-width: 48rem) {
+		.stats__item:nth-child(3) {
+			border-left: 1px solid var(--border);
+		}
+	}
+
+	.stats dt {
+		background: var(--gradient);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		font-size: clamp(2.2rem, 5vw, 3.2rem);
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		line-height: 1.1;
+	}
+
+	.stats dd {
+		margin-top: 0.3rem;
+		color: var(--muted);
+		font-size: 0.88rem;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.hero__pulse,
+		.hero__caret {
+			animation: none;
+		}
+	}
+</style>

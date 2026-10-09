@@ -13,3 +13,20 @@ const other_language_path = Astro.url.pathname.replace(`/${lang}`, `/${other_lan
 <a class="language-switch" href={other_language_path} hreflang={other_language} lang={other_language}>
 	{t(lang, 'lang.switch')}
 </a>
+
+<style>
+	.language-switch {
+		padding: 0.4rem 0.8rem;
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		color: var(--text);
+		font-size: 0.85rem;
+		font-weight: 600;
+		text-decoration: none;
+		transition: border-color 0.2s ease;
+	}
+
+	.language-switch:hover {
+		border-color: var(--accent);
+	}
+</style>

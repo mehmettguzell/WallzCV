@@ -1,12 +1,13 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import World from '../../components/World.astro';
-import Hand from '../../components/Hand.astro';
+import Hero from '../../components/Hero.astro';
+import Marquee from '../../components/Marquee.astro';
 import Section from '../../components/Section.astro';
 import ExperienceItem from '../../components/ExperienceItem.astro';
 import SkillGroup from '../../components/SkillGroup.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
 import { languages, t, type Language } from '../../i18n';
+import { estimate_reading_minutes, get_published_posts_newest_first } from '../../lib/blog';
 import experience from '../../data/experience.json';
 import projects from '../../data/projects.json';
 import skills from '../../data/skills.json';
@@ -18,23 +19,47 @@ export function getStaticPaths() {
 }
 
 const lang = Astro.params.lang as Language;
+const latest_posts = (await get_published_posts_newest_first()).slice(0, 3);
+const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
+
+const all_skills = skills.flatMap((group) => group.skills).map((skill) => skill.replace(/\s*\(.*\)$/, ''));
+const marquee_rows = [all_skills.filter((_, index) => index % 2 === 0), all_skills.filter((_, index) => index % 2 === 1)];
+const focus_areas = ['Backend', 'Distributed Systems', 'DevOps', 'AppSec'];
 ---
 
 <Layout lang={lang} title={t(lang, 'home.title')} description={t(lang, 'meta.home_description')}>
-	<Hand lang={lang} variant="honey" />
-	<World lang={lang}>
-		<Section id="about" title={t(lang, 'about.title')}>
-			<h1>Mehmet Güzel</h1>
-			<p class="tagline">{t(lang, 'about.tagline')}</p>
-			<p>{t(lang, 'about.summary')}</p>
-			<ul class="contact-links">
-				<li><a href={`mailto:${contact.email}`}>{t(lang, 'about.email')}</a></li>
-				<li><a href={contact.linkedin} rel="noopener">LinkedIn</a></li>
-				<li><a href={contact.github} rel="noopener">GitHub</a></li>
-			</ul>
-		</Section>
+	<Hero lang={lang} />
 
-		<Section id="experience" title={t(lang, 'experience.title')}>
+	<Marquee label={t(lang, 'marquee.label')} rows={marquee_rows} />
+
+	<Section id="about" eyebrow={t(lang, 'about.eyebrow')} title={t(lang, 'about.heading')}>
+		<div class="bento">
+			<article class="bento__summary glass spot" data-reveal>
+				<p class="bento__tagline">{t(lang, 'about.tagline')}</p>
+				<p>{t(lang, 'about.summary')}</p>
+			</article>
+			<article class="bento__card glass spot" data-reveal style="--delay: 80ms">
+				<p class="bento__label">Focus</p>
+				<ul class="bento__focus">
+					{focus_areas.map((area) => <li class="chip">{area}</li>)}
+				</ul>
+			</article>
+			<article class="bento__card glass spot" data-reveal style="--delay: 140ms">
+				<p class="bento__label">{education.degrees[0].institution[lang]}</p>
+				<p class="bento__big">3.11<small>/4.00</small></p>
+				<p class="bento__note">{education.degrees[0].period[lang]}</p>
+			</article>
+			<article class="bento__card bento__card--cve glass spot" data-reveal style="--delay: 200ms">
+				<p class="bento__label">Responsible disclosure</p>
+				<p class="bento__big gradient-text">CVE-2025-1301</p>
+				<p class="bento__note">Stored XSS · Privia Security</p>
+			</article>
+		</div>
+	</Section>
+
+	<Section id="experience" eyebrow={t(lang, 'experience.eyebrow')} title={t(lang, 'experience.heading')}>
+		<div class="timeline">
+			<span class="timeline__rail" aria-hidden="true"><span class="timeline__fill"></span></span>
 			{
 				experience.map((item) => (
 					<ExperienceItem
@@ -46,87 +71,387 @@ const lang = Astro.params.lang as Language;
 					/>
 				))
 			}
-		</Section>
+		</div>
+	</Section>
 
-		<Section id="projects" title={t(lang, 'projects.title')}>
-			<div class="project-grid">
-				{
-					projects.map((project) => (
-						<ProjectCard
-							slug={project.slug}
-							name={project.name}
-							summary={project.summary[lang]}
-							technologies={project.technologies}
-							repository={project.repository}
-							highlights={project.highlights.map((highlight) => highlight[lang])}
-							pipeline_steps={'pipeline' in project ? project.pipeline[lang] : undefined}
-							pipeline_label={t(lang, 'projects.pipeline_label')}
-						/>
-					))
-				}
-			</div>
-		</Section>
+	<Section id="projects" eyebrow={t(lang, 'projects.eyebrow')} title={t(lang, 'projects.heading')} lead={t(lang, 'projects.lead')}>
+		<div class="project-grid">
+			{
+				projects.map((project, index) => (
+					<ProjectCard
+						slug={project.slug}
+						index={index}
+						name={project.name}
+						summary={project.summary[lang]}
+						plain={project.plain[lang]}
+						plain_label={t(lang, 'projects.plain')}
+						technologies={project.technologies}
+						repository={project.repository}
+						highlights={project.highlights.map((highlight) => highlight[lang])}
+						pipeline_steps={'pipeline' in project ? project.pipeline[lang] : undefined}
+						pipeline_label={t(lang, 'projects.pipeline_label')}
+						details_label={t(lang, 'projects.details')}
+						repository_label={t(lang, 'projects.repository')}
+					/>
+				))
+			}
+		</div>
+	</Section>
 
-		<Section id="skills" title={t(lang, 'skills.title')}>
-			{skills.map((group) => <SkillGroup label={group.label[lang]} skills={group.skills} />)}
-		</Section>
+	<Section id="skills" eyebrow={t(lang, 'skills.eyebrow')} title={t(lang, 'skills.heading')}>
+		<div class="skill-grid">
+			{skills.map((group, index) => <SkillGroup label={group.label[lang]} skills={group.skills} index={index} />)}
+		</div>
+	</Section>
 
-		<Section id="education" title={t(lang, 'education.title')}>
+	<Section id="education" eyebrow={t(lang, 'education.eyebrow')} title={t(lang, 'education.heading')}>
+		<div class="education-grid">
 			{
 				education.degrees.map((degree) => (
-					<article>
+					<article class="glass spot education-card" data-reveal>
+						<p class="bento__label">{t(lang, 'education.title')}</p>
 						<h3>{degree.institution[lang]}</h3>
 						<p>{degree.program[lang]}</p>
-						<p class="meta">
+						<p class="bento__note">
 							{degree.period[lang]} · {degree.location[lang]}
 						</p>
 					</article>
 				))
 			}
-		</Section>
+			{
+				education.achievements.map((achievement, index) => (
+					<article class="glass spot education-card" data-reveal style={`--delay: ${(index + 1) * 90}ms`}>
+						<p class="bento__label">{achievement.label[lang]}</p>
+						<p>{achievement.text[lang]}</p>
+					</article>
+				))
+			}
+		</div>
+	</Section>
 
-		<Section id="achievements" title={t(lang, 'achievements.title')}>
-			<dl>
-				{
-					education.achievements.map((achievement) => (
-						<>
-							<dt>{achievement.label[lang]}</dt>
-							<dd>{achievement.text[lang]}</dd>
-						</>
-					))
-				}
-			</dl>
-		</Section>
-	</World>
-</Layout>
-
-<style>
-	.tagline {
-		margin-bottom: 1rem;
-		font-family: var(--font-heading);
-		opacity: 0.8;
+	{
+		latest_posts.length > 0 && (
+			<Section id="blog" eyebrow={t(lang, 'blog.eyebrow')} title={t(lang, 'blog.heading')}>
+				<div class="post-grid">
+					{latest_posts.map((post, index) => (
+						<a class="post-card glass spot" href={`/${lang}/blog/${post.id}/`} hreflang={post.data.lang} data-reveal style={`--delay: ${index * 90}ms`}>
+							<p class="bento__note">
+								{date_format.format(post.data.date)} · {estimate_reading_minutes(post)} {t(lang, 'blog.reading_minutes')}
+							</p>
+							<h3 lang={post.data.lang}>{post.data.title}</h3>
+							<p lang={post.data.lang}>{post.data.summary}</p>
+							<span class="post-card__cta">{t(lang, 'blog.read')} →</span>
+						</a>
+					))}
+				</div>
+				<p class="post-all" data-reveal>
+					<a class="btn" href={`/${lang}/blog/`}>{t(lang, 'blog.all')} →</a>
+				</p>
+			</Section>
+		)
 	}
 
-	.contact-links {
+	<section class="section contact" id="contact" aria-labelledby="contact-title">
+		<div class="container">
+			<div class="contact__card glass" data-reveal>
+				<p class="eyebrow">{t(lang, 'contact.eyebrow')}</p>
+				<h2 class="section__title contact__title" id="contact-title">{t(lang, 'contact.heading')}</h2>
+				<p class="section__lead">{t(lang, 'contact.lead')}</p>
+				<p class="contact__email">
+					<a href={`mailto:${contact.email}`}>{contact.email}</a>
+				</p>
+				<div class="contact__actions">
+					<button type="button" class="btn btn--primary" data-copy={contact.email} data-copied={t(lang, 'contact.copied')}>
+						{t(lang, 'contact.copy')}
+					</button>
+					<a class="btn" href={contact.linkedin} rel="noopener" target="_blank">LinkedIn ↗</a>
+					<a class="btn" href={contact.github} rel="noopener" target="_blank">GitHub ↗</a>
+					<a class="btn" href={lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pdf'} download>{t(lang, 'nav.cv_download')} ↓</a>
+				</div>
+			</div>
+		</div>
+	</section>
+</Layout>
+
+<script>
+	const timeline = document.querySelector<HTMLElement>('.timeline');
+	const update_timeline = () => {
+		if (!timeline) return;
+		const box = timeline.getBoundingClientRect();
+		const fraction = (innerHeight * 0.6 - box.top) / box.height;
+		timeline.style.setProperty('--fill', String(Math.min(1, Math.max(0, fraction))));
+	};
+	addEventListener('scroll', update_timeline, { passive: true });
+	update_timeline();
+
+	const copy_button = document.querySelector<HTMLButtonElement>('[data-copy]');
+	copy_button?.addEventListener('click', async () => {
+		const original_label = copy_button.textContent;
+		try {
+			await navigator.clipboard.writeText(copy_button.dataset.copy ?? '');
+			copy_button.textContent = copy_button.dataset.copied ?? '';
+			setTimeout(() => (copy_button.textContent = original_label), 1800);
+		} catch {
+			location.href = `mailto:${copy_button.dataset.copy}`;
+		}
+	});
+</script>
+
+<style>
+	.bento {
+		display: grid;
+		gap: 1.1rem;
+	}
+
+	@media (min-width: 56rem) {
+		.bento {
+			grid-template-columns: repeat(6, 1fr);
+		}
+
+		.bento__summary {
+			grid-column: span 6;
+		}
+
+		.bento__card {
+			grid-column: span 2;
+		}
+	}
+
+	@media (min-width: 56rem) and (min-width: 72rem) {
+		.bento {
+			grid-template-columns: repeat(3, 1fr);
+		}
+
+		.bento__summary {
+			grid-column: span 2;
+			grid-row: span 3;
+		}
+
+		.bento__card {
+			grid-column: span 1;
+		}
+	}
+
+	.bento__summary {
+		padding: clamp(1.5rem, 3vw, 2.4rem);
+		color: var(--muted);
+		font-size: 1.08rem;
+	}
+
+	.bento__tagline {
+		margin-bottom: 1rem;
+		color: var(--accent);
+		font-family: var(--font-heading);
+		font-size: 0.95rem;
+	}
+
+	.bento__card {
 		display: flex;
-		gap: 1.25rem;
-		margin-top: 1rem;
+		flex-direction: column;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 1.5rem;
+	}
+
+	.bento__label {
+		color: var(--muted);
+		font-family: var(--font-heading);
+		font-size: 0.75rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.bento__big {
+		font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		line-height: 1.1;
+	}
+
+	.bento__big small {
+		color: var(--muted);
+		font-size: 0.5em;
+		font-weight: 500;
+	}
+
+	.bento__note {
+		color: var(--muted);
+		font-size: 0.88rem;
+	}
+
+	.bento__focus {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45rem;
 		padding: 0;
 		list-style: none;
 	}
 
+	.timeline {
+		--timeline-offset: 1.6rem;
+		position: relative;
+		display: grid;
+		gap: 1.5rem;
+		padding-left: calc(var(--timeline-offset) + 0.4rem);
+	}
+
+	@media (min-width: 48rem) {
+		.timeline {
+			--timeline-offset: 2.4rem;
+		}
+	}
+
+	.timeline__rail {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0.3rem;
+		width: 2px;
+		background: var(--border);
+	}
+
+	.timeline__fill {
+		position: absolute;
+		inset: 0;
+		background: var(--gradient);
+		transform: scaleY(var(--fill, 0));
+		transform-origin: top;
+	}
+
 	.project-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
 		gap: 1.5rem;
 	}
 
-	.meta {
-		opacity: 0.75;
+	@media (min-width: 62rem) {
+		.project-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
-	dt {
-		margin-top: 0.75rem;
+	.skill-grid {
+		display: grid;
+		gap: 1.1rem;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+	}
+
+	.education-grid {
+		display: grid;
+		gap: 1.1rem;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+	}
+
+	.education-card {
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+		padding: 1.75rem;
+		color: var(--muted);
+	}
+
+	.education-card h3 {
+		color: var(--text);
+		font-size: 1.4rem;
+	}
+
+	.post-grid {
+		display: grid;
+		gap: 1.1rem;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+	}
+
+	.post-card {
+		display: flex;
+		flex-direction: column;
+		gap: 0.7rem;
+		padding: 1.75rem;
+		color: var(--muted);
+		text-decoration: none;
+		transition:
+			transform 0.3s ease,
+			border-color 0.3s ease;
+	}
+
+	.post-card:hover {
+		transform: translateY(-4px);
+		border-color: var(--accent);
+	}
+
+	.post-card h3 {
+		color: var(--text);
+		font-size: 1.3rem;
+	}
+
+	.post-card__cta {
+		margin-top: auto;
+		color: var(--accent);
+		font-weight: 600;
+	}
+
+	.post-all {
+		margin-top: 2rem;
+	}
+
+	.contact__card {
+		position: relative;
+		overflow: hidden;
+		padding: clamp(2rem, 6vw, 4.5rem);
+		text-align: center;
+	}
+
+	.contact__card::before {
+		content: '';
+		position: absolute;
+		inset: -40% -10% auto;
+		height: 24rem;
+		background: radial-gradient(ellipse at center, color-mix(in srgb, var(--accent-2) 30%, transparent), transparent 65%);
+		pointer-events: none;
+	}
+
+	.contact__card > * {
+		position: relative;
+	}
+
+	.contact__card .eyebrow {
+		justify-content: center;
+	}
+
+	.contact__title,
+	.contact__card .section__lead {
+		margin-inline: auto;
+	}
+
+	.contact__email {
+		margin-top: 2rem;
+		font-family: var(--font-heading);
+		font-size: clamp(1.1rem, 3.4vw, 2rem);
 		font-weight: 700;
+		overflow-wrap: anywhere;
+	}
+
+	.contact__email a {
+		background: var(--gradient);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		text-decoration: none;
+	}
+
+	.contact__actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.8rem;
+		margin-top: 2rem;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.post-card {
+			transition: none;
+		}
+
+		.post-card:hover {
+			transform: none;
+		}
 	}
 </style>

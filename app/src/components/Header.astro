@@ -8,181 +8,312 @@ interface Props {
 }
 
 const { lang } = Astro.props;
+
+const section_links = [
+	{ id: 'about', label: t(lang, 'nav.about') },
+	{ id: 'experience', label: t(lang, 'nav.experience') },
+	{ id: 'projects', label: t(lang, 'nav.projects') },
+	{ id: 'skills', label: t(lang, 'nav.skills') },
+	{ id: 'contact', label: t(lang, 'nav.contact') },
+];
 ---
 
 <header class="site-header">
-	<a class="site-header__brand" href={`/${lang}/`}>WallzCV</a>
-	<nav class="site-header__nav" aria-label={t(lang, 'nav.label')}>
-		<a class="site-header__link site-header__link--secondary" href={`/${lang}/#projects`}>
-			{t(lang, 'nav.projects')}
+	<div class="site-header__bar glass">
+		<a class="site-header__brand" href={`/${lang}/`} aria-label="Mehmet Güzel">
+			<span class="site-header__logo">W</span>
+			<span class="site-header__name">Wallz<span class="gradient-text">CV</span></span>
 		</a>
-		<a class="site-header__link site-header__link--secondary" href={`/${lang}/blog/`}>
-			{t(lang, 'nav.blog')}
-		</a>
-		<details class="cv-menu">
-			<summary class="site-header__link site-header__cv">{t(lang, 'nav.cv_download')}</summary>
-			<ul class="cv-menu__list">
-				<li>
-					<a class="cv-menu__option" href="/Mehmet_Guzel_CV_EN.pdf" download hreflang="en">
-						{t(lang, 'nav.cv_english')}
-					</a>
-				</li>
-				<li>
-					<a class="cv-menu__option" href="/Mehmet_Guzel_CV.pdf" download hreflang="tr">
-						{t(lang, 'nav.cv_turkish')}
-					</a>
-				</li>
-			</ul>
-		</details>
-	</nav>
-	<div class="site-header__actions">
-		<LanguageSwitch lang={lang} />
-		<ThemeToggle label={t(lang, 'theme.toggle')} />
+
+		<nav class="site-header__nav" id="site-nav" aria-label={t(lang, 'nav.label')}>
+			{section_links.map((link) => <a href={`/${lang}/#${link.id}`} data-section={link.id}>{link.label}</a>)}
+			<a href={`/${lang}/blog/`} data-section="blog-page">{t(lang, 'nav.blog')}</a>
+		</nav>
+
+		<div class="site-header__actions">
+			<details class="cv-menu">
+				<summary class="btn btn--primary cv-menu__summary">{t(lang, 'nav.cv_download')}</summary>
+				<ul class="cv-menu__list glass">
+					<li>
+						<a href="/Mehmet_Guzel_CV_EN.pdf" download hreflang="en">{t(lang, 'nav.cv_english')}</a>
+					</li>
+					<li>
+						<a href="/Mehmet_Guzel_CV.pdf" download hreflang="tr">{t(lang, 'nav.cv_turkish')}</a>
+					</li>
+				</ul>
+			</details>
+			<LanguageSwitch lang={lang} />
+			<ThemeToggle label={t(lang, 'theme.toggle')} />
+			<button
+				type="button"
+				class="site-header__burger"
+				aria-label={t(lang, 'nav.menu')}
+				aria-expanded="false"
+				aria-controls="site-nav"
+			>
+				<span></span><span></span><span></span>
+			</button>
+		</div>
 	</div>
 </header>
 
 <script>
-	const cv_menu = document.querySelector<HTMLDetailsElement>('.cv-menu');
+	const header = document.querySelector<HTMLElement>('.site-header');
+	const burger = header?.querySelector<HTMLButtonElement>('.site-header__burger');
+	const nav_links = header?.querySelectorAll<HTMLAnchorElement>('.site-header__nav a') ?? [];
+	const cv_menu = header?.querySelector<HTMLDetailsElement>('.cv-menu');
+
+	const set_menu_open = (open: boolean) => {
+		header?.classList.toggle('is-open', open);
+		burger?.setAttribute('aria-expanded', String(open));
+	};
+
+	burger?.addEventListener('click', () => set_menu_open(!header?.classList.contains('is-open')));
+	nav_links.forEach((link) => link.addEventListener('click', () => set_menu_open(false)));
 
 	document.addEventListener('click', (event) => {
 		if (cv_menu?.open && !cv_menu.contains(event.target as Node)) cv_menu.open = false;
 	});
-	cv_menu?.addEventListener('keydown', (event) => {
-		if (event.key === 'Escape') {
+	document.addEventListener('keydown', (event) => {
+		if (event.key !== 'Escape') return;
+		set_menu_open(false);
+		if (cv_menu?.open) {
 			cv_menu.open = false;
 			cv_menu.querySelector('summary')?.focus();
 		}
 	});
+
+	const stuck_class = 'is-stuck';
+	const update_stuck = () => header?.classList.toggle(stuck_class, scrollY > 24);
+	addEventListener('scroll', update_stuck, { passive: true });
+	update_stuck();
+
+	if (location.pathname.includes('/blog')) {
+		header?.querySelector('[data-section="blog-page"]')?.setAttribute('aria-current', 'page');
+	}
+
+	const observed_sections = [...nav_links]
+		.map((link) => document.getElementById(link.dataset.section ?? ''))
+		.filter((section): section is HTMLElement => section !== null);
+
+	if (observed_sections.length > 0) {
+		const section_observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (!entry.isIntersecting) continue;
+					nav_links.forEach((link) =>
+						link.toggleAttribute('aria-current', link.dataset.section === entry.target.id),
+					);
+				}
+			},
+			{ rootMargin: '-45% 0px -50% 0px' },
+		);
+		observed_sections.forEach((section) => section_observer.observe(section));
+	}
 </script>
 
 <style>
 	.site-header {
 		position: sticky;
 		top: 0.75rem;
-		z-index: 10;
-		margin: 0.75rem 0.75rem 0;
-		padding: 0.5rem 0.75rem 0.5rem 1.25rem;
-		gap: 0.75rem;
-		border: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
+		z-index: 50;
+		width: min(100% - 1.5rem, 68rem);
+		margin: 0.75rem auto 0;
+	}
+
+	.site-header__bar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 0.5rem 0.6rem 0.5rem 0.9rem;
 		border-radius: 999px;
-		background: color-mix(in srgb, var(--color-bg) 70%, transparent);
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		box-shadow: 0 8px 32px color-mix(in srgb, var(--color-accent) 18%, transparent);
+		transition:
+			box-shadow 0.3s ease,
+			background 0.3s ease;
+	}
+
+	.site-header.is-stuck .site-header__bar {
+		background: color-mix(in srgb, var(--bg) 72%, transparent);
 	}
 
 	.site-header__brand {
-		letter-spacing: 0.02em;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		color: var(--text);
+		font-family: var(--font-heading);
+		font-weight: 700;
 		text-decoration: none;
+	}
+
+	.site-header__logo {
+		display: grid;
+		place-items: center;
+		width: 2rem;
+		height: 2rem;
+		border-radius: 0.65rem;
+		background: var(--gradient);
+		color: var(--accent-ink);
+		font-size: 0.95rem;
 	}
 
 	.site-header__nav {
 		display: flex;
-		align-items: center;
-		gap: 1.25rem;
-		margin-left: auto;
+		gap: 0.15rem;
 	}
 
-	.site-header__link {
+	.site-header__nav a {
 		position: relative;
-		color: var(--color-text);
-		text-decoration: none;
-		transition: color 0.2s ease;
-	}
-
-	.site-header__link:hover,
-	.site-header__link:focus-visible {
-		color: var(--color-accent);
-	}
-
-	.site-header__link--secondary::after {
-		content: '';
-		position: absolute;
-		left: 0;
-		right: 0;
-		bottom: -0.2rem;
-		height: 2px;
-		background: var(--color-accent);
-		transform: scaleX(0);
-		transform-origin: left;
-		transition: transform 0.25s ease;
-	}
-
-	.site-header__link--secondary:hover::after,
-	.site-header__link--secondary:focus-visible::after {
-		transform: scaleX(1);
-	}
-
-	.site-header__cv {
-		padding: 0.35rem 1rem;
-		border: 1px solid var(--color-accent);
+		padding: 0.45rem 0.85rem;
 		border-radius: 999px;
-		background: color-mix(in srgb, var(--color-accent) 15%, transparent);
+		color: var(--muted);
+		font-size: 0.9rem;
+		font-weight: 500;
+		text-decoration: none;
 		transition:
-			background 0.2s ease,
-			box-shadow 0.2s ease;
+			color 0.2s ease,
+			background 0.2s ease;
 	}
 
-	.site-header__cv:hover,
-	.site-header__cv:focus-visible {
-		background: color-mix(in srgb, var(--color-accent) 30%, transparent);
-		box-shadow: 0 0 16px color-mix(in srgb, var(--color-accent) 55%, transparent);
+	.site-header__nav a:hover {
+		color: var(--text);
+	}
+
+	.site-header__nav a[aria-current] {
+		background: var(--surface-strong);
+		color: var(--text);
+		box-shadow: inset 0 0 0 1px var(--border);
+	}
+
+	.site-header__actions {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
 	}
 
 	.cv-menu {
 		position: relative;
 	}
 
-	.cv-menu summary {
+	.cv-menu__summary {
+		padding: 0.5rem 1.1rem;
+		font-size: 0.88rem;
 		list-style: none;
-		cursor: pointer;
 	}
 
-	.cv-menu summary::-webkit-details-marker {
+	.cv-menu__summary::-webkit-details-marker {
 		display: none;
 	}
 
 	.cv-menu__list {
 		position: absolute;
-		top: calc(100% + 0.75rem);
+		top: calc(100% + 0.6rem);
 		right: 0;
-		min-width: 9rem;
-		margin: 0;
+		min-width: 10rem;
 		padding: 0.4rem;
-		list-style: none;
-		border: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
 		border-radius: 1rem;
-		background: var(--color-bg);
-		box-shadow: 0 8px 32px color-mix(in srgb, var(--color-accent) 18%, transparent);
+		background: color-mix(in srgb, var(--bg) 92%, var(--text));
+		list-style: none;
 	}
 
-	.cv-menu__option {
+	.cv-menu__list a {
 		display: block;
-		padding: 0.5rem 0.9rem;
-		border-radius: 0.6rem;
-		color: var(--color-text);
+		padding: 0.55rem 0.9rem;
+		border-radius: 0.65rem;
+		color: var(--text);
+		font-size: 0.9rem;
 		text-decoration: none;
 	}
 
-	.cv-menu__option:hover,
-	.cv-menu__option:focus-visible {
-		background: color-mix(in srgb, var(--color-accent) 20%, transparent);
+	.cv-menu__list a:hover {
+		background: var(--surface-strong);
 	}
 
-	.site-header__link--secondary {
+	.site-header__burger {
 		display: none;
+		width: 2.4rem;
+		height: 2.4rem;
+		padding: 0;
+		border: 1px solid var(--border);
+		border-radius: 50%;
+		background: var(--surface);
+		cursor: pointer;
 	}
 
-	@media (min-width: 768px) {
-		.site-header__link--secondary {
-			display: inline;
+	.site-header__burger span {
+		display: block;
+		width: 1rem;
+		height: 2px;
+		margin: 3px auto;
+		border-radius: 2px;
+		background: var(--text);
+		transition:
+			transform 0.25s ease,
+			opacity 0.25s ease;
+	}
+
+	.is-open .site-header__burger span:nth-child(1) {
+		transform: translateY(5px) rotate(45deg);
+	}
+
+	.is-open .site-header__burger span:nth-child(2) {
+		opacity: 0;
+	}
+
+	.is-open .site-header__burger span:nth-child(3) {
+		transform: translateY(-5px) rotate(-45deg);
+	}
+
+	@media (max-width: 960px) {
+		.site-header__burger {
+			display: inline-block;
+		}
+
+		.site-header__nav {
+			position: absolute;
+			top: calc(100% + 0.6rem);
+			left: 0;
+			right: 0;
+			flex-direction: column;
+			padding: 0.6rem;
+			border: 1px solid var(--border);
+			border-radius: 1.25rem;
+			background: color-mix(in srgb, var(--bg) 94%, var(--text));
+			box-shadow: var(--shadow);
+			opacity: 0;
+			transform: translateY(-0.5rem);
+			pointer-events: none;
+			visibility: hidden;
+			transition:
+				opacity 0.25s ease,
+				transform 0.25s ease,
+				visibility 0.25s;
+		}
+
+		.is-open .site-header__nav {
+			opacity: 1;
+			transform: none;
+			pointer-events: auto;
+			visibility: visible;
+		}
+
+		.site-header__nav a {
+			padding: 0.8rem 1rem;
+			font-size: 1rem;
+		}
+	}
+
+	@media (max-width: 520px) {
+		.site-header__name {
+			display: none;
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.site-header__link,
-		.site-header__link--secondary::after,
-		.site-header__cv {
+		.site-header__nav,
+		.site-header__nav a,
+		.site-header__burger span {
 			transition: none;
 		}
 	}
