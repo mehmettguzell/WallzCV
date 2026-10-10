@@ -24,7 +24,6 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 			<h1 id="hero-title" class="hero__name" data-reveal style="--delay: 100ms">
 				<span class="gradient-text">Mehmet Güzel</span>
 			</h1>
-			<p class="hero__headline" data-reveal style="--delay: 200ms">{t(lang, 'hero.headline')}</p>
 			<p class="hero__lead" data-reveal style="--delay: 280ms">{t(lang, 'hero.lead')}</p>
 			<div class="hero__actions" data-reveal style="--delay: 360ms">
 				<a class="btn btn--primary" href={cv_path} download>{t(lang, 'hero.cta_cv')} <span aria-hidden="true">↓</span></a>
@@ -441,15 +440,6 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 		50% {
 			opacity: 0;
 		}
-	}
-
-	.hero__headline {
-		max-width: 26ch;
-		margin-top: 1.25rem;
-		font-size: clamp(1.35rem, 2.9vw, 2rem);
-		font-weight: 600;
-		letter-spacing: -0.02em;
-		line-height: 1.25;
 	}
 
 	.hero__lead {

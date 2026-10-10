@@ -74,7 +74,7 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 						tagline={project.tagline[lang]}
 						points={project.points.map((point) => point[lang])}
 						technologies={project.technologies}
-						repository={project.repository}
+						repository={'repository' in project ? project.repository : undefined}
 						pipeline_steps={'pipeline' in project ? project.pipeline[lang] : undefined}
 						pipeline_label={t(lang, 'projects.pipeline_label')}
 						repository_label={t(lang, 'projects.repository')}

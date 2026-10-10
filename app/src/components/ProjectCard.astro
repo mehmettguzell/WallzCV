@@ -8,7 +8,7 @@ interface Props {
 	tagline: string;
 	points: string[];
 	technologies: string[];
-	repository: string;
+	repository?: string;
 	pipeline_steps?: string[];
 	pipeline_label?: string;
 	repository_label: string;
@@ -35,9 +35,13 @@ const { slug, index, name, tagline, points, technologies, repository, pipeline_s
 			<ul class="project__technologies">
 				{technologies.map((technology) => <li class="chip">{technology}</li>)}
 			</ul>
-			<a class="btn project__repository" href={repository} rel="noopener" target="_blank">
-				{repository_label} <span aria-hidden="true">↗</span>
-			</a>
+			{
+				repository && (
+					<a class="btn project__repository" href={repository} rel="noopener" target="_blank">
+						{repository_label} <span aria-hidden="true">↗</span>
+					</a>
+				)
+			}
 		</div>
 	</article>
 </div>
