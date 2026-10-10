@@ -27,12 +27,12 @@
     },
     "points": [
       {
-        "en": "**What it does:** a task is one record shown as a calendar event or a to-do, with recurring tasks, reminders, natural-language quick add, a command palette and time tracking by plan, phase and step. A budget ledger sits on the same data, built on accounts, transfers and card statements.",
-        "tr": "**Ne yapıyor:** bir görev tek kayıt olarak hem takvim etkinliği hem de yapılacak iş görünüyor; tekrarlayan görevler, hatırlatıcılar, doğal dille hızlı ekleme, komut paleti ve plan, faz ve adım bazlı süre takibi var. Aynı verinin üstünde hesap, transfer ve kart ekstresi üzerine kurulu bir bütçe defteri çalışıyor."
+        "en": "**What it does:** a task is one record shown as a calendar event or a to-do, with recurring tasks, natural-language quick add, a command palette and time tracking by plan, phase and step. Reminders still fire after the window is closed, because the app keeps running in the system tray. A budget ledger sits on the same data, built on accounts, transfers and card statements, and money is stored as whole minor units, never as floats.",
+        "tr": "**Ne yapıyor:** bir görev tek kayıt olarak hem takvim etkinliği hem de yapılacak iş görünüyor; tekrarlayan görevler, doğal dille hızlı ekleme, komut paleti ve plan, faz ve adım bazlı süre takibi var. Uygulama sistem tepsisinde çalışmaya devam ettiği için hatırlatıcılar pencere kapandıktan sonra da çalıyor. Aynı verinin üstünde hesap, transfer ve kart ekstresi üzerine kurulu bir bütçe defteri çalışıyor; para float olarak değil, tam sayı olarak en küçük birimle saklanıyor."
       },
       {
-        "en": "**Local-first:** the data is saved to a local file first, so the app never waits for a server. Sync is designed row by row: the newer edit wins, and a deleted row leaves a tombstone so it cannot come back.",
-        "tr": "**Local-first:** veri önce yerel bir dosyaya kaydediliyor, uygulama sunucuyu hiç beklemiyor. Senkron satır satır tasarlandı: daha yeni düzenleme kazanıyor, silinen satır bir tombstone bırakıyor ve geri gelemiyor."
+        "en": "**Local-first:** the data is saved to a local file first, so the app never waits for a server. Sync is cursor-based: every row gets a global server_seq number, a device pulls everything after the last number it saw, the newer edit wins (ties go to the server), and a deleted row leaves a tombstone so it cannot come back. The server only sends a small \"something changed\" nudge, and the device then pulls by itself. The rules live in a shared @tempo/core package with no UI in it, so the same code can serve the mobile app later.",
+        "tr": "**Local-first:** veri önce yerel bir dosyaya kaydediliyor, uygulama sunucuyu hiç beklemiyor. Senkron cursor tabanlı: her satır global bir server_seq numarası alıyor, cihaz en son gördüğü numaradan sonrasını çekiyor, daha yeni düzenleme kazanıyor (eşitlikte sunucu), silinen satır tombstone bırakıyor ve geri gelemiyor. Sunucu yalnızca küçük bir \"bir şey değişti\" dürtmesi gönderiyor, cihaz sonra kendisi pull yapıyor. İş kuralları arayüzsüz, paylaşılan bir @tempo/core paketinde duruyor; böylece aynı kod ileride mobil uygulamaya da hizmet edebilecek."
       },
       {
         "en": "**Backend:** Java 25 and Spring Boot, split into Spring Modulith modules (identity, tasks, budget, sync, notification) over PostgreSQL with 15 Flyway migrations. Sign-in goes through Keycloak, requests are rate-limited with Bucket4j, and the sync API has push, pull and purge plus a server-sent events stream that nudges other devices.",
@@ -71,11 +71,32 @@
         },
         "nodes": [
           {
-            "name": "Tauri desktop app",
+            "name": "React UI",
+            "role": {
+              "en": "React 19, TypeScript and Zustand. The calendar, to-do, focus, budget and wishlist views, plus natural-language quick add. All the rules come from @tempo/core.",
+              "tr": "React 19, TypeScript ve Zustand. Takvim, yapılacaklar, odak, bütçe ve istek listesi görünümleri ile doğal dille hızlı ekleme. Bütün kurallar @tempo/core'dan geliyor."
+            }
+          },
+          {
+            "name": "@tempo/core",
+            "role": {
+              "en": "The shared package: domain rules for tasks, budget, quick-add parsing and reminders, plus the row types and data migrations. It has no UI code, so desktop and the planned mobile app can share it.",
+              "tr": "Paylaşılan paket: görev, bütçe, hızlı ekleme ayrıştırma ve hatırlatıcı kuralları ile satır tipleri ve veri migration'ları. İçinde arayüz kodu yok; masaüstü ve planlanan mobil uygulama paylaşabilsin diye."
+            }
+          },
+          {
+            "name": "Sync engine",
+            "role": {
+              "en": "Pushes the rows that changed and pulls everything after its cursor, retries when the connection is back, and listens to the server's nudge stream so it knows when to pull.",
+              "tr": "Değişen satırları push ediyor, cursor'ından sonrasını pull ediyor, bağlantı gelince yeniden deniyor ve ne zaman pull yapacağını bilmek için sunucunun dürtme akışını dinliyor."
+            }
+          },
+          {
+            "name": "Tauri shell (Rust)",
             "store": "local file",
             "role": {
-              "en": "React 19, TypeScript and Zustand inside a Tauri v2 shell written in Rust. Data is saved to a local file first, so the app works fully offline and syncs when it can.",
-              "tr": "Rust ile yazılmış bir Tauri v2 kabuğunun içinde React 19, TypeScript ve Zustand. Veri önce yerel bir dosyaya kaydediliyor; uygulama çevrimdışı tam çalışıyor, bağlantı olunca senkron oluyor."
+              "en": "Tauri v2. Saves the data to a local file, keeps the app alive in the system tray so reminders fire with the window closed, runs the sign-in redirect and keeps tokens in the OS keychain.",
+              "tr": "Tauri v2. Veriyi yerel bir dosyaya kaydediyor, uygulamayı sistem tepsisinde canlı tutarak hatırlatıcıların pencere kapalıyken çalmasını sağlıyor, giriş yönlendirmesini yürütüyor ve token'ları işletim sisteminin keychain'inde saklıyor."
             }
           }
         ]
@@ -140,8 +161,8 @@
           {
             "name": "Sync",
             "role": {
-              "en": "Push and pull of changed rows, tombstones, and idempotency so a repeated request does no harm. Scheduled jobs clean up old tombstones and orphan rows.",
-              "tr": "Değişen satırların push ve pull'u, tombstone'lar ve tekrarlanan bir isteğin zarar vermemesi için idempotency. Zamanlanmış işler eski tombstone'ları ve sahipsiz satırları temizliyor."
+              "en": "Push and pull of changed rows by the global server_seq cursor. The newer updated_at wins and ties go to the server; tombstones keep deleted rows from coming back. Idempotency makes a repeated request harmless, and scheduled jobs clean up old tombstones and orphan rows.",
+              "tr": "Değişen satırların global server_seq cursor'ıyla push ve pull'u. Daha yeni updated_at kazanıyor, eşitlikte sunucu; tombstone'lar silinen satırların geri gelmesini engelliyor. Idempotency tekrarlanan isteği zararsız yapıyor, zamanlanmış işler eski tombstone'ları ve sahipsiz satırları temizliyor."
             }
           },
           {
@@ -169,8 +190,8 @@
           {
             "name": "PostgreSQL",
             "role": {
-              "en": "The server's database: synced rows, tombstones and a global sequence the sync reads from. Integration tests run against a real PostgreSQL in Testcontainers.",
-              "tr": "Sunucunun veritabanı: senkron edilen satırlar, tombstone'lar ve sync'in okuduğu global bir sequence. Entegrasyon testleri Testcontainers'taki gerçek bir PostgreSQL ile çalışıyor."
+              "en": "The server's database: synced rows, tombstones and the global sequence behind server_seq. Integration tests run against a real PostgreSQL in Testcontainers.",
+              "tr": "Sunucunun veritabanı: senkron edilen satırlar, tombstone'lar ve server_seq'in arkasındaki global sequence. Entegrasyon testleri Testcontainers'taki gerçek bir PostgreSQL ile çalışıyor."
             }
           }
         ]

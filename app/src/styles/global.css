@@ -21,7 +21,7 @@
   --accent-3: #f0abfc;
   --accent-ink: #04201c;
   --shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.7);
-  --blob-opacity: 0.55;
+  --blob-opacity: 0.3;
   --grid-line: rgba(255, 255, 255, 0.045);
 
   --gradient: linear-gradient(110deg, var(--accent), var(--accent-2) 55%, var(--accent-3));
@@ -48,7 +48,7 @@
   --accent-3: #c026d3;
   --accent-ink: #ffffff;
   --shadow: 0 24px 50px -28px rgba(17, 26, 69, 0.35);
-  --blob-opacity: 0.35;
+  --blob-opacity: 0.2;
   --grid-line: rgba(17, 26, 69, 0.06);
 
   color-scheme: light;

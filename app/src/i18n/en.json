@@ -18,7 +18,6 @@
   "upcoming.label": "Blog posts coming soon:",
   "upcoming.topics": "OpenShift|Kubernetes|Terraform|CI/CD|LiteLLM|LLM systems",
   "hero.cta_cv": "Download CV",
-  "hero.cta_email": "Email me",
   "hero.cta_projects": "See projects",
   "glance.title": "profile",
   "glance.role": "Role",
@@ -49,7 +48,7 @@
   "experience.heading": "Work experience.",
   "projects.eyebrow": "03 · Projects",
   "projects.heading": "Projects I built end to end.",
-  "projects.lead": "Six projects I designed and built, from the database to deployment; the first one is still in progress. Each card names its architecture style and shows the diagram.",
+  "projects.lead": "Six projects I designed and built, from the database to deployment; the first one is still in progress. Open a card to see its architecture style and diagram.",
   "projects.pipeline_label": "CI/CD pipeline steps",
   "projects.architecture_label": "Architecture diagram",
   "projects.architecture_hint": "Hover over or tap a component to see what it does.",
@@ -89,5 +88,7 @@
   "skills.learning": "learning now",
   "projects.link_sync": "sync call (HTTP / HTTPS)",
   "projects.link_async": "async hand-off (queue or event bus)",
-  "projects.in_progress": "Currently building"
+  "projects.in_progress": "Currently building",
+  "projects.open_details": "View details",
+  "projects.close_details": "Close project details"
 }

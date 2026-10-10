@@ -29,7 +29,6 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 			<p class="hero__lead" data-reveal style="--delay: 280ms">{t(lang, 'hero.lead')}</p>
 			<div class="hero__actions" data-reveal style="--delay: 360ms">
 				<a class="btn btn--primary" href={cv_path} download>{t(lang, 'hero.cta_cv')} <span aria-hidden="true">↓</span></a>
-				<a class="btn" href={`mailto:${contact.email}`}>{t(lang, 'hero.cta_email')}</a>
 				<a class="btn" href={`/${lang}/#projects`}>{t(lang, 'hero.cta_projects')} →</a>
 			</div>
 			<p class="hero__social" data-reveal style="--delay: 420ms">

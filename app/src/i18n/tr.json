@@ -18,7 +18,6 @@
   "upcoming.label": "Yakında blog yazıları:",
   "upcoming.topics": "OpenShift|Kubernetes|Terraform|CI/CD|LiteLLM|LLM sistemleri",
   "hero.cta_cv": "CV indir",
-  "hero.cta_email": "E-posta gönder",
   "hero.cta_projects": "Projeleri gör",
   "glance.title": "profil",
   "glance.role": "Rol",
@@ -49,7 +48,7 @@
   "experience.heading": "İş deneyimi.",
   "projects.eyebrow": "03 · Projeler",
   "projects.heading": "Baştan sona geliştirdiğim projeler.",
-  "projects.lead": "Veritabanından deploy'a kadar tasarlayıp geliştirdiğim altı proje; ilki hâlâ devam ediyor. Her kart mimari türünü belirtiyor ve diyagramını gösteriyor.",
+  "projects.lead": "Veritabanından deploy'a kadar tasarlayıp geliştirdiğim altı proje; ilki hâlâ devam ediyor. Mimari türünü ve diyagramını görmek için bir karta tıkla.",
   "projects.pipeline_label": "CI/CD pipeline adımları",
   "projects.architecture_label": "Mimari diyagramı",
   "projects.architecture_hint": "Ne yaptığını görmek için bir bileşenin üzerine gel ya da dokun.",
@@ -89,5 +88,7 @@
   "skills.learning": "şu an öğreniyorum",
   "projects.link_sync": "senkron çağrı (HTTP / HTTPS)",
   "projects.link_async": "asenkron devir (kuyruk ya da event bus)",
-  "projects.in_progress": "Şu an geliştiriyorum"
+  "projects.in_progress": "Şu an geliştiriyorum",
+  "projects.open_details": "Detayları gör",
+  "projects.close_details": "Proje detaylarını kapat"
 }
