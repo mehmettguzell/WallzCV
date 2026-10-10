@@ -1,6 +1,5 @@
 ---
 import Wallz from './Wallz.astro';
-import UpcomingTopics from './UpcomingTopics.astro';
 import contact from '../data/contact.json';
 import { t, type Language } from '../i18n';
 
@@ -10,7 +9,7 @@ interface Props {
 
 const { lang } = Astro.props;
 
-const glance_keys = ['role', 'based', 'education', 'experience', 'proof', 'stack', 'languages'] as const;
+const glance_keys = ['role', 'based', 'education', 'experience', 'proof', 'security', 'stack', 'languages'] as const;
 const glance_rows = glance_keys.map((key) => ({
 	label: t(lang, `glance.${key}`),
 	value: t(lang, `glance.${key}_value`),
@@ -21,6 +20,9 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 <section class="hero" aria-labelledby="hero-title">
 	<div class="container hero__grid">
 		<div class="hero__copy">
+			<p class="hero__status" data-reveal>
+				<span class="hero__status-dot" aria-hidden="true"></span>{t(lang, 'hero.status')}
+			</p>
 			<h1 id="hero-title" class="hero__name" data-reveal style="--delay: 100ms">
 				<span class="gradient-text">Mehmet Güzel</span>
 			</h1>
@@ -30,9 +32,11 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 				<a class="btn" href={`mailto:${contact.email}`}>{t(lang, 'hero.cta_email')}</a>
 				<a class="btn" href={`/${lang}/#projects`}>{t(lang, 'hero.cta_projects')} →</a>
 			</div>
-			<div data-reveal style="--delay: 420ms">
-				<UpcomingTopics lang={lang} />
-			</div>
+			<p class="hero__social" data-reveal style="--delay: 420ms">
+				<a href={contact.github} rel="noopener" target="_blank">GitHub <span aria-hidden="true">↗</span></a>
+				<a href={contact.linkedin} rel="noopener" target="_blank">LinkedIn <span aria-hidden="true">↗</span></a>
+				<a href={`mailto:${contact.email}`}>{contact.email}</a>
+			</p>
 		</div>
 
 		<div class="hero__visual" data-reveal style="--delay: 260ms">
@@ -402,6 +406,64 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 		}
 	}
 
+	.hero__status {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		margin-bottom: 1.4rem;
+		padding: 0.35rem 0.9rem 0.35rem 0.75rem;
+		border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--accent) 10%, transparent);
+		color: var(--text);
+		font: 600 0.82rem var(--font-body);
+	}
+
+	.hero__status-dot {
+		position: relative;
+		flex: none;
+		width: 0.5rem;
+		height: 0.5rem;
+		border-radius: 50%;
+		background: #22c55e;
+	}
+
+	.hero__status-dot::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background: inherit;
+		animation: status-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+	}
+
+	@keyframes status-ping {
+		75%,
+		100% {
+			opacity: 0;
+			transform: scale(2.6);
+		}
+	}
+
+	.hero__social {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem 1.4rem;
+		margin-top: 1.6rem;
+		font: 500 0.85rem var(--font-heading);
+	}
+
+	.hero__social a {
+		color: var(--muted);
+		text-decoration: none;
+		overflow-wrap: anywhere;
+		transition: color 0.2s ease;
+	}
+
+	.hero__social a:hover {
+		color: var(--accent);
+	}
+
 	.hero__name .gradient-text {
 		display: inline-block;
 		animation:
@@ -568,7 +630,7 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 
 	@media (min-width: 36rem) {
 		.glance__row {
-			grid-template-columns: 9rem 1fr;
+			grid-template-columns: 10.5rem 1fr;
 			gap: 1rem;
 		}
 	}
@@ -626,6 +688,7 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 
 	@media (prefers-reduced-motion: reduce) {
 		.hero__caret,
+		.hero__status-dot::after,
 		.hero__name .gradient-text {
 			animation: none;
 		}

@@ -112,12 +112,16 @@ const share_image_url = new URL('/og.png', Astro.site);
 		const max_nodes = 90;
 		const area_per_node = 17000;
 		const drift_speed = 0.22;
+		const pointer_pull = 0.012;
 		let nodes: Node[] = [];
 		let width = 0;
 		let height = 0;
+		let previous_width = 0;
+		let previous_height = 0;
 		let pointer: { x: number; y: number } | null = null;
 		let node_color = '';
 		let running = true;
+		let frame_request = 0;
 
 		const read_colors = () => {
 			node_color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
@@ -130,13 +134,32 @@ const share_image_url = new URL('/og.png', Astro.site);
 			network_canvas.width = width * ratio;
 			network_canvas.height = height * ratio;
 			network_context.setTransform(ratio, 0, 0, ratio, 0, 0);
+			// Existing nodes are rescaled, not re-scattered, so a mobile address bar showing or hiding does not reshuffle the network.
 			const count = Math.min(max_nodes, Math.floor((width * height) / area_per_node));
-			nodes = Array.from({ length: count }, () => ({
-				x: Math.random() * width,
-				y: Math.random() * height,
-				vx: (Math.random() - 0.5) * drift_speed * 2,
-				vy: (Math.random() - 0.5) * drift_speed * 2,
-			}));
+			const x_scale = previous_width > 0 ? width / previous_width : 1;
+			const y_scale = previous_height > 0 ? height / previous_height : 1;
+			nodes = nodes.slice(0, count).map((node) => ({ ...node, x: node.x * x_scale, y: node.y * y_scale }));
+			while (nodes.length < count) {
+				nodes.push({
+					x: Math.random() * width,
+					y: Math.random() * height,
+					vx: (Math.random() - 0.5) * drift_speed * 2,
+					vy: (Math.random() - 0.5) * drift_speed * 2,
+				});
+			}
+			previous_width = width;
+			previous_height = height;
+		};
+
+		const bounce_inside_viewport = (node: Node) => {
+			if (node.x < 0 || node.x > width) {
+				node.x = Math.min(width, Math.max(0, node.x));
+				node.vx *= -1;
+			}
+			if (node.y < 0 || node.y > height) {
+				node.y = Math.min(height, Math.max(0, node.y));
+				node.vy *= -1;
+			}
 		};
 
 		const draw = () => {
@@ -147,15 +170,14 @@ const share_image_url = new URL('/og.png', Astro.site);
 			for (const [index, node] of nodes.entries()) {
 				node.x += node.vx;
 				node.y += node.vy;
-				if (node.x < 0 || node.x > width) node.vx *= -1;
-				if (node.y < 0 || node.y > height) node.vy *= -1;
+				bounce_inside_viewport(node);
 				if (pointer) {
 					const dx = pointer.x - node.x;
 					const dy = pointer.y - node.y;
 					const distance = Math.hypot(dx, dy);
 					if (distance < pointer_distance) {
-						node.x += dx * 0.012;
-						node.y += dy * 0.012;
+						node.x += dx * pointer_pull;
+						node.y += dy * pointer_pull;
 						network_context.globalAlpha = (1 - distance / pointer_distance) * 0.55;
 						network_context.beginPath();
 						network_context.moveTo(node.x, node.y);
@@ -178,20 +200,22 @@ const share_image_url = new URL('/og.png', Astro.site);
 					network_context.stroke();
 				}
 			}
-			requestAnimationFrame(draw);
+			frame_request = requestAnimationFrame(draw);
 		};
 
 		read_colors();
 		resize();
 		addEventListener('resize', resize);
 		addEventListener('pointermove', (event) => (pointer = { x: event.clientX, y: event.clientY }), { passive: true });
-		document.addEventListener('pointerleave', () => (pointer = null));
+		document.documentElement.addEventListener('pointerleave', () => (pointer = null));
 		new MutationObserver(read_colors).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+		// A frame queued before the tab was hidden can still fire on return, so it is cancelled to keep a single loop running.
 		document.addEventListener('visibilitychange', () => {
 			running = !document.hidden;
-			if (running) requestAnimationFrame(draw);
+			cancelAnimationFrame(frame_request);
+			if (running) frame_request = requestAnimationFrame(draw);
 		});
-		requestAnimationFrame(draw);
+		frame_request = requestAnimationFrame(draw);
 	}
 
 	if (fine_pointer && !reduced_motion) {

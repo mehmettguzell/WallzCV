@@ -15,8 +15,8 @@
     },
     "highlights": [
       {
-        "en": "Designed the architecture of a GEO (Generative Engine Optimization) system: the same prompts are sent repeatedly to several LLM providers, and a company's visibility against its competitors is reported with a statistical margin of error.",
-        "tr": "GEO (Generative Engine Optimization) sisteminin mimarisini tasarladım: aynı promptlar birden fazla LLM sağlayıcıya tekrar tekrar gönderiliyor ve bir şirketin rakiplerine göre görünürlüğü istatistiksel hata payıyla raporlanıyor."
+        "en": "Researched GEO (Generative Engine Optimization) and designed the architecture: the same prompts go to several LLM providers again and again, and a company's visibility against its competitors is reported with a statistical margin of error.",
+        "tr": "GEO (Generative Engine Optimization) üzerine araştırma yapıp mimariyi tasarladım: aynı promptlar birden fazla LLM sağlayıcıya tekrar tekrar gönderiliyor ve bir şirketin rakiplerine göre görünürlüğü istatistiksel hata payıyla raporlanıyor."
       },
       {
         "en": "Split the daily crawling and analysis into asynchronous Celery + Redis workers, and used a sliding-window approach to reduce the measurement error of repeated LLM queries.",
@@ -28,9 +28,19 @@
       }
     ],
     "summary": {
-      "en": "Designed and developed the architecture of a GEO analysis project that measures how visible companies are in AI chatbot answers.",
-      "tr": "Şirketlerin yapay zekâ sohbet yanıtlarındaki görünürlüğünü ölçen GEO analizi projesinin mimarisini tasarladım ve geliştirdim."
-    }
+      "en": "Designed and built a system that measures how visible companies are in AI chatbot answers.",
+      "tr": "Şirketlerin yapay zekâ sohbet yanıtlarında ne kadar göründüğünü ölçen bir sistemi tasarlayıp geliştirdim."
+    },
+    "technologies": [
+      "Python",
+      "FastAPI",
+      "Celery",
+      "Redis",
+      "PostgreSQL",
+      "React",
+      "TypeScript",
+      "Docker Compose"
+    ]
   },
   {
     "role": {
@@ -65,8 +75,19 @@
       }
     ],
     "summary": {
-      "en": "Penetration-tested real web applications for security vulnerabilities and built tools that sped up the process.",
-      "tr": "Gerçek web uygulamalarında pentest yaparak güvenlik açıkları aradım ve bu süreçleri hızlandıran araçlar geliştirdim."
+      "en": "Tested real web applications for security holes and wrote tools that made the team faster.",
+      "tr": "Gerçek web uygulamalarında güvenlik açığı aradım ve ekibi hızlandıran araçlar yazdım."
+    },
+    "technologies": [
+      "Python",
+      "OWASP Top 10",
+      "Secure code review",
+      "Web pentest",
+      "Responsible disclosure"
+    ],
+    "proof": {
+      "label": "CVE-2025-1301",
+      "url": "https://www.cve.org/CVERecord?id=CVE-2025-1301"
     }
   }
 ]

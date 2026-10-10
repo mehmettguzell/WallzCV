@@ -5,19 +5,25 @@ interface ArchitectureNode {
 	role?: string;
 }
 
+type LinkKind = 'sync' | 'async';
+
 interface ArchitectureLayer {
 	label: string;
 	nodes: ArchitectureNode[];
 	bus?: boolean;
+	/** How the layer above reaches this one; drawn as one labelled arrow instead of the per-node fan. */
+	link?: { kind: LinkKind; label: string };
 }
 
 interface Props {
 	layers: ArchitectureLayer[];
 	label: string;
 	hint: string;
+	legend?: Record<LinkKind, string>;
 }
 
-const { layers, label, hint } = Astro.props;
+const { layers, label, hint, legend } = Astro.props;
+const has_typed_links = layers.some((layer) => layer.link);
 
 // A bus spans the full width, so every node above drops straight into it.
 const links = layers.slice(1).map((to, index) => {
@@ -26,7 +32,7 @@ const links = layers.slice(1).map((to, index) => {
 	return { from_count, to_count, spread: Math.max(from_count, to_count) };
 });
 
-const accessible_label = `${label}: ${layers.map((layer) => `${layer.label} (${layer.nodes.map((node) => node.name).join(', ')})`).join(' → ')}`;
+const accessible_label = `${label}: ${layers.map((layer) => `${layer.link ? `(${layer.link.label}) ` : ''}${layer.label} (${layer.nodes.map((node) => node.name).join(', ')})`).join(' → ')}`;
 ---
 
 <div class="arch" role="group" aria-label={accessible_label} data-architecture>
@@ -34,7 +40,13 @@ const accessible_label = `${label}: ${layers.map((layer) => `${layer.label} (${l
 		{
 			layers.map((layer, layer_index) => (
 				<>
-					{layer_index > 0 && (
+					{layer_index > 0 && layer.link && (
+						<div class={`arch__typed-link arch__typed-link--${layer.link.kind}`} style={`--delay:${layer_index * 0.25}s`}>
+							<span class="arch__typed-line" aria-hidden="true" />
+							<span class="arch__typed-label">{layer.link.label}</span>
+						</div>
+					)}
+					{layer_index > 0 && !layer.link && (
 						<div
 							class="arch__link"
 							style={`--from:${links[layer_index - 1].from_count};--to:${links[layer_index - 1].to_count};--spread:${links[layer_index - 1].spread};--delay:${layer_index * 0.25}s`}
@@ -80,6 +92,20 @@ const accessible_label = `${label}: ${layers.map((layer) => `${layer.label} (${l
 			))
 		}
 	</div>
+	{
+		has_typed_links && legend && (
+			<p class="arch__legend">
+				<span class="arch__legend-item">
+					<span class="arch__legend-swatch arch__legend-swatch--sync" aria-hidden="true" />
+					{legend.sync}
+				</span>
+				<span class="arch__legend-item">
+					<span class="arch__legend-swatch arch__legend-swatch--async" aria-hidden="true" />
+					{legend.async}
+				</span>
+			</p>
+		)
+	}
 	<p class="arch__readout" aria-hidden="true" data-hint={hint}>
 		<span class="arch__readout-prompt">›</span>
 		<b data-readout-name></b>
@@ -325,6 +351,86 @@ const accessible_label = `${label}: ${layers.map((layer) => `${layer.label} (${l
 		animation-delay: var(--delay);
 	}
 
+	/* Typed link: one arrow down the middle, solid for a synchronous call, dashed and moving for a queued hand-off. */
+	.arch__typed-link {
+		grid-column: 2;
+		position: relative;
+		display: flex;
+		align-items: center;
+		height: 2.1rem;
+	}
+
+	.arch__typed-line {
+		position: absolute;
+		top: 0;
+		bottom: 5px;
+		left: 50%;
+		width: 1.5px;
+		translate: -50% 0;
+		background: var(--line);
+	}
+
+	.arch__typed-line::after {
+		content: '';
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		translate: -50% 0;
+		border: 4px solid transparent;
+		border-top: 5px solid var(--accent);
+		border-bottom: 0;
+	}
+
+	.arch__typed-link--async .arch__typed-line {
+		--line: color-mix(in srgb, var(--accent-2) 85%, transparent);
+		background: repeating-linear-gradient(180deg, var(--line) 0 4px, transparent 4px 8px);
+		background-size: 100% 8px;
+		animation: arch-flow-down 0.9s linear infinite;
+		animation-delay: var(--delay);
+	}
+
+	.arch__typed-link--async .arch__typed-line::after {
+		border-top-color: var(--accent-2);
+	}
+
+	.arch__typed-label {
+		position: relative;
+		margin-left: calc(50% + 0.6rem);
+		color: var(--muted);
+		font-size: 0.6rem;
+		letter-spacing: 0.04em;
+		line-height: 1.2;
+	}
+
+	.arch__typed-link--async .arch__typed-label {
+		color: var(--accent-2);
+	}
+
+	.arch__legend {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem 1.2rem;
+		margin-top: 0.9rem;
+		color: var(--muted);
+		font-size: 0.64rem;
+	}
+
+	.arch__legend-item {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+	}
+
+	.arch__legend-swatch {
+		width: 1.4rem;
+		height: 1.5px;
+		background: var(--line);
+	}
+
+	.arch__legend-swatch--async {
+		background: repeating-linear-gradient(90deg, color-mix(in srgb, var(--accent-2) 85%, transparent) 0 4px, transparent 4px 8px);
+	}
+
 	@keyframes arch-flow-down {
 		to {
 			background-position: 0 8px;
@@ -352,7 +458,8 @@ const accessible_label = `${label}: ${layers.map((layer) => `${layer.label} (${l
 
 		.arch__label,
 		.arch__nodes,
-		.arch__link {
+		.arch__link,
+		.arch__typed-link {
 			grid-column: 1;
 		}
 
@@ -389,6 +496,7 @@ const accessible_label = `${label}: ${layers.map((layer) => `${layer.label} (${l
 	@media (prefers-reduced-motion: reduce) {
 		.arch__stub,
 		.arch__bar,
+		.arch__typed-link--async .arch__typed-line,
 		.arch__nodes--bus .arch__node::after {
 			animation: none;
 		}

@@ -3,13 +3,17 @@ interface Props {
 	label: string;
 	skills: string[];
 	index: number;
+	learning_label?: string;
 }
 
-const { label, skills, index } = Astro.props;
+const { label, skills, index, learning_label } = Astro.props;
 ---
 
-<article class="skill-group glass spot" data-reveal style={`--delay: ${(index % 4) * 70}ms`}>
-	<h3 class="skill-group__label"><span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>{label}</h3>
+<article class:list={['skill-group glass spot', { 'skill-group--learning': learning_label }]} data-reveal style={`--delay: ${(index % 4) * 70}ms`}>
+	<h3 class="skill-group__label">
+		<span class="skill-group__number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>{label}
+		{learning_label && <span class="skill-group__badge">{learning_label}</span>}
+	</h3>
 	<ul class="skill-group__skills">
 		{skills.map((skill) => <li class="chip">{skill}</li>)}
 	</ul>
@@ -22,15 +26,26 @@ const { label, skills, index } = Astro.props;
 
 	.skill-group__label {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: baseline;
 		gap: 0.7rem;
 		margin-bottom: 1rem;
 		font-size: 1.1rem;
 	}
 
-	.skill-group__label span {
+	.skill-group__number {
 		color: var(--accent);
 		font: 500 0.75rem var(--font-heading);
+	}
+
+	.skill-group__badge {
+		padding: 0.1rem 0.55rem;
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--accent-2) 18%, transparent);
+		color: var(--accent-2);
+		font: 700 0.62rem var(--font-heading);
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
 	}
 
 	.skill-group__skills {
@@ -43,5 +58,14 @@ const { label, skills, index } = Astro.props;
 
 	.skill-group__skills .chip {
 		white-space: normal;
+	}
+
+	.skill-group--learning {
+		border-style: dashed;
+		border-color: color-mix(in srgb, var(--accent-2) 45%, transparent);
+	}
+
+	.skill-group--learning .chip {
+		border-style: dashed;
 	}
 </style>

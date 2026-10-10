@@ -8,14 +8,22 @@ interface Props {
 	slug: string;
 	index: number;
 	name: string;
+	context?: string;
 	tagline: string;
 	points: string[];
 	technologies: string[];
 	repository?: string;
-	architecture_layers: { label: string; nodes: { name: string; store?: string; role?: string }[]; bus?: boolean }[];
-	metrics: { value: string; label: string }[];
+	architecture_layers: {
+		label: string;
+		nodes: { name: string; store?: string; role?: string }[];
+		bus?: boolean;
+		link?: { kind: 'sync' | 'async'; label: string };
+	}[];
+	architecture_legend: Record<'sync' | 'async', string>;
+	metrics?: { value: string; label: string }[];
 	decisions: { choice: string; cost?: string }[];
 	pipeline_steps?: string[];
+	pipeline_note?: string;
 	default_tab?: TabName;
 	tab_labels: Record<TabName, string>;
 	tabs_label: string;
@@ -30,14 +38,17 @@ const {
 	slug,
 	index,
 	name,
+	context,
 	tagline,
 	points,
 	technologies,
 	repository,
 	architecture_layers,
-	metrics,
+	architecture_legend,
+	metrics = [],
 	decisions,
 	pipeline_steps,
+	pipeline_note,
 	default_tab = 'architecture',
 	tab_labels,
 	tabs_label,
@@ -67,18 +78,21 @@ const tab_icon_paths: Record<TabName, string> = {
 		</div>
 		<div class="project__body">
 			<div class="project__story">
+				{context && <p class="project__context">{context}</p>}
 				<h3 class="project__name">{name}</h3>
 				<p class="project__tagline">{tagline}</p>
-				<dl class="project__metrics" style={`--metric-count:${metrics.length}`}>
-					{
-						metrics.map((metric) => (
-							<div class="project__metric">
-								<dt>{metric.label}</dt>
-								<dd>{metric.value}</dd>
-							</div>
-						))
-					}
-				</dl>
+				{
+					metrics.length > 0 && (
+						<dl class="project__metrics" style={`--metric-count:${metrics.length}`}>
+							{metrics.map((metric) => (
+								<div class="project__metric">
+									<dt>{metric.label}</dt>
+									<dd>{metric.value}</dd>
+								</div>
+							))}
+						</dl>
+					)
+				}
 				<ul class="project__points">
 					{
 						points.map((point) => {
@@ -133,10 +147,13 @@ const tab_icon_paths: Record<TabName, string> = {
 								data-active={tab === active_tab ? '' : undefined}
 							>
 								<h4 class="project__panel-title">{tab_labels[tab]}</h4>
-								{tab === 'architecture' && <ArchitectureDiagram layers={architecture_layers} label={architecture_label} hint={architecture_hint} />}
+								{tab === 'architecture' && (
+									<ArchitectureDiagram layers={architecture_layers} label={architecture_label} hint={architecture_hint} legend={architecture_legend} />
+								)}
 								{tab === 'pipeline' && pipeline_steps && (
 									<div class="project__pipeline">
 										<PipelineDiagram steps={pipeline_steps} label={pipeline_label} />
+										{pipeline_note && <p class="project__pipeline-note">{pipeline_note}</p>}
 									</div>
 								)}
 								{tab === 'decisions' && (
@@ -240,6 +257,17 @@ const tab_icon_paths: Record<TabName, string> = {
 		flex-direction: column;
 		gap: 1.1rem;
 		min-width: 0;
+	}
+
+	.project__context {
+		align-self: flex-start;
+		margin-bottom: -0.4rem;
+		padding: 0.2rem 0.7rem;
+		border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--accent) 10%, transparent);
+		color: var(--accent);
+		font: 700 0.74rem var(--font-heading);
 	}
 
 	.project__name {
@@ -351,6 +379,16 @@ const tab_icon_paths: Record<TabName, string> = {
 	.project__pipeline {
 		width: min(100%, 23rem);
 		margin-inline: auto;
+	}
+
+	.project__pipeline-note {
+		margin-top: 1rem;
+		padding: 0.6rem 0.8rem;
+		border: 1px solid var(--border);
+		border-radius: 0.55rem;
+		background: color-mix(in srgb, var(--bg) 75%, transparent);
+		color: var(--muted);
+		font: 400 0.72rem/1.55 var(--font-heading);
 	}
 
 	.project__decisions {

@@ -6,19 +6,41 @@ interface Props {
 	location: string;
 	period: string;
 	highlights: string[];
+	technologies: string[];
+	technologies_label: string;
+	proof?: { label: string; url: string; title: string };
 }
 
-const { role, summary, organization, location, period, highlights } = Astro.props;
+const { role, summary, organization, location, period, highlights, technologies, technologies_label, proof } = Astro.props;
 ---
 
 <article class="experience glass spot" data-reveal>
 	<span class="experience__dot" aria-hidden="true"></span>
-	<p class="experience__period">{period}</p>
-	<h3 class="experience__role">{role}</h3>
-	<p class="experience__org"><strong>{organization}</strong> · {location}</p>
+	<div class="experience__head">
+		<div>
+			<p class="experience__period">{period}</p>
+			<h3 class="experience__role">{role}</h3>
+			<p class="experience__org"><strong>{organization}</strong> · {location}</p>
+		</div>
+		{
+			proof && (
+				<a class="experience__proof" href={proof.url} rel="noopener" target="_blank" title={proof.title}>
+					<svg viewBox="0 0 16 16" aria-hidden="true">
+						<path d="M8 1.5 2.5 3.8v3.9c0 3.2 2.3 5.9 5.5 6.8 3.2-.9 5.5-3.6 5.5-6.8V3.8z" />
+						<path d="m5.6 8 1.7 1.7 3.2-3.4" />
+					</svg>
+					{proof.label}
+					<span aria-hidden="true">↗</span>
+				</a>
+			)
+		}
+	</div>
 	<p class="experience__summary">{summary}</p>
 	<ul class="experience__highlights">
 		{highlights.map((highlight) => <li>{highlight}</li>)}
+	</ul>
+	<ul class="experience__technologies" aria-label={technologies_label}>
+		{technologies.map((technology) => <li class="chip">{technology}</li>)}
 	</ul>
 </article>
 
@@ -37,6 +59,53 @@ const { role, summary, organization, location, period, highlights } = Astro.prop
 		border-radius: 50%;
 		background: var(--bg);
 		box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 18%, transparent);
+	}
+
+	.experience__head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.experience__proof {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		padding: 0.4rem 0.85rem;
+		border: 1px solid color-mix(in srgb, var(--accent-3) 45%, transparent);
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--accent-3) 12%, transparent);
+		color: var(--text);
+		font: 700 0.78rem var(--font-heading);
+		text-decoration: none;
+		transition:
+			border-color 0.2s ease,
+			transform 0.2s ease;
+	}
+
+	.experience__proof:hover {
+		border-color: var(--accent-3);
+		transform: translateY(-2px);
+	}
+
+	.experience__proof svg {
+		width: 1rem;
+		fill: none;
+		stroke: var(--accent-3);
+		stroke-width: 1.4;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.experience__technologies {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+		margin-top: 1.3rem;
+		padding: 0;
+		list-style: none;
 	}
 
 	.experience__period {
@@ -91,5 +160,15 @@ const { role, summary, organization, location, period, highlights } = Astro.prop
 		width: 0.6rem;
 		height: 2px;
 		background: var(--gradient);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.experience__proof {
+			transition: none;
+		}
+
+		.experience__proof:hover {
+			transform: none;
+		}
 	}
 </style>

@@ -3,25 +3,25 @@
     "slug": "geo-visibility-platform",
     "name": "AI Visibility & GEO Intelligence Platform",
     "tagline": {
-      "en": "A GEO (Generative Engine Optimization) analysis system that measures how visible brands are in LLM answers, compares them with competitors and reports the results with statistical margins of error. I derived the requirements from technical documentation and earlier research, then designed and built it with independent decisions (internship).",
-      "tr": "Markaların LLM yanıtlarındaki görünürlüğünü ölçen, rakiplerle karşılaştıran ve sonuçları istatistiksel hata payıyla raporlayan bir GEO (Generative Engine Optimization) analiz sistemi. Gereksinimleri teknik dokümantasyon ve geçmiş araştırmalardan çıkardım; mimariyi ve teknoloji seçimlerini kendim belirleyerek tasarlayıp geliştirdim"
+      "en": "A GEO (Generative Engine Optimization) analysis system that measures how visible brands are in LLM answers, compares them with competitors and reports prompt coverage, appearance and recommendation rates with confidence intervals. I derived the requirements from technical documentation and earlier research, then designed and built it with independent decisions (internship).",
+      "tr": "Markaların LLM yanıtlarındaki görünürlüğünü ölçen, rakiplerle karşılaştıran ve prompt kapsamasını, görünme ve önerilme oranlarını güven aralıklarıyla raporlayan bir GEO (Generative Engine Optimization) analiz sistemi. Gereksinimleri teknik dokümantasyon ve geçmiş araştırmalardan çıkardım; mimariyi ve teknoloji seçimlerini kendim belirleyerek tasarlayıp geliştirdim."
     },
     "points": [
       {
-        "en": "**My role and approach:** I set the architecture and technology choices myself, split the pipeline into jobs and tasks, structured the backend with Domain-Driven Design, and added a dashboard where the analysis processes can be monitored and managed.",
-        "tr": "**Rolüm ve yaklaşımım:** Mimariyi ve teknoloji seçimlerini kendim belirledim, pipeline'ı job ve task'lere ayırdım, backend'i DDD yaklaşımıyla kurguladım ve analiz süreçlerinin izlenebildiği ve yönetilebildiği bir dashboard ekledim."
+        "en": "**My role and approach:** I set the architecture and the technology choices myself. I split the work into Celery tasks on five queues, kept the backend in one-way layers (api → service → domain, repository and engines → models), and built the dashboard that starts runs and shows their results.",
+        "tr": "**Rolüm ve yaklaşımım:** Mimariyi ve teknoloji seçimlerini kendim belirledim. İşi beş kuyrukta çalışan Celery task'lerine böldüm, backend'i tek yönlü katmanlarla kurdum (api → service → domain, repository ve engines → models) ve çalıştırmaları başlatıp sonuçlarını gösteren dashboard'u geliştirdim."
       },
       {
-        "en": "**Technical approach:** a periodically running background pipeline (job and task structure), a Domain-Driven Design backend, the GEO analysis logic with its calculation processes, and a dashboard (backend and frontend) to monitor and manage pipeline and analysis results.",
-        "tr": "**Teknik yaklaşım:** periyodik çalışan arka plan pipeline'ı (job ve task yapısı), Domain-Driven Design ile backend mimarisi, GEO analiz mantığı ve hesaplama süreçleri, pipeline ve analiz sonuçlarını izleyip yönetebilen dashboard (backend + frontend)."
+        "en": "**Technical approach:** a pipeline run is held together by Celery chords: analysis starts only after the last answer is collected, and metrics only after the last answer is read. Every stage keeps its own run row in PostgreSQL, so the dashboard shows progress as it happens. Celery Beat runs the same stages on a daily schedule, and reports are generated separately.",
+        "tr": "**Teknik yaklaşım:** bir pipeline çalıştırmasını Celery chord'ları bir arada tutuyor: analiz son yanıt toplanınca, metrik hesabı da son yanıt okununca başlıyor. Her aşama PostgreSQL'de kendi run kaydını tutuyor, böylece dashboard ilerlemeyi anlık gösterebiliyor. Celery Beat aynı aşamaları günlük takvimle çalıştırıyor; raporlar ayrıca üretiliyor."
       },
       {
-        "en": "**What I gained as an engineer:** end-to-end project ownership (research, planning, architecture, development), independent technical decisions with an MVP focus, breaking a large system into small testable parts, and thinking about observability and maintainability, not only functionality.",
-        "tr": "**Deneyim kazanımlarım:** uçtan uca proje sahipliği (araştırma, planlama, mimari, geliştirme), bağımsız teknik karar alma ve MVP odaklı ilerleme, büyük sistemi küçük ve test edilebilir parçalara ayırma, sadece işlevsellik değil izlenebilirlik ve sürdürülebilirlik düşünme."
+        "en": "**What I gained as an engineer:** end-to-end project ownership (research, planning, architecture, development), making technical decisions on my own with an MVP focus, breaking a large system into small testable parts, and thinking about observability and maintainability, not only functionality.",
+        "tr": "**Deneyim kazanımlarım:** uçtan uca proje sahipliği (araştırma, planlama, mimari, geliştirme), MVP odaklı ilerleyip teknik kararları kendim alma, büyük bir sistemi küçük ve test edilebilir parçalara ayırma, sadece işlevselliği değil izlenebilirliği ve sürdürülebilirliği de düşünme."
       },
       {
-        "en": "**Technical gains:** system architecture design and technology selection, separating responsibilities with DDD, job/task-based pipeline design and testing, turning GEO analysis methods into an application, and building the dashboard's backend and frontend.",
-        "tr": "**Teknik kazanımlarım:** sistem mimarisi tasarımı ve teknoloji seçimi, DDD ile sorumlulukların ayrıştırılması, job/task bazlı pipeline tasarımı ve test süreçleri, GEO analiz yöntemlerinin uygulamaya dönüştürülmesi, dashboard'un backend ve frontend tarafının geliştirilmesi."
+        "en": "**Technical gains:** designing an asynchronous pipeline with Celery chords and dedicated queues, putting several LLM providers behind one adapter interface (OpenRouter or each provider's own API), turning GEO metrics into code with confidence intervals (Wilson and bootstrap), and building both sides of the dashboard.",
+        "tr": "**Teknik kazanımlarım:** Celery chord'ları ve ayrı kuyruklarla asenkron bir pipeline tasarlamak, birden fazla LLM sağlayıcısını tek bir adapter arayüzünün arkasına almak (OpenRouter ya da sağlayıcının kendi API'si), GEO metriklerini güven aralıklarıyla (Wilson ve bootstrap) koda dökmek ve dashboard'un backend ile frontend tarafını geliştirmek."
       }
     ],
     "technologies": [
@@ -49,8 +49,8 @@
           {
             "name": "React dashboard",
             "role": {
-              "en": "Follow collection runs and explore the visibility results.",
-              "tr": "Toplama çalıştırmalarını izleme ve görünürlük sonuçlarını inceleme ekranı."
+              "en": "React + TypeScript + Vite + Tailwind. Explore the results, manage prompt sets and platforms, start runs and follow their status (polled every 3 seconds).",
+              "tr": "React + TypeScript + Vite + Tailwind. Sonuçları inceleme, prompt setlerini ve platformları yönetme, çalıştırma başlatma ve durumunu izleme (3 saniyede bir yenileniyor)."
             }
           }
         ]
@@ -60,36 +60,103 @@
           "en": "API",
           "tr": "API"
         },
+        "link": {
+          "kind": "sync",
+          "label": {
+            "en": "HTTP · JSON",
+            "tr": "HTTP · JSON"
+          }
+        },
         "nodes": [
           {
             "name": "FastAPI",
             "store": "PostgreSQL",
             "role": {
-              "en": "Serves the dashboard; every run, answer and metric is stored in PostgreSQL.",
-              "tr": "Dashboard'a hizmet veriyor; her çalıştırma, yanıt ve metrik PostgreSQL'de saklanıyor."
+              "en": "Controllers → services → repositories. Reads and writes PostgreSQL directly; a run started from the dashboard is handed to Celery.",
+              "tr": "Controller → service → repository. PostgreSQL'i doğrudan okuyup yazıyor; dashboard'dan başlatılan çalıştırmayı Celery'ye devrediyor."
             }
           }
         ]
       },
       {
         "label": {
-          "en": "Scheduled collection",
-          "tr": "Zamanlı toplama"
+          "en": "Schedule · queue",
+          "tr": "Zamanlama · kuyruk"
+        },
+        "link": {
+          "kind": "async",
+          "label": {
+            "en": "enqueue → Redis",
+            "tr": "Redis'e kuyrukla"
+          }
         },
         "nodes": [
           {
             "name": "Celery Beat",
             "role": {
-              "en": "Schedules the daily collection.",
-              "tr": "Günlük toplamayı zamanlıyor."
+              "en": "The scheduler: sends collection, analysis, metrics and report tasks to Redis at configured hours. It can be switched off with a setting.",
+              "tr": "Zamanlayıcı: toplama, analiz, metrik ve rapor görevlerini ayarlanan saatlerde Redis'e gönderiyor. Bir ayarla kapatılabiliyor."
             }
           },
           {
-            "name": "Celery workers",
-            "store": "Redis broker",
+            "name": "Redis",
             "role": {
-              "en": "Send the prompt set to every provider and save each answer with the conditions it was collected under.",
-              "tr": "Prompt setini her sağlayıcıya gönderiyor, her yanıtı toplandığı koşullarla birlikte kaydediyor."
+              "en": "Celery's broker and result backend. It only carries tasks; no business data is kept here.",
+              "tr": "Celery'nin broker'ı ve result backend'i. Yalnızca görevleri taşıyor; iş verisi burada tutulmuyor."
+            }
+          }
+        ]
+      },
+      {
+        "label": {
+          "en": "Workers · 5 queues",
+          "tr": "Worker · 5 kuyruk"
+        },
+        "link": {
+          "kind": "async",
+          "label": {
+            "en": "Redis → workers",
+            "tr": "Redis → worker"
+          }
+        },
+        "nodes": [
+          {
+            "name": "pipeline",
+            "store": "PostgreSQL",
+            "role": {
+              "en": "Queue: celery. run_pipeline plans the draws and links the stages with Celery chords; each stage closes its own run row.",
+              "tr": "Kuyruk: celery. run_pipeline çekilişleri planlıyor ve aşamaları Celery chord'larıyla bağlıyor; her aşama kendi run kaydını kapatıyor."
+            }
+          },
+          {
+            "name": "collector",
+            "store": "PostgreSQL",
+            "role": {
+              "en": "Queue: collector. Sends each prompt to each platform, spaced out over time, and saves the raw answer with the conditions it was collected under.",
+              "tr": "Kuyruk: collector. Her prompt'u her platforma zamana yayarak gönderiyor ve ham yanıtı toplandığı koşullarla birlikte kaydediyor."
+            }
+          },
+          {
+            "name": "analyzer",
+            "store": "PostgreSQL",
+            "role": {
+              "en": "Queue: analyzer. Finds brand mentions (Turkish-aware matching) and citations; one LLM judge call per answer reads sentiment and whether the brand is recommended.",
+              "tr": "Kuyruk: analyzer. Marka geçişlerini (Türkçe'ye duyarlı eşleştirme) ve kaynak gösterimlerini buluyor; yanıt başına tek bir LLM judge çağrısı duygu tonunu ve markanın önerilip önerilmediğini okuyor."
+            }
+          },
+          {
+            "name": "metrics",
+            "store": "PostgreSQL",
+            "role": {
+              "en": "Queue: metrics. Computes Share of Voice, Citation Share, appearance and recommendation rates, sentiment and the Visibility Score over a date window, with confidence intervals where they apply.",
+              "tr": "Kuyruk: metrics. Bir tarih penceresi üzerinde Share of Voice, Citation Share, görünme ve önerilme oranları, duygu tonu ve Visibility Score hesaplıyor; uygun olan oranlara güven aralığı ekliyor."
+            }
+          },
+          {
+            "name": "reports",
+            "role": {
+              "en": "Queue: reports. Daily PDF and CSV, weekly and monthly PDF and Excel, on their own Beat schedule after the metrics hour.",
+              "tr": "Kuyruk: reports. Günlük PDF ve CSV, haftalık ve aylık PDF ve Excel raporları; metrik saatinden sonra kendi Beat takvimiyle üretiliyor."
             }
           }
         ]
@@ -99,55 +166,26 @@
           "en": "LLM providers",
           "tr": "LLM sağlayıcıları"
         },
-        "nodes": [
-          {
-            "name": "ChatGPT",
-            "role": {
-              "en": "Measured only through its official API.",
-              "tr": "Yalnızca resmi API'si üzerinden ölçülüyor."
-            }
-          },
-          {
-            "name": "Gemini",
-            "role": {
-              "en": "Measured only through its official API.",
-              "tr": "Yalnızca resmi API'si üzerinden ölçülüyor."
-            }
-          },
-          {
-            "name": "Perplexity",
-            "role": {
-              "en": "Measured only through its official API.",
-              "tr": "Yalnızca resmi API'si üzerinden ölçülüyor."
-            }
-          },
-          {
-            "name": "Claude",
-            "role": {
-              "en": "Measured only through its official API.",
-              "tr": "Yalnızca resmi API'si üzerinden ölçülüyor."
-            }
+        "link": {
+          "kind": "sync",
+          "label": {
+            "en": "HTTPS · collector + judge",
+            "tr": "HTTPS · collector + judge"
           }
-        ]
-      },
-      {
-        "label": {
-          "en": "Analysis",
-          "tr": "Analiz"
         },
         "nodes": [
           {
-            "name": "Analyzer",
+            "name": "OpenRouter",
             "role": {
-              "en": "Finds brand mentions, citations and sentiment in every answer.",
-              "tr": "Her yanıttaki marka geçişlerini, kaynak gösterimlerini ve duygu tonunu buluyor."
+              "en": "Used whenever an OpenRouter key is set: one API for all four models (OpenAI, Anthropic, Gemini, Perplexity) and the only route that carries web search.",
+              "tr": "OpenRouter anahtarı tanımlıysa kullanılıyor: dört model (OpenAI, Anthropic, Gemini, Perplexity) için tek API ve web aramasını taşıyan tek yol."
             }
           },
           {
-            "name": "Metrics & reports",
+            "name": "Native APIs",
             "role": {
-              "en": "Share of voice, citation share and visibility score, each with its margin of error.",
-              "tr": "Share of voice, citation share ve visibility score; her biri hata payıyla birlikte."
+              "en": "OpenAI, Anthropic, Gemini and Perplexity through their own keys. Used when there is no OpenRouter key, and without web search.",
+              "tr": "OpenAI, Anthropic, Gemini ve Perplexity kendi anahtarlarıyla. OpenRouter anahtarı yoksa kullanılıyor; bu yolda web araması yapılmıyor."
             }
           }
         ]
@@ -156,8 +194,18 @@
     "decisions": [
       {
         "choice": {
-          "en": "The prompt set is frozen and versioned, so results stay comparable over time.",
-          "tr": "Prompt seti sabit ve versiyonlu; sonuçlar zaman içinde karşılaştırılabilir kalıyor."
+          "en": "Stages are linked with Celery chords, not a plain chain. A chain would start the analysis while answers were still being collected, because queuing the draws returns at once.",
+          "tr": "Aşamalar düz bir chain ile değil, Celery chord'larıyla bağlı. Çekilişleri kuyruğa eklemek hemen döndüğü için chain, yanıtlar daha toplanırken analizi başlatırdı."
+        },
+        "cost": {
+          "en": "More moving parts, so every stage keeps its own run row to stay traceable.",
+          "tr": "Daha fazla hareketli parça var; izlenebilir kalması için her aşama kendi run kaydını tutuyor."
+        }
+      },
+      {
+        "choice": {
+          "en": "The prompt set is frozen and versioned; editing a frozen set means cloning it, so results stay comparable over time.",
+          "tr": "Prompt seti dondurulmuş ve versiyonlu; dondurulmuş bir seti düzenlemek onu klonlamak demek, böylece sonuçlar zaman içinde karşılaştırılabilir kalıyor."
         },
         "cost": {
           "en": "Less room to tweak prompts on the fly.",
@@ -166,8 +214,8 @@
       },
       {
         "choice": {
-          "en": "Measurement goes through the providers' APIs, not scraped chat pages, so it is stable and allowed.",
-          "tr": "Ölçüm sohbet sayfalarından değil, sağlayıcıların API'lerinden yapılıyor; kararlı ve izinli."
+          "en": "Measurement goes through APIs (OpenRouter or the providers' own), not scraped chat pages, so it is stable and allowed.",
+          "tr": "Ölçüm sohbet sayfalarından değil, API'ler üzerinden (OpenRouter ya da sağlayıcının kendisi) yapılıyor; kararlı ve izinli."
         },
         "cost": {
           "en": "Results may differ slightly from what the chat UI shows.",
@@ -176,41 +224,56 @@
       },
       {
         "choice": {
-          "en": "Every run is stored as its own row, so progress is auditable and an interrupted run can resume where it stopped.",
-          "tr": "Her çalıştırma ayrı bir satır olarak saklanıyor; ilerleme denetlenebiliyor ve yarıda kalan çalıştırma kaldığı yerden devam ediyor."
+          "en": "Each rate gets the interval that fits how it was measured: Wilson for prompt coverage, a bootstrap over prompts for the appearance and recommendation rates.",
+          "tr": "Her oran, ölçülme biçimine uyan aralığı alıyor: prompt kapsaması için Wilson, görünme ve önerilme oranları için prompt'lar üzerinde bootstrap."
+        },
+        "cost": {
+          "en": "Pooled Share of Voice and Citation Share have no interval yet.",
+          "tr": "Toplam Share of Voice ve Citation Share için henüz güven aralığı yok."
         }
       }
     ],
-    "metrics": [
-      {
-        "value": "4",
-        "label": {
-          "en": "LLM providers",
-          "tr": "LLM sağlayıcı"
-        }
-      },
-      {
-        "value": "3",
-        "label": {
-          "en": "core metrics",
-          "tr": "temel metrik"
-        }
-      },
-      {
-        "value": "±",
-        "label": {
-          "en": "margin of error on every rate",
-          "tr": "her oranda hata payı"
-        }
-      }
-    ]
+    "context": {
+      "en": "Internship project · Codexist",
+      "tr": "Staj projesi · Codexist"
+    },
+    "pipeline": {
+      "en": [
+        "Run started (API)",
+        "plan the draws",
+        "fan-out: collect",
+        "chord: collected",
+        "fan-out: analyze",
+        "chord: analysed",
+        "compute metrics",
+        "run → succeeded"
+      ],
+      "tr": [
+        "Run başlar (API)",
+        "çekiliş planı",
+        "fan-out: topla",
+        "chord: toplandı",
+        "fan-out: analiz",
+        "chord: okundu",
+        "metrik hesapla",
+        "run → succeeded"
+      ]
+    },
+    "pipeline_label": {
+      "en": "Pipeline run steps",
+      "tr": "Pipeline çalıştırma adımları"
+    },
+    "pipeline_note": {
+      "en": "This chain runs when a pipeline is started from the dashboard. Celery Beat starts the same stages separately on a daily schedule, and reports are generated on their own schedule after the metrics hour.",
+      "tr": "Bu zincir, dashboard'dan bir pipeline başlatıldığında çalışır. Celery Beat aynı aşamaları günlük takvimle ayrı ayrı başlatır; raporlar da metrik saatinden sonra kendi takvimleriyle üretilir."
+    }
   },
   {
     "slug": "stop",
     "name": "STOP",
     "tagline": {
-      "en": "A football match organizing platform, built as 5 independent backend services (graduation project).",
-      "tr": "Futbol maçı organizasyon platformu; 5 bağımsız backend servisi olarak geliştirildi (bitirme projesi)."
+      "en": "A platform for organizing football matches: a mobile app on top of 5 independent backend services.",
+      "tr": "Futbol maçı organize etme platformu: 5 bağımsız backend servisi üzerinde çalışan bir mobil uygulama."
     },
     "points": [
       {
@@ -218,16 +281,20 @@
         "tr": "Backend'i 5 Spring Boot servisine ayırdım (Gateway, Identity, Match, Communication, Notification); her servisin kendi PostgreSQL veritabanı ve Flyway migration'ları var."
       },
       {
-        "en": "Services talk mostly through Kafka events (20+ topics); notifications are created when the Notification service consumes them.",
-        "tr": "Servisler ağırlıklı olarak Kafka event'leriyle haberleşiyor (20'den fazla topic); bildirimler Notification servisi bu event'leri tüketince oluşuyor."
+        "en": "Services talk mostly through Kafka events (20+ topics). The Notification service listens to them and turns them into notifications.",
+        "tr": "Servisler ağırlıklı olarak Kafka event'leriyle haberleşiyor (20'den fazla topic). Notification servisi bu event'leri dinleyip bildirime dönüştürüyor."
+      },
+      {
+        "en": "Built join requests, invitations, a FIFO waitlist that lets the next player in when a spot opens, live chat over WebSocket (STOMP) and a goalkeeper-call feature.",
+        "tr": "Katılım isteklerini, davetleri, yer açılınca sıradaki oyuncuyu otomatik alan FIFO bekleme listesini, WebSocket (STOMP) ile canlı sohbeti ve kaleci çağırma özelliğini geliştirdim."
       },
       {
         "en": "Every service verifies JWTs with its own RSA public key; the gateway adds Redis-backed rate limiting (Bucket4j) and a Resilience4j circuit breaker.",
         "tr": "Her servis JWT'yi kendi RSA public key'iyle doğruluyor; gateway'de Redis tabanlı rate limiting (Bucket4j) ve Resilience4j circuit breaker var."
       },
       {
-        "en": "CI/CD builds only the changed services, tags images with the Git SHA, deploys to AWS EC2 without SSH, and rolls back automatically if the health check fails.",
-        "tr": "CI/CD yalnızca değişen servisleri build ediyor, imajları Git SHA ile etiketliyor, AWS EC2'ye SSH kullanmadan deploy ediyor ve health check başarısız olursa otomatik geri alıyor."
+        "en": "CI/CD builds only the services that changed, tags images with the Git SHA and deploys to AWS EC2 without SSH. Secrets come from Secrets Manager, and a failed health check rolls the deploy back automatically.",
+        "tr": "CI/CD yalnızca değişen servisleri build ediyor, imajları Git SHA ile etiketliyor ve AWS EC2'ye SSH kullanmadan deploy ediyor. Secret'lar Secrets Manager'dan geliyor; health check başarısız olursa deploy otomatik geri alınıyor."
       }
     ],
     "technologies": [
@@ -236,6 +303,7 @@
       "Apache Kafka",
       "PostgreSQL",
       "Redis",
+      "WebSocket",
       "Docker",
       "GitHub Actions",
       "AWS"
@@ -394,7 +462,11 @@
           "tr": "deploy'da SSH anahtarı"
         }
       }
-    ]
+    ],
+    "context": {
+      "en": "Graduation project",
+      "tr": "Bitirme projesi"
+    }
   },
   {
     "slug": "devops-todo-app",
@@ -405,16 +477,20 @@
     },
     "points": [
       {
-        "en": "One GitHub Actions pipeline for a Python/FastAPI backend and a TypeScript frontend; a dynamic build matrix tests and builds only the services that changed.",
-        "tr": "Python/FastAPI backend ve TypeScript frontend için tek bir GitHub Actions pipeline'ı; dinamik build matrisi yalnızca değişen servisleri test edip build ediyor."
+        "en": "One GitHub Actions pipeline for a FastAPI backend and a TypeScript frontend. A dynamic build matrix tests and builds only what changed, and pytest, ruff and frontend lint run on every pull request.",
+        "tr": "FastAPI backend ve TypeScript frontend için tek bir GitHub Actions pipeline'ı. Dinamik build matrisi yalnızca değişen kısmı test edip build ediyor; her pull request'te pytest, ruff ve frontend lint çalışıyor."
       },
       {
-        "en": "Deploys to AWS EC2 through SSM Run Command with a temporary IAM role from GitHub OIDC, so there are no SSH keys and no stored AWS credentials.",
-        "tr": "AWS EC2'ye SSM Run Command ile ve GitHub OIDC'den alınan geçici bir IAM rolüyle deploy ediyor; SSH anahtarı da saklanan AWS kimlik bilgisi de yok."
+        "en": "Multi-stage Dockerfiles keep the images small; they go to GHCR tagged with both the Git SHA and the release version.",
+        "tr": "Multi-stage Dockerfile'lar imajları küçük tutuyor; imajlar hem Git SHA hem de sürüm numarasıyla etiketlenip GHCR'a gönderiliyor."
       },
       {
-        "en": "Docker Compose with health checks, startup ordering and resource limits; release-please generates versions and changelogs from Conventional Commits.",
-        "tr": "Docker Compose'ta health check, başlatma sırası ve kaynak limitleri tanımlı; release-please sürümleri ve changelog'u Conventional Commits'ten üretiyor."
+        "en": "Deploys to AWS EC2 through SSM Run Command with a short-lived IAM role from GitHub OIDC, so there are no SSH keys and no stored AWS credentials. Production settings live in SSM Parameter Store.",
+        "tr": "AWS EC2'ye SSM Run Command ile, GitHub OIDC'den alınan kısa ömürlü bir IAM rolüyle deploy ediyor; SSH anahtarı da saklanan AWS kimlik bilgisi de yok. Production ayarları SSM Parameter Store'da duruyor."
+      },
+      {
+        "en": "Docker Compose starts the app with health checks, startup order and resource limits. The deploy waits until every service is healthy and fails the pipeline if one isn't.",
+        "tr": "Docker Compose uygulamayı health check, başlatma sırası ve kaynak limitleriyle ayağa kaldırıyor. Deploy tüm servisler sağlıklı olana kadar bekliyor; biri sağlıksızsa pipeline başarısız oluyor."
       }
     ],
     "technologies": [

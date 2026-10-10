@@ -138,7 +138,7 @@ h4 {
 }
 
 .section {
-  padding-block: clamp(4rem, 9vw, 7.5rem);
+  padding-block: clamp(3.5rem, 8vw, 6rem);
 }
 
 .eyebrow {

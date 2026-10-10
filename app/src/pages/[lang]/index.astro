@@ -57,6 +57,9 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 						location={item.location[lang]}
 						period={item.period[lang]}
 						highlights={item.highlights.map((highlight) => highlight[lang])}
+						technologies={item.technologies}
+						technologies_label={t(lang, 'experience.stack')}
+						proof={'proof' in item ? { ...item.proof, title: t(lang, 'experience.proof') } : undefined}
 					/>
 				))
 			}
@@ -71,6 +74,7 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 						slug={project.slug}
 						index={index}
 						name={project.name}
+						context={'context' in project ? project.context[lang] : undefined}
 						tagline={project.tagline[lang]}
 						points={project.points.map((point) => point[lang])}
 						technologies={project.technologies}
@@ -79,13 +83,16 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 							...layer,
 							label: layer.label[lang],
 							nodes: layer.nodes.map((node) => ({ ...node, role: node.role[lang] })),
+							link: 'link' in layer ? { kind: layer.link.kind as 'sync' | 'async', label: layer.link.label[lang] } : undefined,
 						}))}
-						metrics={project.metrics.map((metric) => ({ value: metric.value, label: metric.label[lang] }))}
+						architecture_legend={{ sync: t(lang, 'projects.link_sync'), async: t(lang, 'projects.link_async') }}
+						metrics={'metrics' in project && Array.isArray(project.metrics) ? project.metrics.map((metric) => ({ value: metric.value, label: metric.label[lang] })) : undefined}
 						decisions={project.decisions.map((decision) => ({
 							choice: decision.choice[lang],
 							cost: 'cost' in decision ? decision.cost[lang] : undefined,
 						}))}
 						pipeline_steps={'pipeline' in project ? project.pipeline[lang] : undefined}
+						pipeline_note={'pipeline_note' in project ? project.pipeline_note[lang] : undefined}
 						default_tab={'default_tab' in project ? project.default_tab : undefined}
 						tab_labels={{
 							architecture: t(lang, 'projects.tab_architecture'),
@@ -95,7 +102,7 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 						tabs_label={t(lang, 'projects.tabs_label')}
 						architecture_label={t(lang, 'projects.architecture_label')}
 						architecture_hint={t(lang, 'projects.architecture_hint')}
-						pipeline_label={t(lang, 'projects.pipeline_label')}
+						pipeline_label={'pipeline_label' in project ? project.pipeline_label[lang] : t(lang, 'projects.pipeline_label')}
 						decision_cost_label={t(lang, 'projects.decision_cost')}
 						repository_label={t(lang, 'projects.repository')}
 					/>
@@ -106,7 +113,16 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 
 	<Section id="skills" eyebrow={t(lang, 'skills.eyebrow')} title={t(lang, 'skills.heading')}>
 		<div class="skill-grid">
-			{skills.map((group, index) => <SkillGroup label={group.label[lang]} skills={group.skills} index={index} />)}
+			{
+				skills.map((group, index) => (
+					<SkillGroup
+						label={group.label[lang]}
+						skills={group.skills}
+						index={index}
+						learning_label={'learning' in group ? t(lang, 'skills.learning') : undefined}
+					/>
+				))
+			}
 		</div>
 	</Section>
 
@@ -162,7 +178,9 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 		<div class="container">
 			<div class="contact__card glass" data-reveal>
 					<img class="contact__photo" src="/mehmet-guzel.png" alt="Mehmet Güzel" width="128" height="128" loading="lazy" />
-				<h2 class="eyebrow" id="contact-title">{t(lang, 'contact.eyebrow')}</h2>
+				<p class="eyebrow">{t(lang, 'contact.eyebrow')}</p>
+				<h2 class="contact__title" id="contact-title">{t(lang, 'contact.heading')}</h2>
+				<p class="contact__lead">{t(lang, 'contact.lead')}</p>
 				<p class="contact__email">
 					<a href={`mailto:${contact.email}`}>{contact.email}</a>
 				</p>
@@ -306,6 +324,7 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 
 	.post-grid {
 		display: grid;
+		margin-top: 1.75rem;
 		gap: 1.1rem;
 		grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
 	}
@@ -376,8 +395,20 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 		justify-content: center;
 	}
 
+	.contact__title {
+		font-size: clamp(2rem, 5vw, 3.4rem);
+		font-weight: 800;
+	}
+
+	.contact__lead {
+		max-width: 46ch;
+		margin: 1rem auto 0;
+		color: var(--muted);
+		font-size: 1.1rem;
+	}
+
 	.contact__email {
-		margin-top: 2rem;
+		margin-top: 1.75rem;
 		font-family: var(--font-heading);
 		font-size: clamp(1.1rem, 3.4vw, 2rem);
 		font-weight: 700;
