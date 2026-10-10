@@ -1,5 +1,8 @@
 ---
+import ArchitectureDiagram from './ArchitectureDiagram.astro';
 import PipelineDiagram from './PipelineDiagram.astro';
+
+type TabName = 'architecture' | 'pipeline' | 'decisions';
 
 interface Props {
 	slug: string;
@@ -9,67 +12,172 @@ interface Props {
 	points: string[];
 	technologies: string[];
 	repository?: string;
+	architecture_layers: { label: string; nodes: { name: string; store?: string; role?: string }[]; bus?: boolean }[];
+	metrics: { value: string; label: string }[];
+	decisions: { choice: string; cost?: string }[];
 	pipeline_steps?: string[];
-	pipeline_label?: string;
+	default_tab?: TabName;
+	tab_labels: Record<TabName, string>;
+	tabs_label: string;
+	architecture_label: string;
+	architecture_hint: string;
+	pipeline_label: string;
+	decision_cost_label: string;
 	repository_label: string;
 }
 
-const { slug, index, name, tagline, points, technologies, repository, pipeline_steps, pipeline_label, repository_label } =
-	Astro.props;
+const {
+	slug,
+	index,
+	name,
+	tagline,
+	points,
+	technologies,
+	repository,
+	architecture_layers,
+	metrics,
+	decisions,
+	pipeline_steps,
+	default_tab = 'architecture',
+	tab_labels,
+	tabs_label,
+	architecture_label,
+	architecture_hint,
+	pipeline_label,
+	decision_cost_label,
+	repository_label,
+} = Astro.props;
+
+const tab_names: TabName[] = pipeline_steps ? ['architecture', 'pipeline', 'decisions'] : ['architecture', 'decisions'];
+const active_tab = tab_names.includes(default_tab) ? default_tab : 'architecture';
+
+const tab_icon_paths: Record<TabName, string> = {
+	architecture: 'M3 4h10v3H3zM3 10h4v3H3zM9 10h4v3H9zM8 7v3M5 10V8.5h6V10',
+	pipeline: 'M2 8h9M8 5l3 3-3 3M13 3v10',
+	decisions: 'M8 2v12M3 5h10M3 5l-2 5h4zM13 5l-2 5h4zM5 14h6',
+};
 ---
 
-<div class="project-wrap" data-reveal style={`--delay: ${(index % 2) * 90}ms`}>
-	<article class="project glass spot" data-tilt>
+<div class="project-wrap" data-reveal>
+	<article class="project glass spot">
 		<div class="project__bar" aria-hidden="true">
 			<span></span><span></span><span></span>
 			<code>~/projects/{slug}</code>
 			<b>{String(index + 1).padStart(2, '0')}</b>
 		</div>
 		<div class="project__body">
-			<h3 class="project__name">{name}</h3>
-			<p class="project__tagline">{tagline}</p>
-			<ul class="project__points">
+			<div class="project__story">
+				<h3 class="project__name">{name}</h3>
+				<p class="project__tagline">{tagline}</p>
+				<dl class="project__metrics" style={`--metric-count:${metrics.length}`}>
+					{
+						metrics.map((metric) => (
+							<div class="project__metric">
+								<dt>{metric.label}</dt>
+								<dd>{metric.value}</dd>
+							</div>
+						))
+					}
+				</dl>
+				<ul class="project__points">
+					{
+						points.map((point) => {
+							const [, point_label, point_text] = point.match(/^\*\*(.+?)\*\*\s*([\s\S]*)$/) ?? [];
+							return point_label ? <li><strong>{point_label}</strong> {point_text}</li> : <li>{point}</li>;
+						})
+					}
+				</ul>
+				<ul class="project__technologies">
+					{technologies.map((technology) => <li class="chip">{technology}</li>)}
+				</ul>
 				{
-					points.map((point) => {
-						const [, point_label, point_text] = point.match(/^\*\*(.+?)\*\*\s*([\s\S]*)$/) ?? [];
-						return point_label ? <li><strong>{point_label}</strong> {point_text}</li> : <li>{point}</li>;
-					})
+					repository && (
+						<a class="btn project__repository" href={repository} rel="noopener" target="_blank">
+							{repository_label} <span aria-hidden="true">↗</span>
+						</a>
+					)
 				}
-			</ul>
-			{pipeline_steps && pipeline_label && <PipelineDiagram steps={pipeline_steps} label={pipeline_label} />}
-			<ul class="project__technologies">
-				{technologies.map((technology) => <li class="chip">{technology}</li>)}
-			</ul>
-			{
-				repository && (
-					<a class="btn project__repository" href={repository} rel="noopener" target="_blank">
-						{repository_label} <span aria-hidden="true">↗</span>
-					</a>
-				)
-			}
+			</div>
+
+			<div class="project__inspector" data-tabs>
+				<div class="project__tablist" role="tablist" aria-label={tabs_label}>
+					<span class="project__tab-indicator" aria-hidden="true"></span>
+					{
+						tab_names.map((tab) => (
+							<button
+								type="button"
+								role="tab"
+								id={`${slug}-tab-${tab}`}
+								aria-controls={`${slug}-panel-${tab}`}
+								aria-selected={tab === active_tab}
+								tabindex={tab === active_tab ? 0 : -1}
+								data-tab={tab}
+							>
+								<svg viewBox="0 0 16 16" aria-hidden="true">
+									<path d={tab_icon_paths[tab]} />
+								</svg>
+								{tab_labels[tab]}
+							</button>
+						))
+					}
+				</div>
+				<div class="project__panels">
+					{
+						tab_names.map((tab) => (
+							<section
+								class="project__panel"
+								role="tabpanel"
+								id={`${slug}-panel-${tab}`}
+								aria-labelledby={`${slug}-tab-${tab}`}
+								data-panel={tab}
+								data-active={tab === active_tab ? '' : undefined}
+							>
+								<h4 class="project__panel-title">{tab_labels[tab]}</h4>
+								{tab === 'architecture' && <ArchitectureDiagram layers={architecture_layers} label={architecture_label} hint={architecture_hint} />}
+								{tab === 'pipeline' && pipeline_steps && (
+									<div class="project__pipeline">
+										<PipelineDiagram steps={pipeline_steps} label={pipeline_label} />
+									</div>
+								)}
+								{tab === 'decisions' && (
+									<ol class="project__decisions">
+										{decisions.map((decision, position) => (
+											<li class="project__decision">
+												<span class="project__decision-number" aria-hidden="true">
+													{String(position + 1).padStart(2, '0')}
+												</span>
+												<div>
+													<p>{decision.choice}</p>
+													{decision.cost && (
+														<p class="project__decision-cost">
+															<b>{decision_cost_label}</b> {decision.cost}
+														</p>
+													)}
+												</div>
+											</li>
+										))}
+									</ol>
+								)}
+							</section>
+						))
+					}
+				</div>
+			</div>
 		</div>
 	</article>
 </div>
 
 <style>
-	.project-wrap {
-		display: flex;
-	}
-
 	.project {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		overflow: hidden;
+		overflow: clip;
 		transition:
-			transform 0.2s ease-out,
 			border-color 0.3s ease,
 			box-shadow 0.3s ease;
 	}
 
 	.project:hover {
-		border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-		box-shadow: 0 30px 70px -30px color-mix(in srgb, var(--accent) 45%, transparent);
+		border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+		box-shadow: 0 30px 70px -30px color-mix(in srgb, var(--accent) 35%, transparent);
 	}
 
 	.project__bar {
@@ -109,22 +217,77 @@ const { slug, index, name, tagline, points, technologies, repository, pipeline_s
 	}
 
 	.project__body {
+		display: grid;
+		gap: clamp(1.5rem, 3vw, 2.25rem);
+		padding: clamp(1.25rem, 3vw, 2.25rem);
+	}
+
+	@media (min-width: 62rem) {
+		.project__body {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+			align-items: start;
+		}
+
+		/* The diagram stays in view while the reader works through a long description. */
+		.project__inspector {
+			position: sticky;
+			top: 6rem;
+		}
+	}
+
+	.project__story {
 		display: flex;
-		flex: 1;
 		flex-direction: column;
 		gap: 1.1rem;
-		padding: clamp(1.25rem, 3vw, 1.8rem);
+		min-width: 0;
 	}
 
 	.project__name {
-		font-size: clamp(1.5rem, 3vw, 2rem);
+		font-size: clamp(1.45rem, 2.6vw, 1.95rem);
 		font-weight: 800;
 	}
 
 	.project__tagline {
-		margin-top: -0.5rem;
-		font-size: 1.05rem;
+		margin-top: -0.45rem;
+		font-size: 1.02rem;
 		font-weight: 500;
+	}
+
+	.project__metrics {
+		display: grid;
+		grid-template-columns: repeat(var(--metric-count), minmax(0, 1fr));
+		border: 1px solid var(--border);
+		border-radius: 0.8rem;
+		background: color-mix(in srgb, var(--bg) 45%, transparent);
+		overflow: hidden;
+	}
+
+	.project__metric {
+		display: flex;
+		flex-direction: column-reverse;
+		justify-content: flex-end;
+		gap: 0.15rem;
+		padding: 0.7rem clamp(0.6rem, 2vw, 0.9rem);
+	}
+
+	.project__metric + .project__metric {
+		border-left: 1px solid var(--border);
+	}
+
+	.project__metric dd {
+		margin: 0;
+		background: var(--gradient);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		font: 800 clamp(1.35rem, 4.5vw, 1.75rem)/1.1 var(--font-heading);
+		letter-spacing: -0.03em;
+	}
+
+	.project__metric dt {
+		color: var(--muted);
+		font-size: 0.74rem;
+		line-height: 1.35;
 	}
 
 	.project__points {
@@ -132,15 +295,15 @@ const { slug, index, name, tagline, points, technologies, repository, pipeline_s
 		gap: 0.7rem;
 		padding-left: 1.1rem;
 		color: var(--muted);
-		font-size: 0.95rem;
-	}
-
-	.project__points li strong {
-		color: var(--text);
+		font-size: 0.94rem;
 	}
 
 	.project__points li::marker {
 		color: var(--accent);
+	}
+
+	.project__points strong {
+		color: var(--text);
 	}
 
 	.project__technologies {
@@ -156,9 +319,252 @@ const { slug, index, name, tagline, points, technologies, repository, pipeline_s
 		margin-top: auto;
 	}
 
+	/* The inspector reads like a blueprint: a dotted grid behind the diagrams. */
+	.project__inspector {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		min-width: 0;
+		padding: clamp(0.9rem, 2vw, 1.25rem);
+		border: 1px solid var(--border);
+		border-radius: calc(var(--radius) - 0.35rem);
+		background:
+			radial-gradient(circle, var(--grid-line) 1px, transparent 1.2px) 0 0 / 16px 16px,
+			color-mix(in srgb, var(--bg) 55%, transparent);
+		box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 6%, transparent);
+	}
+
+	.project__panels {
+		display: grid;
+		flex: 1;
+		gap: 1.5rem;
+	}
+
+	.project__panel-title {
+		margin-bottom: 0.75rem;
+		color: var(--muted);
+		font: 700 0.7rem var(--font-heading);
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.project__pipeline {
+		width: min(100%, 23rem);
+		margin-inline: auto;
+	}
+
+	.project__decisions {
+		display: grid;
+		gap: 0.65rem;
+		padding: 0;
+		list-style: none;
+	}
+
+	.project__decision {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		gap: 0.85rem;
+		padding: 0.85rem 1rem;
+		border: 1px solid var(--border);
+		border-left: 2px solid var(--accent);
+		border-radius: 0.6rem;
+		background: color-mix(in srgb, var(--bg) 70%, transparent);
+		font-size: 0.9rem;
+		line-height: 1.55;
+	}
+
+	.project__decision-number {
+		color: var(--accent);
+		font: 700 0.78rem/1.9 var(--font-heading);
+	}
+
+	.project__decision-cost {
+		margin-top: 0.4rem;
+		color: var(--muted);
+		font-size: 0.84rem;
+	}
+
+	.project__decision-cost b {
+		margin-right: 0.3rem;
+		padding: 0.05rem 0.45rem;
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--accent-3) 16%, transparent);
+		color: var(--accent-3);
+		font: 700 0.62rem var(--font-heading);
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		vertical-align: 0.1em;
+	}
+
+	/* Without JavaScript every panel stays open, one below the other. */
+	.project__tablist {
+		display: none;
+	}
+
+	:global(.js) .project__tablist {
+		position: relative;
+		display: flex;
+		align-self: flex-start;
+		max-width: 100%;
+		padding: 0.25rem;
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		background: var(--surface);
+		overflow-x: auto;
+		scrollbar-width: none;
+	}
+
+	:global(.js) .project__panel-title {
+		display: none;
+	}
+
+	/* Panels share one grid cell, so the card is as tall as its tallest panel and never jumps. */
+	:global(.js) .project__panels {
+		gap: 0;
+	}
+
+	:global(.js) .project__panel {
+		grid-area: 1 / 1;
+		align-self: start;
+		transition:
+			opacity 0.35s ease,
+			translate 0.35s ease;
+	}
+
+	:global(.js) .project__panel:not([data-active]) {
+		visibility: hidden;
+		opacity: 0;
+		translate: 0 0.5rem;
+		pointer-events: none;
+	}
+
+	.project__tab-indicator {
+		position: absolute;
+		top: 0.25rem;
+		bottom: 0.25rem;
+		left: 0;
+		width: var(--indicator-width, 0);
+		border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--accent) 16%, transparent);
+		opacity: 0;
+		translate: var(--indicator-x, 0) 0;
+	}
+
+	.project__tablist[data-indicator-ready] .project__tab-indicator {
+		opacity: 1;
+	}
+
+	/* Only animate once placed, so the first paint never starts from zero width. */
+	.project__tablist[data-indicator-animated] .project__tab-indicator {
+		transition:
+			translate 0.35s cubic-bezier(0.3, 0.7, 0.2, 1),
+			width 0.35s cubic-bezier(0.3, 0.7, 0.2, 1);
+	}
+
+	.project__tablist button {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.4rem 0.85rem;
+		border: 0;
+		border-radius: 999px;
+		background: transparent;
+		color: var(--muted);
+		font: 600 0.76rem var(--font-heading);
+		white-space: nowrap;
+		cursor: pointer;
+		transition: color 0.25s ease;
+	}
+
+	.project__tablist button svg {
+		width: 0.85rem;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.4;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.project__tablist button:hover,
+	.project__tablist button[aria-selected='true'] {
+		color: var(--text);
+	}
+
+	.project__tablist button[aria-selected='true'] svg {
+		stroke: var(--accent);
+	}
+
+	/* Until the sliding indicator is placed, the selected tab carries its own highlight. */
+	.project__tablist:not([data-indicator-ready]) button[aria-selected='true'] {
+		background: color-mix(in srgb, var(--accent) 16%, transparent);
+	}
+
+	/* Phones: the tabs share the full width and drop their icons so every label fits. */
+	@media (max-width: 30rem) {
+		:global(.js) .project__tablist {
+			align-self: stretch;
+		}
+
+		.project__tablist button {
+			flex: 1;
+			justify-content: center;
+			padding-inline: 0.5rem;
+			font-size: 0.72rem;
+		}
+
+		.project__tablist button svg {
+			display: none;
+		}
+	}
+
 	@media (prefers-reduced-motion: reduce) {
-		.project {
+		.project,
+		.project__tab-indicator,
+		:global(.js) .project__panel {
 			transition: none;
 		}
 	}
 </style>
+
+<script>
+	document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((tabs) => {
+		const tablist = tabs.querySelector<HTMLElement>('[role="tablist"]');
+		const buttons = Array.from(tabs.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+		const panels = Array.from(tabs.querySelectorAll<HTMLElement>('[role="tabpanel"]'));
+		if (!tablist) return;
+
+		const move_indicator = () => {
+			const selected = buttons.find((button) => button.getAttribute('aria-selected') === 'true');
+			if (!selected) return;
+			tablist.style.setProperty('--indicator-x', `${selected.offsetLeft}px`);
+			tablist.style.setProperty('--indicator-width', `${selected.offsetWidth}px`);
+			tablist.toggleAttribute('data-indicator-ready', true);
+		};
+
+		const select_tab = (selected: HTMLButtonElement) => {
+			buttons.forEach((button) => {
+				const is_selected = button === selected;
+				button.setAttribute('aria-selected', String(is_selected));
+				button.tabIndex = is_selected ? 0 : -1;
+			});
+			panels.forEach((panel) => panel.toggleAttribute('data-active', panel.dataset.panel === selected.dataset.tab));
+			tablist.toggleAttribute('data-indicator-animated', true);
+			move_indicator();
+		};
+
+		buttons.forEach((button, position) => {
+			button.addEventListener('click', () => select_tab(button));
+			button.addEventListener('keydown', (event) => {
+				const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+				if (!step) return;
+				const next_button = buttons[(position + step + buttons.length) % buttons.length];
+				next_button.focus();
+				select_tab(next_button);
+			});
+		});
+
+		new ResizeObserver(move_indicator).observe(tablist);
+	});
+</script>

@@ -1,0 +1,429 @@
+---
+interface ArchitectureNode {
+	name: string;
+	store?: string;
+	role?: string;
+}
+
+interface ArchitectureLayer {
+	label: string;
+	nodes: ArchitectureNode[];
+	bus?: boolean;
+}
+
+interface Props {
+	layers: ArchitectureLayer[];
+	label: string;
+	hint: string;
+}
+
+const { layers, label, hint } = Astro.props;
+
+// A bus spans the full width, so every node above drops straight into it.
+const links = layers.slice(1).map((to, index) => {
+	const from_count = layers[index].nodes.length;
+	const to_count = to.bus ? from_count : to.nodes.length;
+	return { from_count, to_count, spread: Math.max(from_count, to_count) };
+});
+
+const accessible_label = `${label}: ${layers.map((layer) => `${layer.label} (${layer.nodes.map((node) => node.name).join(', ')})`).join(' → ')}`;
+---
+
+<div class="arch" role="group" aria-label={accessible_label} data-architecture>
+	<div class="arch__grid">
+		{
+			layers.map((layer, layer_index) => (
+				<>
+					{layer_index > 0 && (
+						<div
+							class="arch__link"
+							style={`--from:${links[layer_index - 1].from_count};--to:${links[layer_index - 1].to_count};--spread:${links[layer_index - 1].spread};--delay:${layer_index * 0.25}s`}
+							aria-hidden="true"
+						>
+							{Array.from({ length: links[layer_index - 1].from_count }, (_, position) => (
+								<span class="arch__stub arch__stub--from" style={`--i:${position}`} />
+							))}
+							{links[layer_index - 1].from_count !== links[layer_index - 1].to_count && <span class="arch__bar" />}
+							{Array.from({ length: links[layer_index - 1].to_count }, (_, position) => (
+								<span class="arch__stub arch__stub--to" style={`--i:${position}`} />
+							))}
+							<span class="arch__stub arch__stub--single" />
+						</div>
+					)}
+					<span class="arch__label">{layer.label}</span>
+					<div
+						class:list={['arch__nodes', { 'arch__nodes--bus': layer.bus, 'arch__nodes--dense': layer.nodes.length >= 4 }]}
+						style={`--count:${layer.nodes.length}`}
+					>
+						{layer.nodes.map((node) => (
+							<div
+								class="arch__node"
+								tabindex={node.role ? 0 : undefined}
+								aria-label={node.role ? `${node.name}${node.store ? ` (${node.store})` : ''}: ${node.role}` : undefined}
+								data-name={node.name}
+								data-role={node.role}
+							>
+								<span class="arch__name">{node.name}</span>
+								{node.store && (
+									<span class="arch__store">
+										<svg viewBox="0 0 12 14" aria-hidden="true">
+											<ellipse cx="6" cy="3" rx="5" ry="2" />
+											<path d="M1 3v8c0 1.1 2.2 2 5 2s5-.9 5-2V3M1 7c0 1.1 2.2 2 5 2s5-.9 5-2" />
+										</svg>
+										{node.store}
+									</span>
+								)}
+							</div>
+						))}
+					</div>
+				</>
+			))
+		}
+	</div>
+	<p class="arch__readout" aria-hidden="true" data-hint={hint}>
+		<span class="arch__readout-prompt">›</span>
+		<b data-readout-name></b>
+		<span data-readout-role>{hint}</span>
+	</p>
+</div>
+
+<style>
+	.arch {
+		--gap: 0.5rem;
+		--line: color-mix(in srgb, var(--accent) 70%, transparent);
+		container-type: inline-size;
+		font-family: var(--font-heading);
+	}
+
+	.arch__grid {
+		display: grid;
+		grid-template-columns: 5.25rem minmax(0, 1fr);
+		column-gap: 0.9rem;
+		align-items: center;
+	}
+
+	.arch__label {
+		grid-column: 1;
+		color: var(--muted);
+		font-size: 0.6rem;
+		font-weight: 500;
+		letter-spacing: 0.1em;
+		line-height: 1.3;
+		text-align: right;
+		text-transform: uppercase;
+	}
+
+	.arch__nodes {
+		grid-column: 2;
+		display: grid;
+		grid-template-columns: repeat(var(--count), minmax(0, 1fr));
+		gap: var(--gap);
+	}
+
+	.arch__node {
+		display: grid;
+		gap: 0.25rem;
+		justify-items: center;
+		min-width: 0;
+		padding: 0.55rem 0.4rem;
+		border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+		border-radius: 0.55rem;
+		background:
+			linear-gradient(180deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent),
+			var(--bg);
+		box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 8%, transparent);
+		text-align: center;
+		transition:
+			border-color 0.25s ease,
+			box-shadow 0.25s ease,
+			transform 0.25s ease;
+	}
+
+	.arch__node[data-role] {
+		cursor: help;
+	}
+
+	.arch__node:hover,
+	.arch__node:focus-visible,
+	.arch__node[data-current] {
+		border-color: var(--accent);
+		box-shadow: 0 0 22px -6px color-mix(in srgb, var(--accent) 70%, transparent);
+		transform: translateY(-2px);
+		outline: none;
+	}
+
+	/* Focus on one component: the rest of the system steps back. */
+	.arch__grid:has(.arch__node[data-current]) .arch__node:not([data-current]) {
+		opacity: 0.38;
+	}
+
+	.arch__node {
+		transition-property: border-color, box-shadow, transform, opacity;
+	}
+
+	/* The readout only makes sense once the script can fill it. */
+	.arch__readout {
+		display: none;
+	}
+
+	:global(.js) .arch__readout {
+		display: flex;
+		gap: 0.5rem;
+		align-items: baseline;
+		min-height: 3.6rem;
+		margin-top: 1rem;
+		padding: 0.6rem 0.8rem;
+		border: 1px solid var(--border);
+		border-radius: 0.55rem;
+		background: color-mix(in srgb, var(--bg) 75%, transparent);
+		color: var(--muted);
+		font-size: 0.72rem;
+		line-height: 1.5;
+	}
+
+	.arch__readout-prompt {
+		color: var(--accent);
+		font-weight: 700;
+	}
+
+	.arch__readout b {
+		flex: none;
+		color: var(--accent);
+	}
+
+	.arch__readout b:empty {
+		display: none;
+	}
+
+	.arch[data-reading] .arch__readout [data-readout-role] {
+		color: var(--text);
+	}
+
+	.arch__name {
+		max-width: 100%;
+		color: var(--text);
+		font-size: 0.74rem;
+		font-weight: 700;
+		line-height: 1.25;
+		overflow-wrap: anywhere;
+	}
+
+	.arch__store {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		max-width: 100%;
+		color: var(--muted);
+		font-size: 0.6rem;
+		line-height: 1.2;
+	}
+
+	.arch__nodes--dense .arch__node {
+		padding-inline: 0.25rem;
+	}
+
+	.arch__nodes--dense .arch__name {
+		font-size: 0.68rem;
+		overflow-wrap: normal;
+	}
+
+	.arch__nodes--dense .arch__store {
+		gap: 0.2rem;
+		font-size: 0.55rem;
+	}
+
+	.arch__store svg {
+		flex: none;
+		width: 0.6rem;
+		fill: none;
+		stroke: var(--accent);
+		stroke-width: 1.2;
+	}
+
+	.arch__nodes--bus .arch__node {
+		position: relative;
+		overflow: hidden;
+		padding-block: 0.45rem;
+		border-style: dashed;
+		background: color-mix(in srgb, var(--accent) 16%, var(--bg));
+	}
+
+	/* A light pulse travelling along the bus, like events moving through the broker. */
+	.arch__nodes--bus .arch__node::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 35%, transparent), transparent);
+		translate: -100% 0;
+		animation: arch-pulse 3.2s ease-in-out infinite;
+	}
+
+	.arch__nodes--bus .arch__name {
+		letter-spacing: 0.2em;
+	}
+
+	.arch__link {
+		grid-column: 2;
+		position: relative;
+		height: 2rem;
+	}
+
+	/* Centre of column --i out of --k columns, with the node gap taken into account. */
+	.arch__stub {
+		--k: var(--from);
+		position: absolute;
+		left: calc((var(--i) + 0.5) * 100% / var(--k) + var(--gap) * (var(--i) + 0.5 - var(--k) / 2) / var(--k));
+		width: 1.5px;
+		translate: -50% 0;
+		background: repeating-linear-gradient(180deg, var(--line) 0 4px, transparent 4px 8px);
+		background-size: 100% 8px;
+		animation: arch-flow-down 0.9s linear infinite;
+		animation-delay: var(--delay);
+	}
+
+	.arch__stub--from {
+		top: 0;
+		height: 50%;
+	}
+
+	.arch__stub--to {
+		--k: var(--to);
+		top: 50%;
+		bottom: 5px;
+	}
+
+	.arch__stub--to::after,
+	.arch__stub--single::after {
+		content: '';
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		translate: -50% 0;
+		border: 4px solid transparent;
+		border-top: 5px solid var(--accent);
+		border-bottom: 0;
+	}
+
+	.arch__stub--single {
+		display: none;
+		--i: 0;
+		--k: 1;
+		top: 0;
+		bottom: 5px;
+	}
+
+	.arch__bar {
+		position: absolute;
+		top: 50%;
+		left: calc(50% / var(--spread) + var(--gap) * (0.5 - var(--spread) / 2) / var(--spread));
+		right: calc(50% / var(--spread) + var(--gap) * (0.5 - var(--spread) / 2) / var(--spread));
+		height: 1.5px;
+		translate: 0 -50%;
+		background: repeating-linear-gradient(90deg, var(--line) 0 4px, transparent 4px 8px);
+		background-size: 8px 100%;
+		animation: arch-flow-right 0.9s linear infinite;
+		animation-delay: var(--delay);
+	}
+
+	@keyframes arch-flow-down {
+		to {
+			background-position: 0 8px;
+		}
+	}
+
+	@keyframes arch-flow-right {
+		to {
+			background-position: 8px 0;
+		}
+	}
+
+	@keyframes arch-pulse {
+		60%,
+		100% {
+			translate: 100% 0;
+		}
+	}
+
+	/* Narrow panels: labels sit above each layer, nodes wrap, and one straight arrow links the layers. */
+	@container (max-width: 30rem) {
+		.arch__grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.arch__label,
+		.arch__nodes,
+		.arch__link {
+			grid-column: 1;
+		}
+
+		.arch__label {
+			margin-bottom: 0.35rem;
+			text-align: left;
+		}
+
+		.arch__nodes {
+			grid-template-columns: repeat(min(var(--count), 2), minmax(0, 1fr));
+		}
+
+		/* An odd node out spans the row instead of sitting at half width. */
+		.arch__node:last-child:nth-child(odd) {
+			grid-column: 1 / -1;
+		}
+
+		.arch__link {
+			height: 1.6rem;
+			margin-block: 0.2rem;
+		}
+
+		.arch__stub--from,
+		.arch__stub--to,
+		.arch__bar {
+			display: none;
+		}
+
+		.arch__stub--single {
+			display: block;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.arch__stub,
+		.arch__bar,
+		.arch__nodes--bus .arch__node::after {
+			animation: none;
+		}
+
+		.arch__node {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	document.querySelectorAll<HTMLElement>('[data-architecture]').forEach((architecture) => {
+		const readout_name = architecture.querySelector<HTMLElement>('[data-readout-name]');
+		const readout_role = architecture.querySelector<HTMLElement>('[data-readout-role]');
+		const hint = architecture.querySelector<HTMLElement>('[data-hint]')?.dataset.hint ?? '';
+		const nodes = Array.from(architecture.querySelectorAll<HTMLElement>('[data-role]'));
+		if (!readout_name || !readout_role) return;
+
+		const show_node = (selected: HTMLElement | null) => {
+			nodes.forEach((node) => node.toggleAttribute('data-current', node === selected));
+			architecture.toggleAttribute('data-reading', Boolean(selected));
+			readout_name.textContent = selected?.dataset.name ?? '';
+			readout_role.textContent = selected?.dataset.role ?? hint;
+		};
+
+		nodes.forEach((node) => {
+			node.addEventListener('pointerenter', () => show_node(node));
+			node.addEventListener('focus', () => show_node(node));
+			node.addEventListener('click', () => show_node(node));
+		});
+		architecture.addEventListener('pointerleave', (event) => {
+			if ((event as PointerEvent).pointerType === 'mouse') show_node(null);
+		});
+		architecture.addEventListener('focusout', (event) => {
+			if (!architecture.contains(event.relatedTarget as Node | null)) show_node(null);
+		});
+	});
+</script>

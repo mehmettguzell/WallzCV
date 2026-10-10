@@ -38,6 +38,171 @@
       "TypeScript",
       "Tailwind",
       "Recharts"
+    ],
+    "architecture": [
+      {
+        "label": {
+          "en": "Client",
+          "tr": "İstemci"
+        },
+        "nodes": [
+          {
+            "name": "React dashboard",
+            "role": {
+              "en": "Follow collection runs and explore the visibility results.",
+              "tr": "Toplama çalıştırmalarını izleme ve görünürlük sonuçlarını inceleme ekranı."
+            }
+          }
+        ]
+      },
+      {
+        "label": {
+          "en": "API",
+          "tr": "API"
+        },
+        "nodes": [
+          {
+            "name": "FastAPI",
+            "store": "PostgreSQL",
+            "role": {
+              "en": "Serves the dashboard; every run, answer and metric is stored in PostgreSQL.",
+              "tr": "Dashboard'a hizmet veriyor; her çalıştırma, yanıt ve metrik PostgreSQL'de saklanıyor."
+            }
+          }
+        ]
+      },
+      {
+        "label": {
+          "en": "Scheduled collection",
+          "tr": "Zamanlı toplama"
+        },
+        "nodes": [
+          {
+            "name": "Celery Beat",
+            "role": {
+              "en": "Schedules the daily collection.",
+              "tr": "Günlük toplamayı zamanlıyor."
+            }
+          },
+          {
+            "name": "Celery workers",
+            "store": "Redis broker",
+            "role": {
+              "en": "Send the prompt set to every provider and save each answer with the conditions it was collected under.",
+              "tr": "Prompt setini her sağlayıcıya gönderiyor, her yanıtı toplandığı koşullarla birlikte kaydediyor."
+            }
+          }
+        ]
+      },
+      {
+        "label": {
+          "en": "LLM providers",
+          "tr": "LLM sağlayıcıları"
+        },
+        "nodes": [
+          {
+            "name": "ChatGPT",
+            "role": {
+              "en": "Measured only through its official API.",
+              "tr": "Yalnızca resmi API'si üzerinden ölçülüyor."
+            }
+          },
+          {
+            "name": "Gemini",
+            "role": {
+              "en": "Measured only through its official API.",
+              "tr": "Yalnızca resmi API'si üzerinden ölçülüyor."
+            }
+          },
+          {
+            "name": "Perplexity",
+            "role": {
+              "en": "Measured only through its official API.",
+              "tr": "Yalnızca resmi API'si üzerinden ölçülüyor."
+            }
+          },
+          {
+            "name": "Claude",
+            "role": {
+              "en": "Measured only through its official API.",
+              "tr": "Yalnızca resmi API'si üzerinden ölçülüyor."
+            }
+          }
+        ]
+      },
+      {
+        "label": {
+          "en": "Analysis",
+          "tr": "Analiz"
+        },
+        "nodes": [
+          {
+            "name": "Analyzer",
+            "role": {
+              "en": "Finds brand mentions, citations and sentiment in every answer.",
+              "tr": "Her yanıttaki marka geçişlerini, kaynak gösterimlerini ve duygu tonunu buluyor."
+            }
+          },
+          {
+            "name": "Metrics & reports",
+            "role": {
+              "en": "Share of voice, citation share and visibility score, each with its margin of error.",
+              "tr": "Share of voice, citation share ve visibility score; her biri hata payıyla birlikte."
+            }
+          }
+        ]
+      }
+    ],
+    "decisions": [
+      {
+        "choice": {
+          "en": "The prompt set is frozen and versioned, so results stay comparable over time.",
+          "tr": "Prompt seti sabit ve versiyonlu; sonuçlar zaman içinde karşılaştırılabilir kalıyor."
+        },
+        "cost": {
+          "en": "Less room to tweak prompts on the fly.",
+          "tr": "Prompt'ları anlık değiştirmek kolay değil."
+        }
+      },
+      {
+        "choice": {
+          "en": "Measurement goes through the providers' APIs, not scraped chat pages, so it is stable and allowed.",
+          "tr": "Ölçüm sohbet sayfalarından değil, sağlayıcıların API'lerinden yapılıyor; kararlı ve izinli."
+        },
+        "cost": {
+          "en": "Results may differ slightly from what the chat UI shows.",
+          "tr": "Sonuçlar sohbet arayüzünde görünenden biraz farklı olabilir."
+        }
+      },
+      {
+        "choice": {
+          "en": "Every run is stored as its own row, so progress is auditable and an interrupted run can resume where it stopped.",
+          "tr": "Her çalıştırma ayrı bir satır olarak saklanıyor; ilerleme denetlenebiliyor ve yarıda kalan çalıştırma kaldığı yerden devam ediyor."
+        }
+      }
+    ],
+    "metrics": [
+      {
+        "value": "4",
+        "label": {
+          "en": "LLM providers",
+          "tr": "LLM sağlayıcı"
+        }
+      },
+      {
+        "value": "3",
+        "label": {
+          "en": "core metrics",
+          "tr": "temel metrik"
+        }
+      },
+      {
+        "value": "±",
+        "label": {
+          "en": "margin of error on every rate",
+          "tr": "her oranda hata payı"
+        }
+      }
     ]
   },
   {
@@ -95,7 +260,141 @@
         "health check",
         "hata varsa rollback"
       ]
-    }
+    },
+    "architecture": [
+      {
+        "label": {
+          "en": "Client",
+          "tr": "İstemci"
+        },
+        "nodes": [
+          {
+            "name": "Expo mobile app",
+            "role": {
+              "en": "The React Native (Expo) mobile client.",
+              "tr": "React Native (Expo) mobil istemci."
+            }
+          }
+        ]
+      },
+      {
+        "label": {
+          "en": "Entry",
+          "tr": "Giriş"
+        },
+        "nodes": [
+          {
+            "name": "API Gateway",
+            "store": "Redis rate limit",
+            "role": {
+              "en": "The only public entry: routing, Redis-backed rate limiting and a circuit breaker.",
+              "tr": "Dışarıya açık tek giriş: yönlendirme, Redis tabanlı rate limiting ve circuit breaker."
+            }
+          }
+        ]
+      },
+      {
+        "label": {
+          "en": "Services",
+          "tr": "Servisler"
+        },
+        "nodes": [
+          {
+            "name": "Identity",
+            "store": "PostgreSQL",
+            "role": {
+              "en": "Users and friendships; publishes friend-request and account events.",
+              "tr": "Kullanıcılar ve arkadaşlıklar; arkadaşlık isteği ve hesap event'lerini yayınlıyor."
+            }
+          },
+          {
+            "name": "Match",
+            "store": "PostgreSQL",
+            "role": {
+              "en": "Matches, participants, invitations and the waitlist; publishes every match event.",
+              "tr": "Maçlar, katılımcılar, davetler ve bekleme listesi; tüm maç event'lerini yayınlıyor."
+            }
+          },
+          {
+            "name": "Communication",
+            "store": "PostgreSQL",
+            "role": {
+              "en": "Match chat; publishes a chat event for every message.",
+              "tr": "Maç sohbeti; her mesaj için bir sohbet event'i yayınlıyor."
+            }
+          },
+          {
+            "name": "Notification",
+            "store": "PostgreSQL",
+            "role": {
+              "en": "Turns the other services' events into notifications.",
+              "tr": "Diğer servislerin event'lerini bildirime dönüştürüyor."
+            }
+          }
+        ]
+      },
+      {
+        "label": {
+          "en": "Events",
+          "tr": "Olaylar"
+        },
+        "nodes": [
+          {
+            "name": "Kafka",
+            "role": {
+              "en": "20+ topics carry events between the services.",
+              "tr": "Servisler arasındaki event'leri 20'den fazla topic taşıyor."
+            }
+          }
+        ],
+        "bus": true
+      }
+    ],
+    "decisions": [
+      {
+        "choice": {
+          "en": "Services do not call each other; they publish events to Kafka. If one service is down the others keep working.",
+          "tr": "Servisler birbirini çağırmıyor, Kafka'ya olay bırakıyor. Biri düşse diğerleri çalışmaya devam ediyor."
+        },
+        "cost": {
+          "en": "Data becomes consistent a moment later, not instantly.",
+          "tr": "Veri anında değil, kısa bir gecikmeyle tutarlı oluyor."
+        }
+      },
+      {
+        "choice": {
+          "en": "Every service checks the JWT itself and does not trust the gateway. There is no single point of trust.",
+          "tr": "Her servis JWT'yi kendisi doğruluyor, gateway'e güvenmiyor. Tek bir güven noktası yok."
+        },
+        "cost": {
+          "en": "The same verification code lives in each service.",
+          "tr": "Aynı doğrulama kodu her serviste var."
+        }
+      }
+    ],
+    "metrics": [
+      {
+        "value": "5",
+        "label": {
+          "en": "services",
+          "tr": "servis"
+        }
+      },
+      {
+        "value": "20+",
+        "label": {
+          "en": "Kafka topics",
+          "tr": "Kafka topic"
+        }
+      },
+      {
+        "value": "0",
+        "label": {
+          "en": "SSH keys in deploy",
+          "tr": "deploy'da SSH anahtarı"
+        }
+      }
+    ]
   },
   {
     "slug": "devops-todo-app",
@@ -132,26 +431,105 @@
     "repository": "https://github.com/mehmettguzell/Devops-Todo-App",
     "pipeline": {
       "en": [
-        "push",
-        "paths-filter",
-        "test",
-        "build matrix",
-        "GHCR",
+        "PR",
+        "paths-filter + test",
+        "release-please",
+        "tag v*",
+        "build → GHCR",
         "OIDC → IAM role",
         "SSM Run Command",
         "health check"
       ],
       "tr": [
-        "push",
-        "paths-filter",
-        "test",
-        "build matrisi",
-        "GHCR",
+        "PR",
+        "paths-filter + test",
+        "release-please",
+        "tag v*",
+        "build → GHCR",
         "OIDC → IAM role",
         "SSM Run Command",
         "health check"
       ]
-    }
+    },
+    "default_tab": "pipeline",
+    "architecture": [
+      {
+        "label": {
+          "en": "Client",
+          "tr": "İstemci"
+        },
+        "nodes": [
+          {
+            "name": "React + nginx",
+            "role": {
+              "en": "A Vite-built React app served by nginx.",
+              "tr": "Vite ile build edilip nginx ile sunulan React uygulaması."
+            }
+          }
+        ]
+      },
+      {
+        "label": {
+          "en": "API",
+          "tr": "API"
+        },
+        "nodes": [
+          {
+            "name": "FastAPI",
+            "store": "PostgreSQL",
+            "role": {
+              "en": "REST API for tasks and settings, backed by PostgreSQL.",
+              "tr": "Görevler ve ayarlar için REST API; veriler PostgreSQL'de."
+            }
+          }
+        ]
+      }
+    ],
+    "decisions": [
+      {
+        "choice": {
+          "en": "No SSH keys and no stored AWS credentials: GitHub gets a temporary role (OIDC) for each deploy. There is nothing to leak or rotate.",
+          "tr": "SSH anahtarı ve saklı AWS şifresi yok; GitHub her deploy için geçici bir rol alıyor (OIDC). Sızacak ya da yenilenecek bir şey kalmıyor."
+        },
+        "cost": {
+          "en": "More IAM setup.",
+          "tr": "Daha fazla IAM kurulumu."
+        }
+      },
+      {
+        "choice": {
+          "en": "Deploys happen only for tagged releases, not on every push, so each version in production is numbered and traceable.",
+          "tr": "Deploy her push'ta değil, sadece etiketli sürümlerde yapılıyor; üretimdeki her sürüm numaralı ve izlenebilir."
+        },
+        "cost": {
+          "en": "Changes reach production a bit slower.",
+          "tr": "Değişiklikler üretime biraz daha geç ulaşıyor."
+        }
+      }
+    ],
+    "metrics": [
+      {
+        "value": "1",
+        "label": {
+          "en": "pipeline, two apps",
+          "tr": "pipeline, iki uygulama"
+        }
+      },
+      {
+        "value": "0",
+        "label": {
+          "en": "SSH keys or stored AWS keys",
+          "tr": "SSH ya da saklı AWS anahtarı"
+        }
+      },
+      {
+        "value": "v*",
+        "label": {
+          "en": "only tagged releases deploy",
+          "tr": "sadece etiketli sürüm deploy olur"
+        }
+      }
+    ]
   },
   {
     "slug": "order-management",
@@ -183,7 +561,126 @@
       "Nginx",
       "Docker Compose"
     ],
-    "repository": "https://github.com/mehmettguzell/Event-Driven-Order-Management-Platform"
+    "repository": "https://github.com/mehmettguzell/Event-Driven-Order-Management-Platform",
+    "architecture": [
+      {
+        "label": {
+          "en": "Entry",
+          "tr": "Giriş"
+        },
+        "nodes": [
+          {
+            "name": "Nginx gateway",
+            "store": "rate limit",
+            "role": {
+              "en": "Single entry point: routing and per-path rate limiting.",
+              "tr": "Tek giriş noktası: yönlendirme ve path bazlı rate limiting."
+            }
+          }
+        ]
+      },
+      {
+        "label": {
+          "en": "Services",
+          "tr": "Servisler"
+        },
+        "nodes": [
+          {
+            "name": "User",
+            "store": "PostgreSQL",
+            "role": {
+              "en": "Accounts and JWT tokens; other services verify tokens here.",
+              "tr": "Hesaplar ve JWT token'ları; diğer servisler token'ı burada doğruluyor."
+            }
+          },
+          {
+            "name": "Product",
+            "store": "PostgreSQL",
+            "role": {
+              "en": "The product catalogue.",
+              "tr": "Ürün kataloğu."
+            }
+          },
+          {
+            "name": "Order",
+            "store": "PostgreSQL",
+            "role": {
+              "en": "Creates the order, publishes order.created and cancels it if a later step fails.",
+              "tr": "Siparişi oluşturuyor, order.created yayınlıyor ve sonraki adım başarısız olursa iptal ediyor."
+            }
+          },
+          {
+            "name": "Inventory",
+            "store": "PostgreSQL",
+            "role": {
+              "en": "Reserves stock on order.created, locking the row so stock is never taken twice.",
+              "tr": "order.created gelince stoğu ayırıyor; kaydı kilitleyerek aynı stoğun iki kez alınmasını önlüyor."
+            }
+          },
+          {
+            "name": "Payment",
+            "store": "PostgreSQL",
+            "role": {
+              "en": "Authorizes the payment on order.created.",
+              "tr": "order.created gelince ödemeyi onaylıyor."
+            }
+          }
+        ]
+      },
+      {
+        "label": {
+          "en": "Events",
+          "tr": "Olaylar"
+        },
+        "nodes": [
+          {
+            "name": "RabbitMQ",
+            "role": {
+              "en": "One topic exchange carries the order, stock and payment events.",
+              "tr": "Sipariş, stok ve ödeme event'lerini tek bir topic exchange taşıyor."
+            }
+          }
+        ],
+        "bus": true
+      }
+    ],
+    "decisions": [
+      {
+        "choice": {
+          "en": "If the stock or payment step fails, the order is cancelled automatically. No central coordinator: each service reacts to events.",
+          "tr": "Stok ya da ödeme adımı başarısız olursa sipariş otomatik iptal ediliyor. Merkezi bir koordinatör yok; her servis olaylara kendisi tepki veriyor."
+        }
+      },
+      {
+        "choice": {
+          "en": "A product's stock row is locked while it is updated, so two orders cannot take the same stock at the same time.",
+          "tr": "Stok güncellenirken ürünün stok kaydı kilitleniyor; iki sipariş aynı stoğu aynı anda alamıyor."
+        }
+      }
+    ],
+    "metrics": [
+      {
+        "value": "5",
+        "label": {
+          "en": "services",
+          "tr": "servis"
+        }
+      },
+      {
+        "value": "5",
+        "label": {
+          "en": "separate databases",
+          "tr": "ayrı veritabanı"
+        }
+      },
+      {
+        "value": "10/s",
+        "label": {
+          "en": "rate limit per path",
+          "tr": "path başına rate limit"
+        }
+      }
+    ]
   },
   {
     "slug": "inventory-microservices",
@@ -217,6 +714,94 @@
       "OpenAPI",
       "Next.js"
     ],
-    "repository": "https://github.com/mehmettguzell/mehmettguzell_Microservice_Project"
+    "repository": "https://github.com/mehmettguzell/mehmettguzell_Microservice_Project",
+    "architecture": [
+      {
+        "label": {
+          "en": "Client",
+          "tr": "İstemci"
+        },
+        "nodes": [
+          {
+            "name": "Next.js",
+            "role": {
+              "en": "Frontend that talks only to the gateway.",
+              "tr": "Yalnızca gateway ile konuşan arayüz."
+            }
+          }
+        ]
+      },
+      {
+        "label": {
+          "en": "Entry",
+          "tr": "Giriş"
+        },
+        "nodes": [
+          {
+            "name": "Spring Cloud Gateway",
+            "role": {
+              "en": "Routing, CORS and OAuth2 in one place.",
+              "tr": "Yönlendirme, CORS ve OAuth2 tek yerde."
+            }
+          }
+        ]
+      },
+      {
+        "label": {
+          "en": "Services",
+          "tr": "Servisler"
+        },
+        "nodes": [
+          {
+            "name": "Product",
+            "store": "MongoDB",
+            "role": {
+              "en": "Product data as flexible MongoDB documents.",
+              "tr": "Ürün verisi esnek MongoDB dokümanları olarak."
+            }
+          },
+          {
+            "name": "Inventory",
+            "store": "MySQL",
+            "role": {
+              "en": "Stock levels in MySQL.",
+              "tr": "Stok seviyeleri MySQL'de."
+            }
+          },
+          {
+            "name": "Order",
+            "store": "MySQL",
+            "role": {
+              "en": "Orders; checks stock with the inventory service before accepting one.",
+              "tr": "Siparişler; kabul etmeden önce stoğu inventory servisine soruyor."
+            }
+          }
+        ]
+      }
+    ],
+    "decisions": [
+      {
+        "choice": {
+          "en": "Each service uses the database that fits its data: MongoDB for flexible product documents, MySQL where stock and orders need strict consistency.",
+          "tr": "Her servis verisine uygun veritabanını kullanıyor: esnek ürün verisi için MongoDB, kesin tutarlılık isteyen stok ve sipariş için MySQL."
+        }
+      }
+    ],
+    "metrics": [
+      {
+        "value": "4",
+        "label": {
+          "en": "services",
+          "tr": "servis"
+        }
+      },
+      {
+        "value": "2",
+        "label": {
+          "en": "database engines",
+          "tr": "veritabanı motoru"
+        }
+      }
+    ]
   }
 ]

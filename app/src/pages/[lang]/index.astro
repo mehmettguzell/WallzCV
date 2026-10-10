@@ -75,8 +75,28 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 						points={project.points.map((point) => point[lang])}
 						technologies={project.technologies}
 						repository={'repository' in project ? project.repository : undefined}
+						architecture_layers={project.architecture.map((layer) => ({
+							...layer,
+							label: layer.label[lang],
+							nodes: layer.nodes.map((node) => ({ ...node, role: node.role[lang] })),
+						}))}
+						metrics={project.metrics.map((metric) => ({ value: metric.value, label: metric.label[lang] }))}
+						decisions={project.decisions.map((decision) => ({
+							choice: decision.choice[lang],
+							cost: 'cost' in decision ? decision.cost[lang] : undefined,
+						}))}
 						pipeline_steps={'pipeline' in project ? project.pipeline[lang] : undefined}
+						default_tab={'default_tab' in project ? project.default_tab : undefined}
+						tab_labels={{
+							architecture: t(lang, 'projects.tab_architecture'),
+							pipeline: t(lang, 'projects.tab_pipeline'),
+							decisions: t(lang, 'projects.tab_decisions'),
+						}}
+						tabs_label={t(lang, 'projects.tabs_label')}
+						architecture_label={t(lang, 'projects.architecture_label')}
+						architecture_hint={t(lang, 'projects.architecture_hint')}
 						pipeline_label={t(lang, 'projects.pipeline_label')}
+						decision_cost_label={t(lang, 'projects.decision_cost')}
 						repository_label={t(lang, 'projects.repository')}
 					/>
 				))
@@ -256,13 +276,7 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 
 	.project-grid {
 		display: grid;
-		gap: 1.5rem;
-	}
-
-	@media (min-width: 62rem) {
-		.project-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
+		gap: clamp(1.5rem, 3vw, 2.25rem);
 	}
 
 	.skill-grid {
