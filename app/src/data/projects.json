@@ -281,20 +281,20 @@
         "tr": "Backend'i 5 Spring Boot servisine ayırdım (Gateway, Identity, Match, Communication, Notification); her servisin kendi PostgreSQL veritabanı ve Flyway migration'ları var."
       },
       {
-        "en": "Services talk mostly through Kafka events (20+ topics). The Notification service listens to them and turns them into notifications.",
-        "tr": "Servisler ağırlıklı olarak Kafka event'leriyle haberleşiyor (20'den fazla topic). Notification servisi bu event'leri dinleyip bildirime dönüştürüyor."
+        "en": "Services talk mostly through Kafka events (20+ topics) instead of calling each other. The Notification service listens to them and turns them into notifications; Communication and Identity react to match events too.",
+        "tr": "Servisler birbirini çağırmak yerine ağırlıklı olarak Kafka event'leriyle haberleşiyor (20'den fazla topic). Notification servisi bu event'leri dinleyip bildirime dönüştürüyor; Communication ve Identity de maç event'lerine tepki veriyor."
       },
       {
         "en": "Built join requests, invitations, a FIFO waitlist that lets the next player in when a spot opens, live chat over WebSocket (STOMP) and a goalkeeper-call feature.",
         "tr": "Katılım isteklerini, davetleri, yer açılınca sıradaki oyuncuyu otomatik alan FIFO bekleme listesini, WebSocket (STOMP) ile canlı sohbeti ve kaleci çağırma özelliğini geliştirdim."
       },
       {
-        "en": "Every service verifies JWTs with its own RSA public key; the gateway adds Redis-backed rate limiting (Bucket4j) and a Resilience4j circuit breaker.",
-        "tr": "Her servis JWT'yi kendi RSA public key'iyle doğruluyor; gateway'de Redis tabanlı rate limiting (Bucket4j) ve Resilience4j circuit breaker var."
+        "en": "Every service, the gateway included, verifies JWTs with its own RSA public key, and the gateway strips any identity headers a client sends. The gateway adds Redis-backed rate limiting (Bucket4j) and a Resilience4j circuit breaker per service group.",
+        "tr": "Gateway dahil her servis JWT'yi kendi RSA public key'iyle doğruluyor; gateway istemcinin gönderdiği kimlik başlıklarını da siliyor. Gateway'de Redis tabanlı rate limiting (Bucket4j) ve servis grubu başına Resilience4j circuit breaker var."
       },
       {
-        "en": "CI/CD builds only the services that changed, tags images with the Git SHA and deploys to AWS EC2 without SSH. Secrets come from Secrets Manager, and a failed health check rolls the deploy back automatically.",
-        "tr": "CI/CD yalnızca değişen servisleri build ediyor, imajları Git SHA ile etiketliyor ve AWS EC2'ye SSH kullanmadan deploy ediyor. Secret'lar Secrets Manager'dan geliyor; health check başarısız olursa deploy otomatik geri alınıyor."
+        "en": "A version tag (v*) builds all five services; each one is booted in Docker Compose and must pass its health check before its image is pushed to GHCR with the Git SHA. Deploy then reaches AWS EC2 through SSM without SSH, with secrets from Secrets Manager. Services start one at a time, and a failed health check rolls back to the previous images.",
+        "tr": "Bir sürüm etiketi (v*) beş servisin hepsini build ediyor; her servis Docker Compose'ta ayağa kaldırılıp health check'ini geçince imajı Git SHA ile GHCR'a gönderiliyor. Deploy, AWS EC2'ye SSH kullanmadan SSM ile ulaşıyor ve secret'ları Secrets Manager'dan alıyor. Servisler tek tek başlatılıyor; health check başarısız olursa önceki imajlara geri dönülüyor."
       }
     ],
     "technologies": [
@@ -311,22 +311,24 @@
     "repository": "https://github.com/mehmettguzell/STOP",
     "pipeline": {
       "en": [
-        "push",
-        "paths-filter",
-        "build changed",
-        "GHCR (Git SHA)",
+        "push tag v*",
+        "build 5 services",
+        "boot + health",
+        "push to GHCR",
+        "OIDC → IAM role",
         "SSM Run Command",
-        "health check",
-        "rollback if fail"
+        "start one by one",
+        "fail → rollback"
       ],
       "tr": [
-        "push",
-        "paths-filter",
-        "değişeni build",
-        "GHCR (Git SHA)",
+        "tag v* push",
+        "5 servisi build",
+        "boot + health",
+        "GHCR'a gönder",
+        "OIDC → IAM rolü",
         "SSM Run Command",
-        "health check",
-        "hata varsa rollback"
+        "tek tek başlat",
+        "hata → rollback"
       ]
     },
     "architecture": [
@@ -339,8 +341,8 @@
           {
             "name": "Expo mobile app",
             "role": {
-              "en": "The React Native (Expo) mobile client.",
-              "tr": "React Native (Expo) mobil istemci."
+              "en": "React Native (Expo SDK 54) with Zustand and React Navigation. Axios for REST calls, STOMP over WebSocket for live chat.",
+              "tr": "React Native (Expo SDK 54), Zustand ve React Navigation. REST için Axios, canlı sohbet için WebSocket üzerinden STOMP."
             }
           }
         ]
@@ -350,13 +352,20 @@
           "en": "Entry",
           "tr": "Giriş"
         },
+        "link": {
+          "kind": "sync",
+          "label": {
+            "en": "HTTP · WebSocket",
+            "tr": "HTTP · WebSocket"
+          }
+        },
         "nodes": [
           {
             "name": "API Gateway",
             "store": "Redis rate limit",
             "role": {
-              "en": "The only public entry: routing, Redis-backed rate limiting and a circuit breaker.",
-              "tr": "Dışarıya açık tek giriş: yönlendirme, Redis tabanlı rate limiting ve circuit breaker."
+              "en": "The only public entry (:8080). Routes to the services, validates the JWT, strips client-sent identity headers, rate-limits with Redis and wraps each service group in a Resilience4j circuit breaker with a fallback.",
+              "tr": "Dışarıya açık tek giriş (:8080). Servislere yönlendiriyor, JWT'yi doğruluyor, istemcinin gönderdiği kimlik başlıklarını siliyor, Redis ile rate limit uyguluyor ve her servis grubunu fallback'li bir Resilience4j circuit breaker ile sarıyor."
             }
           }
         ]
@@ -366,37 +375,44 @@
           "en": "Services",
           "tr": "Servisler"
         },
+        "link": {
+          "kind": "sync",
+          "label": {
+            "en": "routed by path",
+            "tr": "path'e göre yönlendirme"
+          }
+        },
         "nodes": [
           {
             "name": "Identity",
             "store": "PostgreSQL",
             "role": {
-              "en": "Users and friendships; publishes friend-request and account events.",
-              "tr": "Kullanıcılar ve arkadaşlıklar; arkadaşlık isteği ve hesap event'lerini yayınlıyor."
+              "en": "Sign-up and login, JWT signing, profiles, friendships, moderation reports and goalkeeper profiles.",
+              "tr": "Kayıt ve giriş, JWT imzalama, profiller, arkadaşlıklar, moderasyon şikayetleri ve kaleci profilleri."
             }
           },
           {
             "name": "Match",
             "store": "PostgreSQL",
             "role": {
-              "en": "Matches, participants, invitations and the waitlist; publishes every match event.",
-              "tr": "Maçlar, katılımcılar, davetler ve bekleme listesi; tüm maç event'lerini yayınlıyor."
+              "en": "Matches, participation requests, invitations, the waitlist and goalkeeper offers. It publishes most of the events.",
+              "tr": "Maçlar, katılım istekleri, davetler, bekleme listesi ve kaleci teklifleri. Event'lerin çoğunu o yayınlıyor."
             }
           },
           {
             "name": "Communication",
             "store": "PostgreSQL",
             "role": {
-              "en": "Match chat; publishes a chat event for every message.",
-              "tr": "Maç sohbeti; her mesaj için bir sohbet event'i yayınlıyor."
+              "en": "Match chat over WebSocket (STOMP). It publishes an event for every message and follows who joins or leaves a match.",
+              "tr": "WebSocket (STOMP) ile maç sohbeti. Her mesaj için event yayınlıyor ve maça kimin girip çıktığını takip ediyor."
             }
           },
           {
             "name": "Notification",
             "store": "PostgreSQL",
             "role": {
-              "en": "Turns the other services' events into notifications.",
-              "tr": "Diğer servislerin event'lerini bildirime dönüştürüyor."
+              "en": "Listens to the other services' events and turns them into notifications. Its one synchronous call asks Match for a match's participant IDs.",
+              "tr": "Diğer servislerin event'lerini dinleyip bildirime dönüştürüyor. Tek senkron çağrısı, Match'ten bir maçın katılımcı ID'lerini istemek."
             }
           }
         ]
@@ -406,23 +422,30 @@
           "en": "Events",
           "tr": "Olaylar"
         },
+        "bus": true,
+        "link": {
+          "kind": "async",
+          "label": {
+            "en": "publish / consume",
+            "tr": "yayınla / dinle"
+          }
+        },
         "nodes": [
           {
             "name": "Kafka",
             "role": {
-              "en": "20+ topics carry events between the services.",
-              "tr": "Servisler arasındaki event'leri 20'den fazla topic taşıyor."
+              "en": "About 28 topics carry events between the services, for example match.participant.joined or identity.user.suspended.",
+              "tr": "Servisler arasındaki event'leri yaklaşık 28 topic taşıyor; örneğin match.participant.joined ya da identity.user.suspended."
             }
           }
-        ],
-        "bus": true
+        ]
       }
     ],
     "decisions": [
       {
         "choice": {
-          "en": "Services do not call each other; they publish events to Kafka. If one service is down the others keep working.",
-          "tr": "Servisler birbirini çağırmıyor, Kafka'ya olay bırakıyor. Biri düşse diğerleri çalışmaya devam ediyor."
+          "en": "Services talk through Kafka events instead of calling each other, so if one is down the others keep working. The one synchronous call is Notification asking Match for participant IDs, and it falls back to an empty list when Match does not answer.",
+          "tr": "Servisler birbirini çağırmıyor, Kafka event'leriyle haberleşiyor; biri düşse diğerleri çalışmaya devam ediyor. Tek senkron çağrı, Notification'ın Match'ten katılımcı ID'lerini istemesi; Match cevap vermezse boş liste ile devam ediyor."
         },
         "cost": {
           "en": "Data becomes consistent a moment later, not instantly.",
@@ -431,12 +454,22 @@
       },
       {
         "choice": {
-          "en": "Every service checks the JWT itself and does not trust the gateway. There is no single point of trust.",
-          "tr": "Her servis JWT'yi kendisi doğruluyor, gateway'e güvenmiyor. Tek bir güven noktası yok."
+          "en": "Every service checks the JWT itself and does not trust the gateway's headers. There is no single point of trust.",
+          "tr": "Her servis JWT'yi kendisi doğruluyor, gateway'in başlıklarına güvenmiyor. Tek bir güven noktası yok."
         },
         "cost": {
           "en": "The same verification code lives in each service.",
           "tr": "Aynı doğrulama kodu her serviste var."
+        }
+      },
+      {
+        "choice": {
+          "en": "Each service has its own PostgreSQL database on its own Docker network, so no service can reach another one's data.",
+          "tr": "Her servisin kendi PostgreSQL veritabanı ve kendi Docker ağı var; hiçbir servis diğerinin verisine erişemiyor."
+        },
+        "cost": {
+          "en": "Data that spans services has to travel as events, not as a join.",
+          "tr": "Servisleri aşan veri join ile değil event olarak taşınıyor."
         }
       }
     ],
@@ -466,6 +499,10 @@
     "context": {
       "en": "Graduation project",
       "tr": "Bitirme projesi"
+    },
+    "pipeline_note": {
+      "en": "Build starts on the version tag and Deploy starts when Build succeeds. Images are tagged with the Git SHA, and the running images are kept as previous so a failed deploy can roll back.",
+      "tr": "Build sürüm etiketiyle başlıyor, Deploy da Build başarılı olunca başlıyor. İmajlar Git SHA ile etiketleniyor; çalışan imajlar previous olarak saklandığı için başarısız bir deploy geri alınabiliyor."
     }
   },
   {

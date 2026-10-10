@@ -90,5 +90,5 @@
   "contact.lead": "I'm looking for a Fullstack, DevOps or AI/LLM engineering role. Email is the fastest way to reach me, and my CV is one click away.",
   "skills.learning": "learning now",
   "projects.link_sync": "sync call (HTTP / HTTPS)",
-  "projects.link_async": "async hand-off (Celery queue)"
+  "projects.link_async": "async hand-off (queue or event bus)"
 }

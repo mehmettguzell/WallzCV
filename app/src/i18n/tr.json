@@ -90,5 +90,5 @@
   "contact.lead": "Fullstack, DevOps ya da AI/LLM mühendisliği rolü arıyorum. Bana en hızlı e-postayla ulaşabilirsin; CV'm de bir tık uzakta.",
   "skills.learning": "şu an öğreniyorum",
   "projects.link_sync": "senkron çağrı (HTTP / HTTPS)",
-  "projects.link_async": "asenkron devir (Celery kuyruğu)"
+  "projects.link_async": "asenkron devir (kuyruk ya da event bus)"
 }
