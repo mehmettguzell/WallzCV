@@ -75,7 +75,7 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 						index={index}
 						name={project.name}
 						context={'context' in project ? project.context[lang] : undefined}
-						microservices_label={'microservices' in project && project.microservices ? t(lang, 'projects.microservices') : undefined}
+						architecture_styles={project.architecture_style.map((style) => style[lang])}
 						tagline={project.tagline[lang]}
 						points={project.points.map((point) => point[lang])}
 						technologies={project.technologies}

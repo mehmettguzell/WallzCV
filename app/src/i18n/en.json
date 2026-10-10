@@ -49,7 +49,7 @@
   "experience.heading": "Work experience.",
   "projects.eyebrow": "03 · Projects",
   "projects.heading": "Projects I built end to end.",
-  "projects.lead": "Five projects I designed and built, from the database to deployment. Each card shows its architecture, and the microservice projects are marked.",
+  "projects.lead": "Five projects I designed and built, from the database to deployment. Each card names its architecture style and shows the diagram.",
   "projects.pipeline_label": "CI/CD pipeline steps",
   "projects.architecture_label": "Architecture diagram",
   "projects.architecture_hint": "Hover over or tap a component to see what it does.",
@@ -88,6 +88,5 @@
   "contact.lead": "I'm looking for a Fullstack, DevOps or AI/LLM engineering role. Email is the fastest way to reach me, and my CV is one click away.",
   "skills.learning": "learning now",
   "projects.link_sync": "sync call (HTTP / HTTPS)",
-  "projects.link_async": "async hand-off (queue or event bus)",
-  "projects.microservices": "Microservices"
+  "projects.link_async": "async hand-off (queue or event bus)"
 }

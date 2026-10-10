@@ -224,7 +224,17 @@
     "pipeline_note": {
       "en": "This chain runs when a pipeline is started from the dashboard. Celery Beat starts the same stages separately on a daily schedule, and reports are generated on their own schedule after the metrics hour.",
       "tr": "Bu zincir, dashboard'dan bir pipeline başlatıldığında çalışır. Celery Beat aynı aşamaları günlük takvimle ayrı ayrı başlatır; raporlar da metrik saatinden sonra kendi takvimleriyle üretilir."
-    }
+    },
+    "architecture_style": [
+      {
+        "en": "Layered monolith",
+        "tr": "Katmanlı monolit"
+      },
+      {
+        "en": "Async task queue",
+        "tr": "Asenkron görev kuyruğu"
+      }
+    ]
   },
   {
     "slug": "stop",
@@ -430,7 +440,16 @@
       "en": "Build starts on the version tag and Deploy starts when Build succeeds. Images are tagged with the Git SHA, and the running images are kept as previous so a failed deploy can roll back.",
       "tr": "Build sürüm etiketiyle başlıyor, Deploy da Build başarılı olunca başlıyor. İmajlar Git SHA ile etiketleniyor; çalışan imajlar previous olarak saklandığı için başarısız bir deploy geri alınabiliyor."
     },
-    "microservices": true
+    "architecture_style": [
+      {
+        "en": "Microservices",
+        "tr": "Mikroservis"
+      },
+      {
+        "en": "Event-driven",
+        "tr": "Event-driven"
+      }
+    ]
   },
   {
     "slug": "devops-todo-app",
@@ -584,7 +603,13 @@
     "pipeline_note": {
       "en": "Tests run on pull requests and pushes to main. release-please turns Conventional Commits into a version tag; the tag starts the image build, and Deploy starts when the build succeeds.",
       "tr": "Testler pull request'lerde ve main push'larında çalışıyor. release-please Conventional Commits'ten sürüm etiketi üretiyor; etiket imaj build'ini, build başarılı olunca da Deploy'u başlatıyor."
-    }
+    },
+    "architecture_style": [
+      {
+        "en": "Three-tier web app",
+        "tr": "Üç katmanlı web uygulaması"
+      }
+    ]
   },
   {
     "slug": "order-management",
@@ -722,7 +747,16 @@
         }
       }
     ],
-    "microservices": true
+    "architecture_style": [
+      {
+        "en": "Microservices",
+        "tr": "Mikroservis"
+      },
+      {
+        "en": "Event-driven",
+        "tr": "Event-driven"
+      }
+    ]
   },
   {
     "slug": "inventory-microservices",
@@ -837,6 +871,15 @@
         }
       }
     ],
-    "microservices": true
+    "architecture_style": [
+      {
+        "en": "Microservices",
+        "tr": "Mikroservis"
+      },
+      {
+        "en": "API gateway",
+        "tr": "API gateway"
+      }
+    ]
   }
 ]

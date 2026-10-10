@@ -9,7 +9,7 @@ interface Props {
 	index: number;
 	name: string;
 	context?: string;
-	microservices_label?: string;
+	architecture_styles: string[];
 	tagline: string;
 	points: string[];
 	technologies: string[];
@@ -38,7 +38,7 @@ const {
 	index,
 	name,
 	context,
-	microservices_label,
+	architecture_styles,
 	tagline,
 	points,
 	technologies,
@@ -75,14 +75,10 @@ const tab_icon_paths: Record<TabName, string> = {
 		</div>
 		<div class="project__body">
 			<div class="project__story">
-				{
-					(microservices_label || context) && (
-						<ul class="project__badges">
-							{microservices_label && <li class="project__badge project__badge--microservices">{microservices_label}</li>}
-							{context && <li class="project__badge">{context}</li>}
-						</ul>
-					)
-				}
+				<ul class="project__badges">
+					{architecture_styles.map((style) => <li class="project__badge project__badge--style">{style}</li>)}
+					{context && <li class="project__badge">{context}</li>}
+				</ul>
 				<h3 class="project__name">{name}</h3>
 				<p class="project__tagline">{tagline}</p>
 				{
@@ -262,7 +258,7 @@ const tab_icon_paths: Record<TabName, string> = {
 		font: 700 0.74rem var(--font-heading);
 	}
 
-	.project__badge--microservices {
+	.project__badge--style {
 		border-color: color-mix(in srgb, var(--accent-2) 50%, transparent);
 		background: color-mix(in srgb, var(--accent-2) 16%, transparent);
 		color: var(--accent-2);
