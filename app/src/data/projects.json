@@ -1,5 +1,46 @@
 [
   {
+    "slug": "geo-visibility-platform",
+    "name": "AI Visibility & GEO Intelligence Platform",
+    "tagline": {
+      "en": "A GEO (Generative Engine Optimization) analysis system that measures how visible brands are in LLM answers, compares them with competitors and reports the results with statistical margins of error. I derived the requirements from technical documentation and earlier research, then designed and built it with independent decisions (internship).",
+      "tr": "Markaların LLM yanıtlarındaki görünürlüğünü ölçen, rakiplerle karşılaştıran ve sonuçları istatistiksel hata payıyla raporlayan bir GEO (Generative Engine Optimization) analiz sistemi. Gereksinimleri teknik dokümantasyon ve geçmiş araştırmalardan çıkardım; mimariyi ve teknoloji seçimlerini kendim belirleyerek tasarlayıp geliştirdim"
+    },
+    "points": [
+      {
+        "en": "**My role and approach:** I set the architecture and technology choices myself, split the pipeline into jobs and tasks, structured the backend with Domain-Driven Design, and added a dashboard where the analysis processes can be monitored and managed.",
+        "tr": "**Rolüm ve yaklaşımım:** Mimariyi ve teknoloji seçimlerini kendim belirledim, pipeline'ı job ve task'lere ayırdım, backend'i DDD yaklaşımıyla kurguladım ve analiz süreçlerinin izlenebildiği ve yönetilebildiği bir dashboard ekledim."
+      },
+      {
+        "en": "**Technical approach:** a periodically running background pipeline (job and task structure), a Domain-Driven Design backend, the GEO analysis logic with its calculation processes, and a dashboard (backend and frontend) to monitor and manage pipeline and analysis results.",
+        "tr": "**Teknik yaklaşım:** periyodik çalışan arka plan pipeline'ı (job ve task yapısı), Domain-Driven Design ile backend mimarisi, GEO analiz mantığı ve hesaplama süreçleri, pipeline ve analiz sonuçlarını izleyip yönetebilen dashboard (backend + frontend)."
+      },
+      {
+        "en": "**What I gained as an engineer:** end-to-end project ownership (research, planning, architecture, development), independent technical decisions with an MVP focus, breaking a large system into small testable parts, and thinking about observability and maintainability, not only functionality.",
+        "tr": "**Deneyim kazanımlarım:** uçtan uca proje sahipliği (araştırma, planlama, mimari, geliştirme), bağımsız teknik karar alma ve MVP odaklı ilerleme, büyük sistemi küçük ve test edilebilir parçalara ayırma, sadece işlevsellik değil izlenebilirlik ve sürdürülebilirlik düşünme."
+      },
+      {
+        "en": "**Technical gains:** system architecture design and technology selection, separating responsibilities with DDD, job/task-based pipeline design and testing, turning GEO analysis methods into an application, and building the dashboard's backend and frontend.",
+        "tr": "**Teknik kazanımlarım:** sistem mimarisi tasarımı ve teknoloji seçimi, DDD ile sorumlulukların ayrıştırılması, job/task bazlı pipeline tasarımı ve test süreçleri, GEO analiz yöntemlerinin uygulamaya dönüştürülmesi, dashboard'un backend ve frontend tarafının geliştirilmesi."
+      }
+    ],
+    "technologies": [
+      "Python 3.11",
+      "FastAPI",
+      "SQLAlchemy (async)",
+      "PostgreSQL",
+      "Celery",
+      "Redis",
+      "Alembic",
+      "pytest",
+      "Docker Compose",
+      "React",
+      "TypeScript",
+      "Tailwind",
+      "Recharts"
+    ]
+  },
+  {
     "slug": "stop",
     "name": "STOP",
     "tagline": {

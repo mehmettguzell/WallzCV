@@ -29,7 +29,12 @@ const { slug, index, name, tagline, points, technologies, repository, pipeline_s
 			<h3 class="project__name">{name}</h3>
 			<p class="project__tagline">{tagline}</p>
 			<ul class="project__points">
-				{points.map((point) => <li>{point}</li>)}
+				{
+					points.map((point) => {
+						const [, point_label, point_text] = point.match(/^\*\*(.+?)\*\*\s*([\s\S]*)$/) ?? [];
+						return point_label ? <li><strong>{point_label}</strong> {point_text}</li> : <li>{point}</li>;
+					})
+				}
 			</ul>
 			{pipeline_steps && pipeline_label && <PipelineDiagram steps={pipeline_steps} label={pipeline_label} />}
 			<ul class="project__technologies">
@@ -128,6 +133,10 @@ const { slug, index, name, tagline, points, technologies, repository, pipeline_s
 		padding-left: 1.1rem;
 		color: var(--muted);
 		font-size: 0.95rem;
+	}
+
+	.project__points li strong {
+		color: var(--text);
 	}
 
 	.project__points li::marker {
