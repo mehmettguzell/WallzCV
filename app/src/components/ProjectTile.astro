@@ -1,0 +1,314 @@
+---
+interface Props {
+	slug: string;
+	index: number;
+	name: string;
+	tagline: string;
+	architecture_styles: string[];
+	context?: string;
+	technologies: string[];
+	status_label?: string;
+	open_label: string;
+	close_label: string;
+}
+
+const { slug, index, name, tagline, architecture_styles, context, technologies, status_label, open_label, close_label } = Astro.props;
+
+const visible_technology_count = 4;
+const visible_technologies = technologies.slice(0, visible_technology_count);
+const hidden_technology_count = technologies.length - visible_technologies.length;
+---
+
+<div class="tile-wrap" data-reveal>
+	<article class:list={['tile glass spot', { 'tile--in-progress': status_label }]}>
+		<div class="tile__bar" aria-hidden="true">
+			<span></span><span></span><span></span>
+			<code>~/projects/{slug}</code>
+			<b>{String(index + 1).padStart(2, '0')}</b>
+		</div>
+		<div class="tile__body">
+			<ul class="tile__badges">
+				{status_label && <li class="tile__badge tile__badge--status">{status_label}</li>}
+				{architecture_styles.map((style) => <li class="tile__badge tile__badge--style">{style}</li>)}
+				{context && <li class="tile__badge">{context}</li>}
+			</ul>
+			<div class="tile__heading">
+				<h3 class="tile__name">
+					<button type="button" class="tile__open" aria-haspopup="dialog" data-open-project={`${slug}-dialog`}>{name}</button>
+				</h3>
+				<p class="tile__tagline">{tagline}</p>
+			</div>
+			<ul class="tile__technologies">
+				{visible_technologies.map((technology) => <li class="chip">{technology}</li>)}
+				{hidden_technology_count > 0 && <li class="chip">+{hidden_technology_count}</li>}
+			</ul>
+			<span class="tile__cta" aria-hidden="true">{open_label} <span>→</span></span>
+		</div>
+	</article>
+
+	<dialog id={`${slug}-dialog`} class="project-dialog" aria-label={name}>
+		<button type="button" class="project-dialog__close" data-close-project aria-label={close_label}>×</button>
+		<slot />
+	</dialog>
+</div>
+
+<style>
+	.tile {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		overflow: clip;
+		transition:
+			border-color 0.3s ease,
+			box-shadow 0.3s ease,
+			transform 0.3s ease;
+	}
+
+	.tile:hover,
+	.tile:focus-within {
+		border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+		box-shadow: 0 30px 70px -30px color-mix(in srgb, var(--accent) 35%, transparent);
+		transform: translateY(-3px);
+	}
+
+	.tile__bar {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.65rem 1rem;
+		border-bottom: 1px solid var(--border);
+		background: var(--surface);
+	}
+
+	.tile__bar span {
+		flex: none;
+		width: 0.6rem;
+		height: 0.6rem;
+		border-radius: 50%;
+		background: #ff5f57;
+	}
+
+	.tile__bar span:nth-child(2) {
+		background: #febc2e;
+	}
+
+	.tile__bar span:nth-child(3) {
+		background: #28c840;
+	}
+
+	.tile__bar code {
+		margin-left: 0.6rem;
+		overflow: hidden;
+		color: var(--muted);
+		font: 400 0.76rem var(--font-heading);
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.tile__bar b {
+		margin-left: auto;
+		color: var(--accent);
+		font: 700 0.78rem var(--font-heading);
+	}
+
+	.tile__body {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: 1.1rem;
+		padding: clamp(1.1rem, 2.5vw, 1.4rem);
+	}
+
+	.tile__heading {
+		display: grid;
+		gap: 0.55rem;
+	}
+
+	.tile--in-progress {
+		border-color: color-mix(in srgb, #22c55e 45%, transparent);
+		box-shadow:
+			var(--shadow),
+			0 0 0 1px color-mix(in srgb, #22c55e 18%, transparent),
+			0 0 48px -18px color-mix(in srgb, #22c55e 55%, transparent);
+	}
+
+	.tile--in-progress:hover,
+	.tile--in-progress:focus-within {
+		border-color: color-mix(in srgb, #22c55e 70%, transparent);
+	}
+
+	.tile__badges,
+	.tile__technologies {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+		padding: 0;
+		list-style: none;
+	}
+
+	.tile__badge {
+		padding: 0.2rem 0.7rem;
+		border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--accent) 10%, transparent);
+		color: var(--accent);
+		font: 700 0.74rem var(--font-heading);
+	}
+
+	.tile__badge--status {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		border-color: color-mix(in srgb, #22c55e 50%, transparent);
+		background: color-mix(in srgb, #22c55e 14%, transparent);
+		color: var(--text);
+	}
+
+	.tile__badge--status::before {
+		content: '';
+		width: 0.45rem;
+		height: 0.45rem;
+		border-radius: 50%;
+		background: #22c55e;
+	}
+
+	.tile__badge--style {
+		border-color: color-mix(in srgb, var(--accent-2) 50%, transparent);
+		background: color-mix(in srgb, var(--accent-2) 16%, transparent);
+		color: var(--accent-2);
+	}
+
+	.tile__name {
+		color: var(--text);
+		font-size: clamp(1.25rem, 2vw, 1.45rem);
+		font-weight: 800;
+		line-height: 1.2;
+	}
+
+	/* The button's pseudo-element stretches over the whole tile, so the entire card opens the dialog. */
+	.tile__open {
+		padding: 0;
+		border: 0;
+		background: none;
+		color: inherit;
+		font: inherit;
+		text-align: left;
+		cursor: pointer;
+	}
+
+	.tile__open::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		border-radius: inherit;
+	}
+
+	.tile__open:focus-visible::after {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.tile {
+			transition: none;
+		}
+	}
+
+	.tile__tagline {
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		color: var(--muted);
+		font-size: 0.93rem;
+		line-height: 1.55;
+	}
+
+	.tile__technologies {
+		margin-top: auto;
+	}
+
+	.tile__cta {
+		padding-top: 0.9rem;
+		border-top: 1px solid var(--border);
+		color: var(--accent);
+		font: 700 0.85rem var(--font-heading);
+	}
+
+	.tile__cta span {
+		display: inline-block;
+		transition: transform 0.25s ease;
+	}
+
+	.tile:hover .tile__cta span {
+		transform: translateX(4px);
+	}
+
+	.project-dialog {
+		width: min(72rem, calc(100% - 2rem));
+		max-width: none;
+		max-height: calc(100dvh - 2rem);
+		margin: auto;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: inherit;
+		overflow: auto;
+		overscroll-behavior: contain;
+	}
+
+	.project-dialog::backdrop {
+		background: rgb(0 0 0 / 0.6);
+		backdrop-filter: blur(6px);
+	}
+
+	.project-dialog__close {
+		position: sticky;
+		top: 0.5rem;
+		z-index: 2;
+		display: block;
+		width: 2.25rem;
+		height: 2.25rem;
+		margin: 0 0.5rem -2.75rem auto;
+		border: 1px solid var(--border);
+		border-radius: 50%;
+		background: var(--surface);
+		color: var(--text);
+		font-size: 1.4rem;
+		line-height: 1;
+		cursor: pointer;
+	}
+
+	.project-dialog__close:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+
+	/* Inside the dialog the diagram sticks to the dialog's own scroll area, not the page header offset. */
+	.project-dialog :global(.project__inspector) {
+		top: 1rem;
+	}
+
+	/* Leaves room in the window bar for the close button. */
+	.project-dialog :global(.project__bar) {
+		padding-right: 3.5rem;
+	}
+
+	:global(body:has(.project-dialog[open])) {
+		overflow: hidden;
+	}
+</style>
+
+<script>
+	document.querySelectorAll<HTMLButtonElement>('[data-open-project]').forEach((opener) => {
+		const dialog = document.getElementById(opener.dataset.openProject ?? '');
+		if (!(dialog instanceof HTMLDialogElement)) return;
+
+		opener.addEventListener('click', () => dialog.showModal());
+		dialog.querySelector('[data-close-project]')?.addEventListener('click', () => dialog.close());
+		dialog.addEventListener('click', (event) => {
+			if (event.target === dialog) dialog.close();
+		});
+	});
+</script>
