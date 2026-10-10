@@ -10,6 +10,8 @@ interface Props {
 	name: string;
 	context?: string;
 	architecture_styles: string[];
+	status_label?: string;
+	release_status?: { title: string; text: string; platforms: { name: string; state: string }[] };
 	tagline: string;
 	points: string[];
 	technologies: string[];
@@ -39,6 +41,8 @@ const {
 	name,
 	context,
 	architecture_styles,
+	status_label,
+	release_status,
 	tagline,
 	points,
 	technologies,
@@ -67,15 +71,17 @@ const tab_icon_paths: Record<TabName, string> = {
 ---
 
 <div class="project-wrap" data-reveal>
-	<article class="project glass spot">
+	<article class:list={['project glass spot', { 'project--in-progress': status_label }]}>
 		<div class="project__bar" aria-hidden="true">
 			<span></span><span></span><span></span>
 			<code>~/projects/{slug}</code>
+			{status_label && <em class="project__bar-status">{status_label}</em>}
 			<b>{String(index + 1).padStart(2, '0')}</b>
 		</div>
 		<div class="project__body">
 			<div class="project__story">
 				<ul class="project__badges">
+					{status_label && <li class="project__badge project__badge--status">{status_label}</li>}
 					{architecture_styles.map((style) => <li class="project__badge project__badge--style">{style}</li>)}
 					{context && <li class="project__badge">{context}</li>}
 				</ul>
@@ -104,6 +110,23 @@ const tab_icon_paths: Record<TabName, string> = {
 				<ul class="project__technologies">
 					{technologies.map((technology) => <li class="chip">{technology}</li>)}
 				</ul>
+				{
+					release_status && (
+						<div class="release" role="status">
+							<p class="release__title">{release_status.title}</p>
+							<span class="release__bar" aria-hidden="true" />
+							<p class="release__text">{release_status.text}</p>
+							<ul class="release__platforms">
+								{release_status.platforms.map((platform) => (
+									<li>
+										<span>{platform.name}</span>
+										<b>{platform.state}</b>
+									</li>
+								))}
+							</ul>
+						</div>
+					)
+				}
 				{
 					repository && (
 						<a class="btn project__repository" href={repository} rel="noopener" target="_blank">
@@ -258,6 +281,23 @@ const tab_icon_paths: Record<TabName, string> = {
 		font: 700 0.74rem var(--font-heading);
 	}
 
+	.project__badge--status {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		border-color: color-mix(in srgb, #22c55e 50%, transparent);
+		background: color-mix(in srgb, #22c55e 14%, transparent);
+		color: var(--text);
+	}
+
+	.project__badge--status::before {
+		content: '';
+		width: 0.45rem;
+		height: 0.45rem;
+		border-radius: 50%;
+		background: #22c55e;
+	}
+
 	.project__badge--style {
 		border-color: color-mix(in srgb, var(--accent-2) 50%, transparent);
 		background: color-mix(in srgb, var(--accent-2) 16%, transparent);
@@ -334,6 +374,121 @@ const tab_icon_paths: Record<TabName, string> = {
 		gap: 0.4rem;
 		padding: 0;
 		list-style: none;
+	}
+
+	.project--in-progress {
+		border-color: color-mix(in srgb, #22c55e 45%, transparent);
+		box-shadow:
+			var(--shadow),
+			0 0 0 1px color-mix(in srgb, #22c55e 18%, transparent),
+			0 0 48px -18px color-mix(in srgb, #22c55e 55%, transparent);
+	}
+
+	.project__bar-status {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		margin-left: auto;
+		margin-right: 0.8rem;
+		color: #22c55e;
+		font: 700 0.72rem var(--font-heading);
+		font-style: normal;
+	}
+
+	.project__bar-status::before {
+		content: '';
+		width: 0.45rem;
+		height: 0.45rem;
+		border-radius: 50%;
+		background: currentColor;
+		animation: live-pulse 1.8s ease-in-out infinite;
+	}
+
+	/* The badge below already says it; on a phone the top bar has no room for it. */
+	@media (max-width: 40rem) {
+		.project__bar-status {
+			display: none;
+		}
+
+		.project__bar b {
+			margin-left: auto;
+		}
+	}
+
+	.project__bar-status + b {
+		margin-left: 0;
+	}
+
+	@keyframes live-pulse {
+		50% {
+			opacity: 0.25;
+		}
+	}
+
+	.release {
+		align-self: stretch;
+		display: grid;
+		gap: 0.6rem;
+		padding: 0.9rem 1rem;
+		border: 1px dashed color-mix(in srgb, #22c55e 50%, transparent);
+		border-radius: 0.8rem;
+		background: color-mix(in srgb, #22c55e 7%, transparent);
+	}
+
+	.release__title {
+		font: 700 0.85rem var(--font-heading);
+	}
+
+	.release__bar {
+		position: relative;
+		height: 0.4rem;
+		overflow: hidden;
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--text) 10%, transparent);
+	}
+
+	.release__bar::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		width: 40%;
+		border-radius: inherit;
+		background: linear-gradient(90deg, transparent, #22c55e, transparent);
+		animation: release-slide 2.2s ease-in-out infinite;
+	}
+
+	@keyframes release-slide {
+		from {
+			translate: -100% 0;
+		}
+		to {
+			translate: 250% 0;
+		}
+	}
+
+	.release__text {
+		color: var(--muted);
+		font-size: 0.84rem;
+	}
+
+	.release__platforms {
+		display: grid;
+		gap: 0.35rem;
+		padding: 0;
+		list-style: none;
+		font-size: 0.8rem;
+	}
+
+	.release__platforms li {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 0.2rem 0.8rem;
+	}
+
+	.release__platforms b {
+		color: #22c55e;
+		font: 700 0.72rem var(--font-heading);
 	}
 
 	.project__repository {
@@ -514,6 +669,11 @@ const tab_icon_paths: Record<TabName, string> = {
 	}
 
 	@media (prefers-reduced-motion: reduce) {
+		.project__bar-status::before,
+		.release__bar::after {
+			animation: none;
+		}
+
 		.project,
 		.project__tab-indicator,
 		:global(.js) .project__panel {

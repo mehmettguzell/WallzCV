@@ -75,6 +75,16 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 						index={index}
 						name={project.name}
 						context={'context' in project ? project.context[lang] : undefined}
+						release_status={
+							'release_status' in project
+								? {
+										title: project.release_status.title[lang],
+										text: project.release_status.text[lang],
+										platforms: project.release_status.platforms.map((platform) => ({ name: platform.name[lang], state: platform.state[lang] })),
+									}
+								: undefined
+						}
+						status_label={'in_progress' in project && project.in_progress ? t(lang, 'projects.in_progress') : undefined}
 						architecture_styles={project.architecture_style.map((style) => style[lang])}
 						tagline={project.tagline[lang]}
 						points={project.points.map((point) => point[lang])}

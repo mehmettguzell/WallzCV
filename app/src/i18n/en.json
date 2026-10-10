@@ -30,7 +30,7 @@
   "glance.experience": "Experience",
   "glance.experience_value": "Backend Intern at Codexist · Application Security Intern at Privia Security (1+ year)",
   "glance.proof": "Projects",
-  "glance.proof_value": "5 end-to-end projects: microservices, Kafka, RabbitMQ, LLM pipelines, CI/CD on AWS",
+  "glance.proof_value": "6 end-to-end projects (1 in progress): microservices, Kafka, RabbitMQ, LLM pipelines, CI/CD on AWS",
   "glance.stack": "Core stack",
   "glance.stack_value": "Java, Spring Boot, Python, FastAPI, Kafka, Docker, AWS, LLM pipelines",
   "glance.languages": "Languages",
@@ -49,7 +49,7 @@
   "experience.heading": "Work experience.",
   "projects.eyebrow": "03 · Projects",
   "projects.heading": "Projects I built end to end.",
-  "projects.lead": "Five projects I designed and built, from the database to deployment. Each card names its architecture style and shows the diagram.",
+  "projects.lead": "Six projects I designed and built, from the database to deployment; the first one is still in progress. Each card names its architecture style and shows the diagram.",
   "projects.pipeline_label": "CI/CD pipeline steps",
   "projects.architecture_label": "Architecture diagram",
   "projects.architecture_hint": "Hover over or tap a component to see what it does.",
@@ -88,5 +88,6 @@
   "contact.lead": "I'm looking for a Fullstack, DevOps or AI/LLM engineering role. Email is the fastest way to reach me, and my CV is one click away.",
   "skills.learning": "learning now",
   "projects.link_sync": "sync call (HTTP / HTTPS)",
-  "projects.link_async": "async hand-off (queue or event bus)"
+  "projects.link_async": "async hand-off (queue or event bus)",
+  "projects.in_progress": "Currently building"
 }

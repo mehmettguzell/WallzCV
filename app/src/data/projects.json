@@ -1,5 +1,245 @@
 [
   {
+    "slug": "tempo-desktop",
+    "name": "Tempo: Calendar, Tasks & Budget App",
+    "in_progress": true,
+    "context": {
+      "en": "Personal project",
+      "tr": "Kişisel proje"
+    },
+    "architecture_style": [
+      {
+        "en": "Desktop + mobile app",
+        "tr": "Masaüstü + mobil uygulama"
+      },
+      {
+        "en": "Local-first",
+        "tr": "Local-first"
+      },
+      {
+        "en": "Modular monolith backend",
+        "tr": "Modüler monolit backend"
+      }
+    ],
+    "tagline": {
+      "en": "A calendar, task and budget app that will run on desktop and on mobile, and works fully offline. One task shows up both as a calendar event and as a to-do. The desktop app comes first, and a Spring Boot backend that syncs it between devices is being built.",
+      "tr": "Hem masaüstünde hem mobilde çalışacak, tamamen çevrimdışı kullanılabilen bir takvim, görev ve bütçe uygulaması. Aynı görev hem takvim etkinliği hem de yapılacak iş olarak görünüyor. Önce masaüstü uygulaması geliyor; cihazlar arası senkronu sağlayacak Spring Boot backend'i geliştiriyorum."
+    },
+    "points": [
+      {
+        "en": "**What it does:** a task is one record shown as a calendar event or a to-do, with recurring tasks, reminders, natural-language quick add, a command palette and time tracking by plan, phase and step. A budget ledger sits on the same data, built on accounts, transfers and card statements.",
+        "tr": "**Ne yapıyor:** bir görev tek kayıt olarak hem takvim etkinliği hem de yapılacak iş görünüyor; tekrarlayan görevler, hatırlatıcılar, doğal dille hızlı ekleme, komut paleti ve plan, faz ve adım bazlı süre takibi var. Aynı verinin üstünde hesap, transfer ve kart ekstresi üzerine kurulu bir bütçe defteri çalışıyor."
+      },
+      {
+        "en": "**Local-first:** the data is saved to a local file first, so the app never waits for a server. Sync is designed row by row: the newer edit wins, and a deleted row leaves a tombstone so it cannot come back.",
+        "tr": "**Local-first:** veri önce yerel bir dosyaya kaydediliyor, uygulama sunucuyu hiç beklemiyor. Senkron satır satır tasarlandı: daha yeni düzenleme kazanıyor, silinen satır bir tombstone bırakıyor ve geri gelemiyor."
+      },
+      {
+        "en": "**Backend:** Java 25 and Spring Boot, split into Spring Modulith modules (identity, tasks, budget, sync, notification) over PostgreSQL with 15 Flyway migrations. Sign-in goes through Keycloak, requests are rate-limited with Bucket4j, and the sync API has push, pull and purge plus a server-sent events stream that nudges other devices.",
+        "tr": "**Backend:** Java 25 ve Spring Boot; Spring Modulith modüllerine ayrılmış (identity, tasks, budget, sync, notification), PostgreSQL üzerinde 15 Flyway migration'ı var. Giriş Keycloak'tan geçiyor, istekler Bucket4j ile sınırlanıyor; sync API'sinde push, pull ve purge ile diğer cihazları uyaran bir server-sent events akışı var."
+      },
+      {
+        "en": "**CI/CD:** every pull request that touches the server runs ./mvnw verify, with a real PostgreSQL in Testcontainers, the migrations, the Modulith boundary check and ArchUnit rules. A version tag builds installers for Windows, macOS and Linux and publishes a signed update that the installed app picks up by itself.",
+        "tr": "**CI/CD:** sunucuya dokunan her pull request ./mvnw verify çalıştırıyor; Testcontainers'ta gerçek bir PostgreSQL, migration'lar, Modulith sınır kontrolü ve ArchUnit kuralları test ediliyor. Bir sürüm etiketi Windows, macOS ve Linux için kurulum dosyalarını build edip imzalı bir güncelleme yayınlıyor; kurulu uygulama bunu kendisi alıyor."
+      },
+      {
+        "en": "**Still in progress:** I am building this right now. The server is not deployed yet. The Docker image, the staging and production deploys, the frontend checks in CI and the Android app (Expo) are what I build next.",
+        "tr": "**Devam ediyor:** bunu şu an geliştiriyorum. Sunucu henüz canlıya alınmadı. Docker imajı, staging ve production deploy'u, CI'daki frontend kontrolleri ve Android uygulaması (Expo) sırada olan işler."
+      }
+    ],
+    "technologies": [
+      "Tauri",
+      "Rust",
+      "React",
+      "TypeScript",
+      "Zustand",
+      "Java 25",
+      "Spring Boot",
+      "Spring Modulith",
+      "PostgreSQL",
+      "Flyway",
+      "Keycloak",
+      "Testcontainers",
+      "Docker",
+      "GitHub Actions"
+    ],
+    "architecture": [
+      {
+        "label": {
+          "en": "Client",
+          "tr": "İstemci"
+        },
+        "nodes": [
+          {
+            "name": "Tauri desktop app",
+            "store": "local file",
+            "role": {
+              "en": "React 19, TypeScript and Zustand inside a Tauri v2 shell written in Rust. Data is saved to a local file first, so the app works fully offline and syncs when it can.",
+              "tr": "Rust ile yazılmış bir Tauri v2 kabuğunun içinde React 19, TypeScript ve Zustand. Veri önce yerel bir dosyaya kaydediliyor; uygulama çevrimdışı tam çalışıyor, bağlantı olunca senkron oluyor."
+            }
+          }
+        ]
+      },
+      {
+        "label": {
+          "en": "Sign-in · API",
+          "tr": "Giriş · API"
+        },
+        "link": {
+          "kind": "sync",
+          "label": {
+            "en": "OIDC sign-in · REST + JWT",
+            "tr": "OIDC giriş · REST + JWT"
+          }
+        },
+        "nodes": [
+          {
+            "name": "Keycloak",
+            "role": {
+              "en": "A separate identity server that handles sign-in. The Rust side of the app catches the loopback redirect and keeps the tokens in the OS keychain; the API only checks the tokens it issues.",
+              "tr": "Giriş işlemini yürüten ayrı bir kimlik sunucusu. Uygulamanın Rust tarafı loopback yönlendirmesini karşılıyor ve token'ları işletim sisteminin keychain'inde saklıyor; API yalnızca onun verdiği token'ları doğruluyor."
+            }
+          },
+          {
+            "name": "Spring Boot API",
+            "store": "PostgreSQL",
+            "role": {
+              "en": "Java 25. Validates the Keycloak token as an OAuth2 resource server, rate-limits with Bucket4j and serves /v1: accounts, devices, avatars and the sync endpoints. Flyway owns the schema.",
+              "tr": "Java 25. Keycloak token'ını OAuth2 resource server olarak doğruluyor, Bucket4j ile istek sınırlıyor ve /v1'i sunuyor: hesaplar, cihazlar, avatarlar ve sync endpoint'leri. Şemayı Flyway yönetiyor."
+            }
+          }
+        ]
+      },
+      {
+        "label": {
+          "en": "Modules",
+          "tr": "Modüller"
+        },
+        "nodes": [
+          {
+            "name": "Identity",
+            "role": {
+              "en": "Accounts, devices, avatars and account deletion; it talks to Keycloak's admin API.",
+              "tr": "Hesaplar, cihazlar, avatarlar ve hesap silme; Keycloak'ın admin API'siyle konuşuyor."
+            }
+          },
+          {
+            "name": "Tasks",
+            "role": {
+              "en": "The task rules: recurrence, priority and status, and reminders.",
+              "tr": "Görev kuralları: tekrarlama, öncelik, durum ve hatırlatıcılar."
+            }
+          },
+          {
+            "name": "Budget",
+            "role": {
+              "en": "The money rules: transaction kinds, money flow and import modes.",
+              "tr": "Para kuralları: işlem türleri, para akışı ve içe aktarma modları."
+            }
+          },
+          {
+            "name": "Sync",
+            "role": {
+              "en": "Push and pull of changed rows, tombstones, and idempotency so a repeated request does no harm. Scheduled jobs clean up old tombstones and orphan rows.",
+              "tr": "Değişen satırların push ve pull'u, tombstone'lar ve tekrarlanan bir isteğin zarar vermemesi için idempotency. Zamanlanmış işler eski tombstone'ları ve sahipsiz satırları temizliyor."
+            }
+          },
+          {
+            "name": "Notifier",
+            "role": {
+              "en": "The notification module: tells other devices that something changed over a server-sent events stream (no row data, they pull afterwards) and sends the product emails.",
+              "tr": "Notification modülü: Başka cihazlara bir şeyin değiştiğini server-sent events akışıyla haber veriyor (satır verisi taşımıyor, cihazlar sonra pull yapıyor) ve ürün e-postalarını gönderiyor."
+            }
+          }
+        ]
+      },
+      {
+        "label": {
+          "en": "Data",
+          "tr": "Veri"
+        },
+        "link": {
+          "kind": "sync",
+          "label": {
+            "en": "SQL · JPA",
+            "tr": "SQL · JPA"
+          }
+        },
+        "nodes": [
+          {
+            "name": "PostgreSQL",
+            "role": {
+              "en": "The server's database: synced rows, tombstones and a global sequence the sync reads from. Integration tests run against a real PostgreSQL in Testcontainers.",
+              "tr": "Sunucunun veritabanı: senkron edilen satırlar, tombstone'lar ve sync'in okuduğu global bir sequence. Entegrasyon testleri Testcontainers'taki gerçek bir PostgreSQL ile çalışıyor."
+            }
+          }
+        ]
+      }
+    ],
+    "pipeline": {
+      "en": [
+        "PR · server/**",
+        "mvnw verify",
+        "tag v*",
+        "build 3 OS",
+        "sign update",
+        "draft release",
+        "publish",
+        "app auto-update"
+      ],
+      "tr": [
+        "PR · server/**",
+        "mvnw verify",
+        "tag v*",
+        "3 OS'ta build",
+        "update'i imzala",
+        "draft release",
+        "publish",
+        "app günceller"
+      ]
+    },
+    "pipeline_label": {
+      "en": "Build and release steps",
+      "tr": "Build ve release adımları"
+    },
+    "pipeline_note": {
+      "en": "These are two separate workflows. Backend runs mvnw verify on pull requests and on main. Release starts on a version tag and builds for Windows, macOS and Linux; the update is signed and the installed app finds it through the updater.",
+      "tr": "Bunlar iki ayrı workflow. Backend, pull request'lerde ve main'de mvnw verify çalıştırıyor. Release bir sürüm etiketiyle başlıyor ve Windows, macOS ve Linux için build ediyor; güncelleme imzalanıyor ve kurulu uygulama onu updater ile buluyor."
+    },
+    "release_status": {
+      "title": {
+        "en": "The app is being prepared",
+        "tr": "Uygulama hazırlanıyor"
+      },
+      "text": {
+        "en": "There are no public installers yet.",
+        "tr": "Henüz herkese açık kurulum dosyası yok."
+      },
+      "platforms": [
+        {
+          "name": {
+            "en": "Desktop · Windows, macOS, Linux",
+            "tr": "Masaüstü · Windows, macOS, Linux"
+          },
+          "state": {
+            "en": "In development",
+            "tr": "Geliştiriliyor"
+          }
+        },
+        {
+          "name": {
+            "en": "Mobile · Android first",
+            "tr": "Mobil · önce Android"
+          },
+          "state": {
+            "en": "Planned",
+            "tr": "Planlanıyor"
+          }
+        }
+      ]
+    }
+  },
+  {
     "slug": "geo-visibility-platform",
     "name": "AI Visibility & GEO Intelligence Platform",
     "tagline": {

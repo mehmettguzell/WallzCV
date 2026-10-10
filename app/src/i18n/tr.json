@@ -30,7 +30,7 @@
   "glance.experience": "Deneyim",
   "glance.experience_value": "Codexist'te Backend Stajyeri · Privia Security'de Application Security Stajyeri (1 yıldan uzun)",
   "glance.proof": "Projeler",
-  "glance.proof_value": "Baştan sona 5 proje: mikroservisler, Kafka, RabbitMQ, LLM pipeline'ları, AWS üzerinde CI/CD",
+  "glance.proof_value": "Baştan sona 6 proje (1'i devam ediyor): mikroservisler, Kafka, RabbitMQ, LLM pipeline'ları, AWS üzerinde CI/CD",
   "glance.stack": "Ana teknolojiler",
   "glance.stack_value": "Java, Spring Boot, Python, FastAPI, Kafka, Docker, AWS, LLM pipeline'ları",
   "glance.languages": "Diller",
@@ -49,7 +49,7 @@
   "experience.heading": "İş deneyimi.",
   "projects.eyebrow": "03 · Projeler",
   "projects.heading": "Baştan sona geliştirdiğim projeler.",
-  "projects.lead": "Veritabanından deploy'a kadar tasarlayıp geliştirdiğim beş proje. Her kart mimari türünü belirtiyor ve diyagramını gösteriyor.",
+  "projects.lead": "Veritabanından deploy'a kadar tasarlayıp geliştirdiğim altı proje; ilki hâlâ devam ediyor. Her kart mimari türünü belirtiyor ve diyagramını gösteriyor.",
   "projects.pipeline_label": "CI/CD pipeline adımları",
   "projects.architecture_label": "Mimari diyagramı",
   "projects.architecture_hint": "Ne yaptığını görmek için bir bileşenin üzerine gel ya da dokun.",
@@ -88,5 +88,6 @@
   "contact.lead": "Fullstack, DevOps ya da AI/LLM mühendisliği rolü arıyorum. Bana en hızlı e-postayla ulaşabilirsin; CV'm de bir tık uzakta.",
   "skills.learning": "şu an öğreniyorum",
   "projects.link_sync": "senkron çağrı (HTTP / HTTPS)",
-  "projects.link_async": "asenkron devir (kuyruk ya da event bus)"
+  "projects.link_async": "asenkron devir (kuyruk ya da event bus)",
+  "projects.in_progress": "Şu an geliştiriyorum"
 }
