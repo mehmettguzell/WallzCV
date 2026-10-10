@@ -24,6 +24,7 @@ interface Props {
 
 const { layers, label, hint, legend } = Astro.props;
 const has_typed_links = layers.some((layer) => layer.link);
+const used_link_kinds = (['sync', 'async'] as const).filter((kind) => layers.some((layer) => layer.link?.kind === kind));
 
 // A bus spans the full width, so every node above drops straight into it.
 const links = layers.slice(1).map((to, index) => {
@@ -95,14 +96,12 @@ const accessible_label = `${label}: ${layers.map((layer) => `${layer.link ? `(${
 	{
 		has_typed_links && legend && (
 			<p class="arch__legend">
-				<span class="arch__legend-item">
-					<span class="arch__legend-swatch arch__legend-swatch--sync" aria-hidden="true" />
-					{legend.sync}
-				</span>
-				<span class="arch__legend-item">
-					<span class="arch__legend-swatch arch__legend-swatch--async" aria-hidden="true" />
-					{legend.async}
-				</span>
+				{used_link_kinds.map((kind) => (
+					<span class="arch__legend-item">
+						<span class={`arch__legend-swatch arch__legend-swatch--${kind}`} aria-hidden="true" />
+						{legend[kind]}
+					</span>
+				))}
 			</p>
 		)
 	}

@@ -514,20 +514,24 @@
     },
     "points": [
       {
-        "en": "One GitHub Actions pipeline for a FastAPI backend and a TypeScript frontend. A dynamic build matrix tests and builds only what changed, and pytest, ruff and frontend lint run on every pull request.",
-        "tr": "FastAPI backend ve TypeScript frontend için tek bir GitHub Actions pipeline'ı. Dinamik build matrisi yalnızca değişen kısmı test edip build ediyor; her pull request'te pytest, ruff ve frontend lint çalışıyor."
+        "en": "A small task app whose tasks fade: untouched tasks turn faded and then archived, and the app recommends one task that fits the time and energy you have left. The daily time budget stays in the browser's localStorage.",
+        "tr": "Görevlerin zamanla solduğu küçük bir görev uygulaması: dokunulmayan görevler önce soluyor, sonra arşivleniyor; uygulama kalan zamanına ve enerjine uyan tek bir görev öneriyor. Günlük süre bütçesi tarayıcının localStorage'ında duruyor."
       },
       {
-        "en": "Multi-stage Dockerfiles keep the images small; they go to GHCR tagged with both the Git SHA and the release version.",
-        "tr": "Multi-stage Dockerfile'lar imajları küçük tutuyor; imajlar hem Git SHA hem de sürüm numarasıyla etiketlenip GHCR'a gönderiliyor."
+        "en": "GitHub Actions with path filtering: on every pull request and push to main, pytest and ruff run only when the backend changed and Oxlint only when the frontend changed. A version tag then builds only the images that changed since the previous release.",
+        "tr": "Path filtering'li GitHub Actions: her pull request ve main push'unda backend değiştiyse pytest ve ruff, frontend değiştiyse Oxlint çalışıyor. Bir sürüm etiketi de önceki sürümden bu yana yalnızca değişen imajları build ediyor."
       },
       {
-        "en": "Deploys to AWS EC2 through SSM Run Command with a short-lived IAM role from GitHub OIDC, so there are no SSH keys and no stored AWS credentials. Production settings live in SSM Parameter Store.",
-        "tr": "AWS EC2'ye SSM Run Command ile, GitHub OIDC'den alınan kısa ömürlü bir IAM rolüyle deploy ediyor; SSH anahtarı da saklanan AWS kimlik bilgisi de yok. Production ayarları SSM Parameter Store'da duruyor."
+        "en": "Multi-stage Dockerfiles keep the images small; they go to GHCR tagged with the Git SHA, the release version and latest.",
+        "tr": "Multi-stage Dockerfile'lar imajları küçük tutuyor; imajlar Git SHA, sürüm numarası ve latest etiketleriyle GHCR'a gönderiliyor."
       },
       {
-        "en": "Docker Compose starts the app with health checks, startup order and resource limits. The deploy waits until every service is healthy and fails the pipeline if one isn't.",
-        "tr": "Docker Compose uygulamayı health check, başlatma sırası ve kaynak limitleriyle ayağa kaldırıyor. Deploy tüm servisler sağlıklı olana kadar bekliyor; biri sağlıksızsa pipeline başarısız oluyor."
+        "en": "Deploys to AWS EC2 through SSM Run Command with a short-lived IAM role from GitHub OIDC, so there are no SSH keys and no stored AWS credentials. The server reads its .env from SSM Parameter Store with its own IAM role.",
+        "tr": "AWS EC2'ye SSM Run Command ile, GitHub OIDC'den alınan kısa ömürlü bir IAM rolüyle deploy ediyor; SSH anahtarı da saklanan AWS kimlik bilgisi de yok. Sunucu .env dosyasını kendi IAM rolüyle SSM Parameter Store'dan çekiyor."
+      },
+      {
+        "en": "Docker Compose starts the app with health checks, startup order and a memory limit on the database. The deploy waits up to 180 seconds for every service to become healthy and fails the pipeline if one doesn't.",
+        "tr": "Docker Compose uygulamayı health check, başlatma sırası ve veritabanında bellek limitiyle ayağa kaldırıyor. Deploy her servisin sağlıklı olması için en fazla 180 saniye bekliyor; biri sağlıksızsa pipeline başarısız oluyor."
       }
     ],
     "technologies": [
@@ -575,8 +579,8 @@
           {
             "name": "React + nginx",
             "role": {
-              "en": "A Vite-built React app served by nginx.",
-              "tr": "Vite ile build edilip nginx ile sunulan React uygulaması."
+              "en": "React 19 + TypeScript + Vite, built to static files and served by nginx on port 80. The API address is set at build time, and the daily time budget is kept only in the browser.",
+              "tr": "React 19 + TypeScript + Vite; statik dosyaya derlenip nginx ile 80. porttan sunuluyor. API adresi build sırasında belirleniyor, günlük süre bütçesi yalnızca tarayıcıda tutuluyor."
             }
           }
         ]
@@ -586,13 +590,42 @@
           "en": "API",
           "tr": "API"
         },
+        "link": {
+          "kind": "sync",
+          "label": {
+            "en": "REST · JSON · CORS",
+            "tr": "REST · JSON · CORS"
+          }
+        },
         "nodes": [
           {
             "name": "FastAPI",
-            "store": "PostgreSQL",
             "role": {
-              "en": "REST API for tasks and settings, backed by PostgreSQL.",
-              "tr": "Görevler ve ayarlar için REST API; veriler PostgreSQL'de."
+              "en": "Python 3.13 with uv. REST endpoints for tasks (create, complete, revive, fading) and fading settings, plus /health/live and /health/ready. The tables are created on startup.",
+              "tr": "uv ile Python 3.13. Görevler (oluşturma, tamamlama, geri getirme, solma) ve solma ayarları için REST endpoint'leri, ayrıca /health/live ve /health/ready. Tablolar uygulama açılırken oluşturuluyor."
+            }
+          }
+        ]
+      },
+      {
+        "label": {
+          "en": "Database",
+          "tr": "Veritabanı"
+        },
+        "link": {
+          "kind": "sync",
+          "label": {
+            "en": "SQL · psycopg",
+            "tr": "SQL · psycopg"
+          }
+        },
+        "nodes": [
+          {
+            "name": "PostgreSQL 15",
+            "store": "persistent volume",
+            "role": {
+              "en": "Sits on its own Docker network that only the backend joins, publishes no port to the host, and keeps its data on a volume.",
+              "tr": "Yalnızca backend'in katıldığı ayrı bir Docker ağında duruyor, host'a port açmıyor ve verisini bir volume'da tutuyor."
             }
           }
         ]
@@ -618,14 +651,24 @@
           "en": "Changes reach production a bit slower.",
           "tr": "Değişiklikler üretime biraz daha geç ulaşıyor."
         }
+      },
+      {
+        "choice": {
+          "en": "The .env is never stored in GitHub. The server fetches it from SSM Parameter Store into a temporary file and swaps it in only after the download succeeds, so a failed fetch cannot blank the running config.",
+          "tr": ".env dosyası GitHub'da tutulmuyor. Sunucu onu SSM Parameter Store'dan geçici bir dosyaya çekip yalnızca indirme başarılı olunca yerine koyuyor; başarısız bir çekme çalışan ayarı boşaltamıyor."
+        },
+        "cost": {
+          "en": "The parameter has to be created and updated by hand in AWS.",
+          "tr": "Parametrenin AWS'de elle oluşturulması ve güncellenmesi gerekiyor."
+        }
       }
     ],
     "metrics": [
       {
-        "value": "1",
+        "value": "2",
         "label": {
-          "en": "pipeline, two apps",
-          "tr": "pipeline, iki uygulama"
+          "en": "images, built only when they changed",
+          "tr": "imaj, yalnızca değiştiğinde build edilir"
         }
       },
       {
@@ -642,7 +685,11 @@
           "tr": "sadece etiketli sürüm deploy olur"
         }
       }
-    ]
+    ],
+    "pipeline_note": {
+      "en": "Tests run on pull requests and pushes to main. release-please turns Conventional Commits into a version tag; the tag starts the image build, and Deploy starts when the build succeeds.",
+      "tr": "Testler pull request'lerde ve main push'larında çalışıyor. release-please Conventional Commits'ten sürüm etiketi üretiyor; etiket imaj build'ini, build başarılı olunca da Deploy'u başlatıyor."
+    }
   },
   {
     "slug": "order-management",
