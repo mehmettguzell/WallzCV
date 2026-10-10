@@ -191,48 +191,6 @@
         ]
       }
     ],
-    "decisions": [
-      {
-        "choice": {
-          "en": "Stages are linked with Celery chords, not a plain chain. A chain would start the analysis while answers were still being collected, because queuing the draws returns at once.",
-          "tr": "Aşamalar düz bir chain ile değil, Celery chord'larıyla bağlı. Çekilişleri kuyruğa eklemek hemen döndüğü için chain, yanıtlar daha toplanırken analizi başlatırdı."
-        },
-        "cost": {
-          "en": "More moving parts, so every stage keeps its own run row to stay traceable.",
-          "tr": "Daha fazla hareketli parça var; izlenebilir kalması için her aşama kendi run kaydını tutuyor."
-        }
-      },
-      {
-        "choice": {
-          "en": "The prompt set is frozen and versioned; editing a frozen set means cloning it, so results stay comparable over time.",
-          "tr": "Prompt seti dondurulmuş ve versiyonlu; dondurulmuş bir seti düzenlemek onu klonlamak demek, böylece sonuçlar zaman içinde karşılaştırılabilir kalıyor."
-        },
-        "cost": {
-          "en": "Less room to tweak prompts on the fly.",
-          "tr": "Prompt'ları anlık değiştirmek kolay değil."
-        }
-      },
-      {
-        "choice": {
-          "en": "Measurement goes through APIs (OpenRouter or the providers' own), not scraped chat pages, so it is stable and allowed.",
-          "tr": "Ölçüm sohbet sayfalarından değil, API'ler üzerinden (OpenRouter ya da sağlayıcının kendisi) yapılıyor; kararlı ve izinli."
-        },
-        "cost": {
-          "en": "Results may differ slightly from what the chat UI shows.",
-          "tr": "Sonuçlar sohbet arayüzünde görünenden biraz farklı olabilir."
-        }
-      },
-      {
-        "choice": {
-          "en": "Each rate gets the interval that fits how it was measured: Wilson for prompt coverage, a bootstrap over prompts for the appearance and recommendation rates.",
-          "tr": "Her oran, ölçülme biçimine uyan aralığı alıyor: prompt kapsaması için Wilson, görünme ve önerilme oranları için prompt'lar üzerinde bootstrap."
-        },
-        "cost": {
-          "en": "Pooled Share of Voice and Citation Share have no interval yet.",
-          "tr": "Toplam Share of Voice ve Citation Share için henüz güven aralığı yok."
-        }
-      }
-    ],
     "context": {
       "en": "Internship project · Codexist",
       "tr": "Staj projesi · Codexist"
@@ -441,38 +399,6 @@
         ]
       }
     ],
-    "decisions": [
-      {
-        "choice": {
-          "en": "Services talk through Kafka events instead of calling each other, so if one is down the others keep working. The one synchronous call is Notification asking Match for participant IDs, and it falls back to an empty list when Match does not answer.",
-          "tr": "Servisler birbirini çağırmıyor, Kafka event'leriyle haberleşiyor; biri düşse diğerleri çalışmaya devam ediyor. Tek senkron çağrı, Notification'ın Match'ten katılımcı ID'lerini istemesi; Match cevap vermezse boş liste ile devam ediyor."
-        },
-        "cost": {
-          "en": "Data becomes consistent a moment later, not instantly.",
-          "tr": "Veri anında değil, kısa bir gecikmeyle tutarlı oluyor."
-        }
-      },
-      {
-        "choice": {
-          "en": "Every service checks the JWT itself and does not trust the gateway's headers. There is no single point of trust.",
-          "tr": "Her servis JWT'yi kendisi doğruluyor, gateway'in başlıklarına güvenmiyor. Tek bir güven noktası yok."
-        },
-        "cost": {
-          "en": "The same verification code lives in each service.",
-          "tr": "Aynı doğrulama kodu her serviste var."
-        }
-      },
-      {
-        "choice": {
-          "en": "Each service has its own PostgreSQL database on its own Docker network, so no service can reach another one's data.",
-          "tr": "Her servisin kendi PostgreSQL veritabanı ve kendi Docker ağı var; hiçbir servis diğerinin verisine erişemiyor."
-        },
-        "cost": {
-          "en": "Data that spans services has to travel as events, not as a join.",
-          "tr": "Servisleri aşan veri join ile değil event olarak taşınıyor."
-        }
-      }
-    ],
     "metrics": [
       {
         "value": "5",
@@ -503,7 +429,8 @@
     "pipeline_note": {
       "en": "Build starts on the version tag and Deploy starts when Build succeeds. Images are tagged with the Git SHA, and the running images are kept as previous so a failed deploy can roll back.",
       "tr": "Build sürüm etiketiyle başlıyor, Deploy da Build başarılı olunca başlıyor. İmajlar Git SHA ile etiketleniyor; çalışan imajlar previous olarak saklandığı için başarısız bir deploy geri alınabiliyor."
-    }
+    },
+    "microservices": true
   },
   {
     "slug": "devops-todo-app",
@@ -629,38 +556,6 @@
             }
           }
         ]
-      }
-    ],
-    "decisions": [
-      {
-        "choice": {
-          "en": "No SSH keys and no stored AWS credentials: GitHub gets a temporary role (OIDC) for each deploy. There is nothing to leak or rotate.",
-          "tr": "SSH anahtarı ve saklı AWS şifresi yok; GitHub her deploy için geçici bir rol alıyor (OIDC). Sızacak ya da yenilenecek bir şey kalmıyor."
-        },
-        "cost": {
-          "en": "More IAM setup.",
-          "tr": "Daha fazla IAM kurulumu."
-        }
-      },
-      {
-        "choice": {
-          "en": "Deploys happen only for tagged releases, not on every push, so each version in production is numbered and traceable.",
-          "tr": "Deploy her push'ta değil, sadece etiketli sürümlerde yapılıyor; üretimdeki her sürüm numaralı ve izlenebilir."
-        },
-        "cost": {
-          "en": "Changes reach production a bit slower.",
-          "tr": "Değişiklikler üretime biraz daha geç ulaşıyor."
-        }
-      },
-      {
-        "choice": {
-          "en": "The .env is never stored in GitHub. The server fetches it from SSM Parameter Store into a temporary file and swaps it in only after the download succeeds, so a failed fetch cannot blank the running config.",
-          "tr": ".env dosyası GitHub'da tutulmuyor. Sunucu onu SSM Parameter Store'dan geçici bir dosyaya çekip yalnızca indirme başarılı olunca yerine koyuyor; başarısız bir çekme çalışan ayarı boşaltamıyor."
-        },
-        "cost": {
-          "en": "The parameter has to be created and updated by hand in AWS.",
-          "tr": "Parametrenin AWS'de elle oluşturulması ve güncellenmesi gerekiyor."
-        }
       }
     ],
     "metrics": [
@@ -804,20 +699,6 @@
         "bus": true
       }
     ],
-    "decisions": [
-      {
-        "choice": {
-          "en": "If the stock or payment step fails, the order is cancelled automatically. No central coordinator: each service reacts to events.",
-          "tr": "Stok ya da ödeme adımı başarısız olursa sipariş otomatik iptal ediliyor. Merkezi bir koordinatör yok; her servis olaylara kendisi tepki veriyor."
-        }
-      },
-      {
-        "choice": {
-          "en": "A product's stock row is locked while it is updated, so two orders cannot take the same stock at the same time.",
-          "tr": "Stok güncellenirken ürünün stok kaydı kilitleniyor; iki sipariş aynı stoğu aynı anda alamıyor."
-        }
-      }
-    ],
     "metrics": [
       {
         "value": "5",
@@ -840,7 +721,8 @@
           "tr": "path başına rate limit"
         }
       }
-    ]
+    ],
+    "microservices": true
   },
   {
     "slug": "inventory-microservices",
@@ -939,14 +821,6 @@
         ]
       }
     ],
-    "decisions": [
-      {
-        "choice": {
-          "en": "Each service uses the database that fits its data: MongoDB for flexible product documents, MySQL where stock and orders need strict consistency.",
-          "tr": "Her servis verisine uygun veritabanını kullanıyor: esnek ürün verisi için MongoDB, kesin tutarlılık isteyen stok ve sipariş için MySQL."
-        }
-      }
-    ],
     "metrics": [
       {
         "value": "4",
@@ -962,6 +836,7 @@
           "tr": "veritabanı motoru"
         }
       }
-    ]
+    ],
+    "microservices": true
   }
 ]

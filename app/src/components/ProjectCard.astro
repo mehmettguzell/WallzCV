@@ -2,13 +2,14 @@
 import ArchitectureDiagram from './ArchitectureDiagram.astro';
 import PipelineDiagram from './PipelineDiagram.astro';
 
-type TabName = 'architecture' | 'pipeline' | 'decisions';
+type TabName = 'architecture' | 'pipeline';
 
 interface Props {
 	slug: string;
 	index: number;
 	name: string;
 	context?: string;
+	microservices_label?: string;
 	tagline: string;
 	points: string[];
 	technologies: string[];
@@ -21,7 +22,6 @@ interface Props {
 	}[];
 	architecture_legend: Record<'sync' | 'async', string>;
 	metrics?: { value: string; label: string }[];
-	decisions: { choice: string; cost?: string }[];
 	pipeline_steps?: string[];
 	pipeline_note?: string;
 	default_tab?: TabName;
@@ -30,7 +30,6 @@ interface Props {
 	architecture_label: string;
 	architecture_hint: string;
 	pipeline_label: string;
-	decision_cost_label: string;
 	repository_label: string;
 }
 
@@ -39,6 +38,7 @@ const {
 	index,
 	name,
 	context,
+	microservices_label,
 	tagline,
 	points,
 	technologies,
@@ -46,7 +46,6 @@ const {
 	architecture_layers,
 	architecture_legend,
 	metrics = [],
-	decisions,
 	pipeline_steps,
 	pipeline_note,
 	default_tab = 'architecture',
@@ -55,17 +54,15 @@ const {
 	architecture_label,
 	architecture_hint,
 	pipeline_label,
-	decision_cost_label,
 	repository_label,
 } = Astro.props;
 
-const tab_names: TabName[] = pipeline_steps ? ['architecture', 'pipeline', 'decisions'] : ['architecture', 'decisions'];
+const tab_names: TabName[] = pipeline_steps ? ['architecture', 'pipeline'] : ['architecture'];
 const active_tab = tab_names.includes(default_tab) ? default_tab : 'architecture';
 
 const tab_icon_paths: Record<TabName, string> = {
 	architecture: 'M3 4h10v3H3zM3 10h4v3H3zM9 10h4v3H9zM8 7v3M5 10V8.5h6V10',
 	pipeline: 'M2 8h9M8 5l3 3-3 3M13 3v10',
-	decisions: 'M8 2v12M3 5h10M3 5l-2 5h4zM13 5l-2 5h4zM5 14h6',
 };
 ---
 
@@ -78,7 +75,14 @@ const tab_icon_paths: Record<TabName, string> = {
 		</div>
 		<div class="project__body">
 			<div class="project__story">
-				{context && <p class="project__context">{context}</p>}
+				{
+					(microservices_label || context) && (
+						<ul class="project__badges">
+							{microservices_label && <li class="project__badge project__badge--microservices">{microservices_label}</li>}
+							{context && <li class="project__badge">{context}</li>}
+						</ul>
+					)
+				}
 				<h3 class="project__name">{name}</h3>
 				<p class="project__tagline">{tagline}</p>
 				{
@@ -113,7 +117,7 @@ const tab_icon_paths: Record<TabName, string> = {
 				}
 			</div>
 
-			<div class="project__inspector" data-tabs>
+			<div class="project__inspector" data-tabs data-single={tab_names.length === 1 ? '' : undefined}>
 				<div class="project__tablist" role="tablist" aria-label={tabs_label}>
 					<span class="project__tab-indicator" aria-hidden="true"></span>
 					{
@@ -155,25 +159,6 @@ const tab_icon_paths: Record<TabName, string> = {
 										<PipelineDiagram steps={pipeline_steps} label={pipeline_label} />
 										{pipeline_note && <p class="project__pipeline-note">{pipeline_note}</p>}
 									</div>
-								)}
-								{tab === 'decisions' && (
-									<ol class="project__decisions">
-										{decisions.map((decision, position) => (
-											<li class="project__decision">
-												<span class="project__decision-number" aria-hidden="true">
-													{String(position + 1).padStart(2, '0')}
-												</span>
-												<div>
-													<p>{decision.choice}</p>
-													{decision.cost && (
-														<p class="project__decision-cost">
-															<b>{decision_cost_label}</b> {decision.cost}
-														</p>
-													)}
-												</div>
-											</li>
-										))}
-									</ol>
 								)}
 							</section>
 						))
@@ -259,15 +244,28 @@ const tab_icon_paths: Record<TabName, string> = {
 		min-width: 0;
 	}
 
-	.project__context {
-		align-self: flex-start;
+	.project__badges {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
 		margin-bottom: -0.4rem;
+		padding: 0;
+		list-style: none;
+	}
+
+	.project__badge {
 		padding: 0.2rem 0.7rem;
 		border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
 		border-radius: 999px;
 		background: color-mix(in srgb, var(--accent) 10%, transparent);
 		color: var(--accent);
 		font: 700 0.74rem var(--font-heading);
+	}
+
+	.project__badge--microservices {
+		border-color: color-mix(in srgb, var(--accent-2) 50%, transparent);
+		background: color-mix(in srgb, var(--accent-2) 16%, transparent);
+		color: var(--accent-2);
 	}
 
 	.project__name {
@@ -391,49 +389,6 @@ const tab_icon_paths: Record<TabName, string> = {
 		font: 400 0.72rem/1.55 var(--font-heading);
 	}
 
-	.project__decisions {
-		display: grid;
-		gap: 0.65rem;
-		padding: 0;
-		list-style: none;
-	}
-
-	.project__decision {
-		display: grid;
-		grid-template-columns: auto minmax(0, 1fr);
-		gap: 0.85rem;
-		padding: 0.85rem 1rem;
-		border: 1px solid var(--border);
-		border-left: 2px solid var(--accent);
-		border-radius: 0.6rem;
-		background: color-mix(in srgb, var(--bg) 70%, transparent);
-		font-size: 0.9rem;
-		line-height: 1.55;
-	}
-
-	.project__decision-number {
-		color: var(--accent);
-		font: 700 0.78rem/1.9 var(--font-heading);
-	}
-
-	.project__decision-cost {
-		margin-top: 0.4rem;
-		color: var(--muted);
-		font-size: 0.84rem;
-	}
-
-	.project__decision-cost b {
-		margin-right: 0.3rem;
-		padding: 0.05rem 0.45rem;
-		border-radius: 999px;
-		background: color-mix(in srgb, var(--accent-3) 16%, transparent);
-		color: var(--accent-3);
-		font: 700 0.62rem var(--font-heading);
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		vertical-align: 0.1em;
-	}
-
 	/* Without JavaScript every panel stays open, one below the other. */
 	.project__tablist {
 		display: none;
@@ -452,7 +407,12 @@ const tab_icon_paths: Record<TabName, string> = {
 		scrollbar-width: none;
 	}
 
-	:global(.js) .project__panel-title {
+	:global(.js) .project__inspector:not([data-single]) .project__panel-title {
+		display: none;
+	}
+
+	/* A lone tab needs no switcher; the panel title names it instead. */
+	:global(.js) .project__inspector[data-single] .project__tablist {
 		display: none;
 	}
 
