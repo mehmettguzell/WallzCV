@@ -1,7 +1,8 @@
 ---
 import '../styles/global.css';
 import Header from '../components/Header.astro';
-import { languages, t, type Language } from '../i18n';
+import { default_language, languages, t, type Language } from '../i18n';
+import contact from '../data/contact.json';
 
 interface Props {
 	lang: Language;
@@ -18,6 +19,17 @@ const alternate_links = languages.map((alternate_lang) => ({
 }));
 const canonical_url = new URL(Astro.url.pathname, Astro.site);
 const share_image_url = new URL('/og.png', Astro.site);
+const default_language_href = new URL(`/${default_language}${path_in_language}`, Astro.site);
+const open_graph_locales: Record<Language, string> = { en: 'en_US', tr: 'tr_TR' };
+const person_structured_data = {
+	'@context': 'https://schema.org',
+	'@type': 'Person',
+	name: 'Mehmet Güzel',
+	jobTitle: t(lang, 'hero.status'),
+	url: new URL(`/${lang}/`, Astro.site),
+	image: new URL('/mehmet-guzel.webp', Astro.site),
+	sameAs: [contact.github, contact.linkedin],
+};
 ---
 
 <html lang={lang} id="top">
@@ -31,12 +43,20 @@ const share_image_url = new URL('/og.png', Astro.site);
 		<meta name="description" content={description} />
 		<link rel="canonical" href={canonical_url} />
 		{alternate_links.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={alternate.href} />)}
+		<link rel="alternate" hreflang="x-default" href={default_language_href} />
 		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Mehmet Güzel" />
+		<meta property="og:locale" content={open_graph_locales[lang]} />
+		{languages.filter((other) => other !== lang).map((other) => <meta property="og:locale:alternate" content={open_graph_locales[other]} />)}
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:url" content={canonical_url} />
 		<meta property="og:image" content={share_image_url} />
 		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={share_image_url} />
+		<script type="application/ld+json" set:html={JSON.stringify(person_structured_data)} />
 		<script is:inline>
 			(function () {
 				var theme = null;

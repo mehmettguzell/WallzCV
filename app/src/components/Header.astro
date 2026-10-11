@@ -10,9 +10,9 @@ interface Props {
 const { lang } = Astro.props;
 
 const section_links = [
-	{ id: 'about', label: t(lang, 'nav.about') },
 	{ id: 'experience', label: t(lang, 'nav.experience') },
 	{ id: 'projects', label: t(lang, 'nav.projects') },
+	{ id: 'about', label: t(lang, 'nav.about') },
 	{ id: 'skills', label: t(lang, 'nav.skills') },
 	{ id: 'contact', label: t(lang, 'nav.contact') },
 ];
@@ -21,7 +21,7 @@ const section_links = [
 <header class="site-header">
 	<div class="site-header__bar glass">
 		<a class="site-header__brand" href={`/${lang}/`} aria-label="Mehmet Güzel">
-			<img class="site-header__logo" src="/mehmet-guzel.png" alt="" width="32" height="32" />
+			<img class="site-header__logo" src="/mehmet-guzel.webp" alt="" width="32" height="32" />
 			<span class="site-header__name">Mehmet <span class="gradient-text">Güzel</span></span>
 		</a>
 

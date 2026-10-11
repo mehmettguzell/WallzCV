@@ -34,20 +34,6 @@ const pillars = [1, 2, 3, 4, 5].map((number) => ({
 <Layout lang={lang} title={t(lang, 'home.title')} description={t(lang, 'meta.home_description')}>
 	<Hero lang={lang} />
 
-	<Section id="about" eyebrow={t(lang, 'about.eyebrow')} title={t(lang, 'about.heading')}>
-		<div class="pillars">
-			{
-				pillars.map((pillar, index) => (
-					<article class="pillar glass spot" data-reveal style={`--delay: ${index * 70}ms`}>
-						<span class="pillar__number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-						<h3>{pillar.title}</h3>
-						<p>{pillar.body}</p>
-					</article>
-				))
-			}
-		</div>
-	</Section>
-
 	<Section id="experience" eyebrow={t(lang, 'experience.eyebrow')} title={t(lang, 'experience.heading')}>
 		<div class="timeline">
 			<span class="timeline__rail" aria-hidden="true"><span class="timeline__fill"></span></span>
@@ -133,6 +119,20 @@ const pillars = [1, 2, 3, 4, 5].map((number) => ({
 		</div>
 	</Section>
 
+	<Section id="about" eyebrow={t(lang, 'about.eyebrow')} title={t(lang, 'about.heading')}>
+		<div class="pillars">
+			{
+				pillars.map((pillar, index) => (
+					<article class="pillar glass spot" data-reveal style={`--delay: ${index * 70}ms`}>
+						<span class="pillar__number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+						<h3>{pillar.title}</h3>
+						<p>{pillar.body}</p>
+					</article>
+				))
+			}
+		</div>
+	</Section>
+
 	<Section id="skills" eyebrow={t(lang, 'skills.eyebrow')} title={t(lang, 'skills.heading')}>
 		<div class="skill-grid">
 			{
@@ -197,7 +197,7 @@ const pillars = [1, 2, 3, 4, 5].map((number) => ({
 	<section class="section contact" id="contact" aria-labelledby="contact-title">
 		<div class="container">
 			<div class="contact__card glass" data-reveal>
-					<img class="contact__photo" src="/mehmet-guzel.png" alt="Mehmet Güzel" width="128" height="128" loading="lazy" />
+					<img class="contact__photo" src="/mehmet-guzel.webp" alt="Mehmet Güzel" width="128" height="128" loading="lazy" />
 				<p class="eyebrow">{t(lang, 'contact.eyebrow')}</p>
 				<h2 class="contact__title" id="contact-title">{t(lang, 'contact.heading')}</h2>
 				<p class="contact__lead">{t(lang, 'contact.lead')}</p>
