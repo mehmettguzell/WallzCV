@@ -17,7 +17,7 @@ const alternate_links = languages.map((alternate_lang) => ({
 	lang: alternate_lang,
 	href: new URL(`/${alternate_lang}${path_in_language}`, Astro.site),
 }));
-const canonical_url = new URL(Astro.url.pathname, Astro.site);
+const canonical_url = new URL(Astro.url.pathname === '/' ? `/${lang}/` : Astro.url.pathname, Astro.site);
 const share_image_url = new URL('/og.png', Astro.site);
 const default_language_href = new URL(`/${default_language}${path_in_language}`, Astro.site);
 const open_graph_locales: Record<Language, string> = { en: 'en_US', tr: 'tr_TR' };

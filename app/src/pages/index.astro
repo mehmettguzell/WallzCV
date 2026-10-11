@@ -1,5 +1,5 @@
 ---
-import { default_language } from '../i18n';
-
-return Astro.redirect(`/${default_language}`);
+import Home from './[lang]/index.astro';
 ---
+
+<Home />
