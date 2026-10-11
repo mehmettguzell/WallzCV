@@ -14,7 +14,7 @@ import education from '../../data/education.json';
 import contact from '../../data/contact.json';
 
 export function getStaticPaths() {
-	return languages.map((lang) => ({ params: { lang } }));
+	return languages.filter((lang) => lang !== default_language).map((lang) => ({ params: { lang } }));
 }
 
 const lang = (Astro.params.lang ?? default_language) as Language;

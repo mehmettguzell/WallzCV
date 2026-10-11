@@ -1,15 +1,15 @@
 ---
 import { render } from 'astro:content';
 import Layout from '../../../layouts/Layout.astro';
-import { languages, t, type Language } from '../../../i18n';
+import { languages, t, default_language, localized_path, type Language } from '../../../i18n';
 import { estimate_reading_minutes, get_published_posts_newest_first } from '../../../lib/blog';
 
 export async function getStaticPaths() {
 	const posts = await get_published_posts_newest_first();
-	return languages.flatMap((lang) => posts.map((post) => ({ params: { lang, slug: post.id }, props: { post } })));
+	return languages.filter((lang) => lang !== default_language).flatMap((lang) => posts.map((post) => ({ params: { lang, slug: post.id }, props: { post } })));
 }
 
-const lang = Astro.params.lang as Language;
+const lang = (Astro.params.lang ?? default_language) as Language;
 const { post } = Astro.props;
 const { Content } = await render(post);
 const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
@@ -17,7 +17,7 @@ const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
 
 <Layout lang={lang} title={`${post.data.title} · Mehmet Güzel`} description={post.data.summary}>
 	<article class="post" lang={post.data.lang}>
-		<a class="post__back" href={`/${lang}/blog/`}>← {t(lang, 'blog.title')}</a>
+		<a class="post__back" href={localized_path(lang, '/blog/')}>← {t(lang, 'blog.title')}</a>
 		<h1 class="gradient-text">{post.data.title}</h1>
 		<p class="post__meta">
 			<time datetime={post.data.date.toISOString()}>{date_format.format(post.data.date)}</time>

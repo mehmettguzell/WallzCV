@@ -1,14 +1,14 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import UpcomingTopics from '../../../components/UpcomingTopics.astro';
-import { languages, t, type Language } from '../../../i18n';
+import { languages, t, default_language, localized_path, type Language } from '../../../i18n';
 import { estimate_reading_minutes, get_published_posts_newest_first } from '../../../lib/blog';
 
 export function getStaticPaths() {
-	return languages.map((lang) => ({ params: { lang } }));
+	return languages.filter((lang) => lang !== default_language).map((lang) => ({ params: { lang } }));
 }
 
-const lang = Astro.params.lang as Language;
+const lang = (Astro.params.lang ?? default_language) as Language;
 const posts = await get_published_posts_newest_first();
 const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 ---
@@ -24,7 +24,7 @@ const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 				posts.map((post) => (
 					<li class="blog-list__post glass spot">
 						<h2>
-							<a href={`/${lang}/blog/${post.id}/`} hreflang={post.data.lang}>{post.data.title}</a>
+							<a href={localized_path(lang, `/blog/${post.id}/`)} hreflang={post.data.lang}>{post.data.title}</a>
 						</h2>
 						<p class="blog-list__meta">
 							<time datetime={post.data.date.toISOString()}>{date_format.format(post.data.date)}</time>

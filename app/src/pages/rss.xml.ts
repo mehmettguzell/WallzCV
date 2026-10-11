@@ -1,5 +1,6 @@
 import rss from '@astrojs/rss';
 import type { APIContext } from 'astro';
+import { localized_path } from '../i18n';
 import { get_published_posts_newest_first } from '../lib/blog';
 
 export async function GET(context: APIContext) {
@@ -12,7 +13,7 @@ export async function GET(context: APIContext) {
 			title: post.data.title,
 			pubDate: post.data.date,
 			description: post.data.summary,
-			link: `/${post.data.lang}/blog/${post.id}/`,
+			link: localized_path(post.data.lang, `/blog/${post.id}/`),
 			categories: post.data.tags,
 		})),
 	});

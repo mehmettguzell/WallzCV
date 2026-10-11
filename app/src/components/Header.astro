@@ -1,7 +1,7 @@
 ---
 import LanguageSwitch from './LanguageSwitch.astro';
 import ThemeToggle from './ThemeToggle.astro';
-import { t, type Language } from '../i18n';
+import { t, localized_path, type Language } from '../i18n';
 
 interface Props {
 	lang: Language;
@@ -20,14 +20,14 @@ const section_links = [
 
 <header class="site-header">
 	<div class="site-header__bar glass">
-		<a class="site-header__brand" href={`/${lang}/`} aria-label="Mehmet Güzel">
+		<a class="site-header__brand" href={localized_path(lang, '/')} aria-label="Mehmet Güzel">
 			<img class="site-header__logo" src="/mehmet-guzel.webp" alt="" width="32" height="32" />
 			<span class="site-header__name">Mehmet <span class="gradient-text">Güzel</span></span>
 		</a>
 
 		<nav class="site-header__nav" id="site-nav" aria-label={t(lang, 'nav.label')}>
-			{section_links.map((link) => <a href={`/${lang}/#${link.id}`} data-section={link.id}>{link.label}</a>)}
-			<a href={`/${lang}/blog/`} data-section="blog-page">{t(lang, 'nav.blog')}</a>
+			{section_links.map((link) => <a href={localized_path(lang, `/#${link.id}`)} data-section={link.id}>{link.label}</a>)}
+			<a href={localized_path(lang, '/blog/')} data-section="blog-page">{t(lang, 'nav.blog')}</a>
 		</nav>
 
 		<div class="site-header__actions">

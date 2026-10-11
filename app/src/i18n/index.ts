@@ -3,7 +3,16 @@ import tr from './tr.json';
 
 export const languages = ['en', 'tr'] as const;
 export type Language = (typeof languages)[number];
-export const default_language: Language = 'en';
+export const default_language: Language = 'tr';
+
+export function localized_path(language: Language, path: string): string {
+	return language === default_language ? path : `/${language}${path}`;
+}
+
+export function path_without_language_prefix(language: Language, pathname: string): string {
+	if (language === default_language) return pathname;
+	return pathname.replace(new RegExp(`^/${language}(?=/|$)`), '') || '/';
+}
 
 type TranslationKey = keyof typeof en;
 

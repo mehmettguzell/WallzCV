@@ -9,7 +9,7 @@ export default defineConfig({
 	integrations: [
 		mdx(),
 		sitemap({
-			i18n: { defaultLocale: 'en', locales: { en: 'en', tr: 'tr' } },
+			i18n: { defaultLocale: 'tr', locales: { en: 'en', tr: 'tr' } },
 		}),
 	],
 	markdown: {

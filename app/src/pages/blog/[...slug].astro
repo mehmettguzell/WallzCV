@@ -1,0 +1,13 @@
+---
+import BlogPost from '../[lang]/blog/[...slug].astro';
+import { get_published_posts_newest_first } from '../../lib/blog';
+
+export async function getStaticPaths() {
+	const posts = await get_published_posts_newest_first();
+	return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+---
+
+<BlogPost post={post} />
