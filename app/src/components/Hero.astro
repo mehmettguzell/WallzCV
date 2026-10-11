@@ -9,7 +9,7 @@ interface Props {
 
 const { lang } = Astro.props;
 
-const glance_keys = ['role', 'based', 'education', 'experience', 'proof', 'security', 'stack', 'languages'] as const;
+const glance_keys = ['role', 'based', 'education', 'experience', 'stack', 'languages'] as const;
 const glance_rows = glance_keys.map((key) => ({
 	label: t(lang, `glance.${key}`),
 	value: t(lang, `glance.${key}_value`),
@@ -82,7 +82,7 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 	if (typed_elements.length > 0 && !reduced_motion) {
 		// Every line takes the same time to type, so long values (experience, projects) do not stretch the total.
 		const typing_time_per_line_ms = 250;
-		const start_delay_ms = 300;
+		const start_delay_ms = 250;
 		const pause_between_lines_ms = 40;
 		const pending_class = 'is-pending';
 
@@ -117,7 +117,14 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 				}
 			}, typing_time_per_line_ms / full_text.length);
 		};
-		setTimeout(() => type_next(0), start_delay_ms);
+		// Typing starts once the card's fade-in actually begins (after its --delay), so it overlaps the fade instead of waiting for it.
+		const hero_visual = document.querySelector<HTMLElement>('.hero__visual');
+		const start_when_card_starts_fading_in = (event: TransitionEvent) => {
+			if (event.target !== hero_visual || event.propertyName !== 'opacity') return;
+			hero_visual?.removeEventListener('transitionstart', start_when_card_starts_fading_in);
+			setTimeout(() => type_next(0), start_delay_ms);
+		};
+		hero_visual?.addEventListener('transitionstart', start_when_card_starts_fading_in);
 	}
 
 	const wallz_button = document.querySelector<HTMLButtonElement>('.hero__wallz');
@@ -607,9 +614,17 @@ const cv_path = lang === 'tr' ? '/Mehmet_Guzel_CV.pdf' : '/Mehmet_Guzel_CV_EN.pd
 		font-weight: 700;
 	}
 
+	.glance__row,
+	.glance__idle {
+		transition:
+			opacity 0.45s ease,
+			transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+	}
+
 	.glance__row.is-pending,
 	.glance__idle.is-pending {
-		visibility: hidden;
+		opacity: 0;
+		transform: translateY(0.35rem);
 	}
 
 	.glance__rest {
