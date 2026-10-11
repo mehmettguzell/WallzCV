@@ -25,7 +25,7 @@ const education_icons = {
 	certificate: 'M2.5 2.5h11v8h-11zM5 5.5h6M5 8h3M10.5 10.5l1 3-1.5-.8-1.5.8z',
 };
 
-const pillars = [1, 2, 3, 4].map((number) => ({
+const pillars = [1, 2, 3, 4, 5].map((number) => ({
 	title: t(lang, `pillar.${number}.title` as 'pillar.1.title'),
 	body: t(lang, `pillar.${number}.body` as 'pillar.1.body'),
 }));
@@ -245,7 +245,31 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 	.pillars {
 		display: grid;
 		gap: 1.1rem;
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+		grid-template-columns: 1fr;
+	}
+
+	/* Five cards: the two most important span half the row each, the other three share the row below. */
+	@media (min-width: 48rem) {
+		.pillars {
+			grid-template-columns: repeat(6, 1fr);
+		}
+
+		.pillar {
+			grid-column: span 2;
+		}
+
+		.pillar:nth-child(-n + 2) {
+			grid-column: span 3;
+		}
+
+		.pillar:nth-child(-n + 2) h3 {
+			font-size: 1.45rem;
+		}
+
+		.pillar:nth-child(-n + 2) .pillar__number {
+			font-size: 1.6rem;
+			font-weight: 800;
+		}
 	}
 
 	.pillar {
@@ -255,17 +279,45 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 		padding: 1.75rem;
 	}
 
+	.pillar:hover {
+		border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+	}
+
+	/* A gradient line on the two lead cards marks them as the strongest points. */
+	.pillar:nth-child(-n + 2)::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 1.75rem;
+		right: 1.75rem;
+		height: 2px;
+		border-radius: 0 0 2px 2px;
+		background: var(--gradient);
+	}
+
 	.pillar__number {
 		color: var(--accent);
 		font: 500 0.8rem var(--font-heading);
+		line-height: 1;
+	}
+
+	.pillar:nth-child(-n + 2) .pillar__number {
+		background: var(--gradient);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
 	}
 
 	.pillar h3 {
 		font-size: 1.25rem;
+		line-height: 1.3;
+		text-wrap: balance;
 	}
 
 	.pillar p {
 		color: var(--muted);
+		font-size: 0.96rem;
+		line-height: 1.7;
 	}
 
 	.bento__label {
