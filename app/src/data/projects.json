@@ -22,29 +22,29 @@
       }
     ],
     "tagline": {
-      "en": "A calendar, task and budget app that will run on desktop and on mobile, and works fully offline. One task shows up both as a calendar event and as a to-do. The desktop app comes first, and a Spring Boot backend that syncs it between devices is being built.",
-      "tr": "Hem masaüstünde hem mobilde çalışacak, tamamen çevrimdışı kullanılabilen bir takvim, görev ve bütçe uygulaması. Aynı görev hem takvim etkinliği hem de yapılacak iş olarak görünüyor. Önce masaüstü uygulaması geliyor; cihazlar arası senkronu sağlayacak Spring Boot backend'i geliştiriyorum."
+      "en": "I am developing a personal productivity app that combines calendar, task, project, and budget management with offline support and cross-device synchronization.",
+      "tr": "Çevrimdışı kullanım ve cihazlar arası senkronizasyon desteği sunan, takvim, görev, proje ve bütçe yönetimini tek bir uygulamada birleştiren kişisel verimlilik uygulaması geliştiriyorum."
     },
     "points": [
       {
-        "en": "**What it does:** a task is one record shown as a calendar event or a to-do, with recurring tasks, natural-language quick add, a command palette and time tracking by plan, phase and step. Reminders still fire after the window is closed, because the app keeps running in the system tray. A budget ledger sits on the same data, built on accounts, transfers and card statements, and money is stored as whole minor units, never as floats.",
-        "tr": "**Ne yapıyor:** bir görev tek kayıt olarak hem takvim etkinliği hem de yapılacak iş görünüyor; tekrarlayan görevler, doğal dille hızlı ekleme, komut paleti ve plan, faz ve adım bazlı süre takibi var. Uygulama sistem tepsisinde çalışmaya devam ettiği için hatırlatıcılar pencere kapandıktan sonra da çalıyor. Aynı verinin üstünde hesap, transfer ve kart ekstresi üzerine kurulu bir bütçe defteri çalışıyor; para float olarak değil, tam sayı olarak en küçük birimle saklanıyor."
+        "en": "What it does: Combines calendar, task, and project management with budget tracking and investment goals, allowing users to manage their plans and financial goals in one place.",
+        "tr": "**Ne yapıyor:** Takvim, görev ve proje yönetimini; bütçe takibi ve yatırım hedefleriyle birleştirerek tüm planlarını ve finansal hedeflerini tek bir yerden yönetmeni sağlar."
       },
       {
-        "en": "**Local-first:** the data is saved to a local file first, so the app never waits for a server. Sync is cursor-based: every row gets a global server_seq number, a device pulls everything after the last number it saw, the newer edit wins (ties go to the server), and a deleted row leaves a tombstone so it cannot come back. The server only sends a small \"something changed\" nudge, and the device then pulls by itself. The rules live in a shared @tempo/core package with no UI in it, so the same code can serve the mobile app later.",
-        "tr": "**Local-first:** veri önce yerel bir dosyaya kaydediliyor, uygulama sunucuyu hiç beklemiyor. Senkron cursor tabanlı: her satır global bir server_seq numarası alıyor, cihaz en son gördüğü numaradan sonrasını çekiyor, daha yeni düzenleme kazanıyor (eşitlikte sunucu), silinen satır tombstone bırakıyor ve geri gelemiyor. Sunucu yalnızca küçük bir \"bir şey değişti\" dürtmesi gönderiyor, cihaz sonra kendisi pull yapıyor. İş kuralları arayüzsüz, paylaşılan bir @tempo/core paketinde duruyor; böylece aynı kod ileride mobil uygulamaya da hizmet edebilecek."
+        "en": "Local-first: Stores data locally, allowing the application to work offline. When an internet connection is available, it synchronizes data across devices.",
+        "tr": "**Local-first:** Verileri localde saklanır ve uygulama internet bağlantısı olmadan çalışabilir. İnternet erişimi sağlandığında verileri diğer cihazlarla senkronize eder."
       },
       {
-        "en": "**Backend:** Java 25 and Spring Boot, split into Spring Modulith modules (identity, tasks, budget, sync, notification) over PostgreSQL with 15 Flyway migrations. Sign-in goes through Keycloak, requests are rate-limited with Bucket4j, and the sync API has push, pull and purge plus a server-sent events stream that nudges other devices.",
-        "tr": "**Backend:** Java 25 ve Spring Boot; Spring Modulith modüllerine ayrılmış (identity, tasks, budget, sync, notification), PostgreSQL üzerinde 15 Flyway migration'ı var. Giriş Keycloak'tan geçiyor, istekler Bucket4j ile sınırlanıyor; sync API'sinde push, pull ve purge ile diğer cihazları uyaran bir server-sent events akışı var."
+        "en": "Backend: Developed a modular backend using Java 25 and Spring Boot. Managed the database schema with PostgreSQL and Flyway, and used Keycloak for authentication, Bucket4j for rate limiting, and Server-Sent Events for device synchronization.",
+        "tr": "**Backend:** Java 25 ve Spring Boot ile modüler bir mimarisi olarak geliştirdim. PostgreSQL ve Flyway ile veritabanı yapısını yönettim; kimlik doğrulama, istek sınırlama ve cihazlar arası veri senkronizasyonu için Keycloak, Bucket4j ve Server-Sent Events kullandım"
       },
       {
-        "en": "**CI/CD:** every pull request that touches the server runs ./mvnw verify, with a real PostgreSQL in Testcontainers, the migrations, the Modulith boundary check and ArchUnit rules. A version tag builds installers for Windows, macOS and Linux and publishes a signed update that the installed app picks up by itself.",
-        "tr": "**CI/CD:** sunucuya dokunan her pull request ./mvnw verify çalıştırıyor; Testcontainers'ta gerçek bir PostgreSQL, migration'lar, Modulith sınır kontrolü ve ArchUnit kuralları test ediliyor. Bir sürüm etiketi Windows, macOS ve Linux için kurulum dosyalarını build edip imzalı bir güncelleme yayınlıyor; kurulu uygulama bunu kendisi alıyor."
+        "en": "**CI/CD:** Planning to automate backend testing, application builds and releases. The pipeline will include integration tests with PostgreSQL, database migration checks and architectural rules, alongside automated builds for desktop platforms.",
+        "tr": "**CI/CD ve dağıtım:** Backend testlerini, uygulama derlemelerini ve sürüm yayınlama süreçlerini otomatikleştirmeyi planlıyorum. Pipeline; PostgreSQL ile entegrasyon testlerini, veritabanı migration kontrollerini, mimari kuralları ve masaüstü platformları için otomtika derlemeleri kapsayacak."
       },
       {
-        "en": "**Still in progress:** I am building this right now. The server is not deployed yet. The Docker image, the staging and production deploys, the frontend checks in CI and the Android app (Expo) are what I build next.",
-        "tr": "**Devam ediyor:** bunu şu an geliştiriyorum. Sunucu henüz canlıya alınmadı. Docker imajı, staging ve production deploy'u, CI'daki frontend kontrolleri ve Android uygulaması (Expo) sırada olan işler."
+        "en": "**Still in progress:** The application is under active development, and the backend has not been deployed to a live server yet. Next, I plan to configure Docker-based deployment, set up staging and production environments, add frontend checks to CI, and develop the Android app with Expo.",
+        "tr": "**Geliştirme durumu:** Uygulamanın geliştirilmesi devam ediyor ve backend henüz canlı sunucuya alınmadı. Sıradaki adımlarım Docker tabanlı dağıtımı yapılandırmak, staging ve production ortamlarını kurmak, CI sürecine frontend kontrollerini eklemek ve Expo ile Android uygulamasını geliştirmek."
       }
     ],
     "technologies": [
@@ -281,8 +281,8 @@
         "tr": "**Deneyim kazanımlarım:** uçtan uca proje sahipliği (araştırma, planlama, mimari, geliştirme), MVP odaklı ilerleyip teknik kararları kendim alma, büyük bir sistemi küçük ve test edilebilir parçalara ayırma, sadece işlevselliği değil izlenebilirliği ve sürdürülebilirliği de düşünme."
       },
       {
-        "en": "**Technical gains:** designing an asynchronous pipeline with Celery chords and dedicated queues, putting several LLM providers behind one adapter interface (OpenRouter or each provider's own API), turning GEO metrics into code with confidence intervals (Wilson and bootstrap), and building both sides of the dashboard.",
-        "tr": "**Teknik kazanımlarım:** Celery chord'ları ve ayrı kuyruklarla asenkron bir pipeline tasarlamak, birden fazla LLM sağlayıcısını tek bir adapter arayüzünün arkasına almak (OpenRouter ya da sağlayıcının kendi API'si), GEO metriklerini güven aralıklarıyla (Wilson ve bootstrap) koda dökmek ve dashboard'un backend ile frontend tarafını geliştirmek."
+        "en": "**Technical gains:** gaining hands-on experience in system design and modular architecture, managing asynchronous workflows, integrating multiple LLM providers through a common interface, implementing statistical metrics in code, and developing backend and frontend components end to end.",
+        "tr": "**Teknik kazanımlarım:** Sistem tasarımı ve modüler mimari oluşturma, asenkron iş akışlarını yönetme, farklı LLM sağlayıcılarını ortak bir yapı üzerinden entegre etme, istatistiksel metrikleri uygulamaya dönüştürme ve backend ile frontend bileşenlerini uçtan uca geliştirme konularında pratik deneyim kazandım."
       }
     ],
     "technologies": [
@@ -501,29 +501,33 @@
     "slug": "stop",
     "name": "STOP",
     "tagline": {
-      "en": "A platform for organizing football matches: a mobile app on top of 5 independent backend services.",
-      "tr": "Futbol maçı organize etme platformu: 5 bağımsız backend servisi üzerinde çalışan bir mobil uygulama."
+      "en": "A football match organization platform built with a microservices architecture. The React Native mobile app connects to five independent Spring Boot services, using event-driven communication, service-level security and automated AWS deployments.",
+      "tr": "Mikroservis mimarisiyle geliştirilen bir futbol maçı organizasyon platformu. React Native mobil uygulaması; olay tabanlı iletişim, servis düzeyinde güvenlik ve otomatik AWS dağıtımıyla desteklenen beş bağımsız Spring Boot servisiyle çalışır."
     },
     "points": [
       {
-        "en": "Split the backend into 5 Spring Boot services (Gateway, Identity, Match, Communication, Notification), each with its own PostgreSQL database and Flyway migrations.",
-        "tr": "Backend'i 5 Spring Boot servisine ayırdım (Gateway, Identity, Match, Communication, Notification); her servisin kendi PostgreSQL veritabanı ve Flyway migration'ları var."
+        "en": "**Architecture and system design:** Decomposed the backend into five independent Spring Boot services (Gateway, Identity, Match, Communication and Notification), each with its own PostgreSQL database and Flyway-managed schema. This separates service responsibilities and data ownership.",
+        "tr": "**Mimari ve sistem tasarımı:** Backend'i beş bağımsız Spring Boot servisine ayırdım (Gateway, Identity, Match, Communication ve Notification). Her servis kendi PostgreSQL veritabanına ve Flyway ile yönetilen şemasına sahip. Böylece servis sorumluluklarını ve veri sahipliğini birbirinden ayırdım."
       },
       {
-        "en": "Services talk mostly through Kafka events (20+ topics) instead of calling each other. The Notification service listens to them and turns them into notifications; Communication and Identity react to match events too.",
-        "tr": "Servisler birbirini çağırmak yerine ağırlıklı olarak Kafka event'leriyle haberleşiyor (20'den fazla topic). Notification servisi bu event'leri dinleyip bildirime dönüştürüyor; Communication ve Identity de maç event'lerine tepki veriyor."
+        "en": "**Event-driven architecture** Services talk mostly through Kafka events (20+ topics) instead of calling each other. The Notification service listens to them and turns them into notifications; Communication and Identity react to match events too.",
+        "tr": "**Event-driven architecture** Servisler birbirini çağırmak yerine ağırlıklı olarak Kafka event'leriyle haberleşiyor (20'den fazla topic). Notification servisi bu event'leri dinleyip bildirime dönüştürüyor; Communication ve Identity de maç event'lerine tepki veriyor."
       },
       {
-        "en": "Built join requests, invitations, a FIFO waitlist that lets the next player in when a spot opens, live chat over WebSocket (STOMP) and a goalkeeper-call feature.",
-        "tr": "Katılım isteklerini, davetleri, yer açılınca sıradaki oyuncuyu otomatik alan FIFO bekleme listesini, WebSocket (STOMP) ile canlı sohbeti ve kaleci çağırma özelliğini geliştirdim."
+        "en": "**Core application features:** Developed match participation requests, invitations, a FIFO waitlist that automatically admits the next player when a spot becomes available, real-time match chat using WebSocket and STOMP, and a goalkeeper-call feature.",
+        "tr": "**Temel uygulama özellikleri:** Maçlara katılım isteklerini, davetleri, boş yer açıldığında sıradaki oyuncuyu otomatik kabul eden FIFO bekleme listesini, WebSocket ve STOMP ile gerçek zamanlı maç sohbetini ve kaleci çağırma özelliğini geliştirdim."
       },
       {
-        "en": "Every service, the gateway included, verifies JWTs with its own RSA public key, and the gateway strips any identity headers a client sends. The gateway adds Redis-backed rate limiting (Bucket4j) and a Resilience4j circuit breaker per service group.",
-        "tr": "Gateway dahil her servis JWT'yi kendi RSA public key'iyle doğruluyor; gateway istemcinin gönderdiği kimlik başlıklarını da siliyor. Gateway'de Redis tabanlı rate limiting (Bucket4j) ve servis grubu başına Resilience4j circuit breaker var."
+        "en": "**Request Security and Traffic Control:** Implemented RSA public key-based JWT verification across all services, Redis-backed rate limiting with Bucket4j at the gateway, and Resilience4j circuit breakers with fallbacks to limit the impact of service failures.",
+        "tr": "**İstek Güvenliği ve Trafik Kontrolü:** Tüm servislerde RSA public key ile JWT doğrulaması, gateway katmanında Bucket4j ve Redis ile istek sınırlaması, servis hatalarının etkisini azaltmak için ise Resilience4j circuit breaker ve fallback mekanizmaları uyguladım."
       },
       {
-        "en": "A version tag (v*) builds all five services; each one is booted in Docker Compose and must pass its health check before its image is pushed to GHCR with the Git SHA. Deploy then reaches AWS EC2 through SSM without SSH, with secrets from Secrets Manager. Services start one at a time, and a failed health check rolls back to the previous images.",
-        "tr": "Bir sürüm etiketi (v*) beş servisin hepsini build ediyor; her servis Docker Compose'ta ayağa kaldırılıp health check'ini geçince imajı Git SHA ile GHCR'a gönderiliyor. Deploy, AWS EC2'ye SSH kullanmadan SSM ile ulaşıyor ve secret'ları Secrets Manager'dan alıyor. Servisler tek tek başlatılıyor; health check başarısız olursa önceki imajlara geri dönülüyor."
+        "en": "**CI/CD and Deployment:** Built a GitHub Actions pipeline triggered by version tags to build all five services, validate them using Docker Compose health checks, and publish Git SHA-tagged images to GHCR. Automated deployment to AWS EC2 through AWS Systems Manager without SSH, with secrets managed by AWS Secrets Manager, sequential service startup, and automatic rollback to previous images if health checks fail.",
+        "tr": "**CI/CD ve Dağıtım:** Sürüm etiketleriyle tetiklenen bir GitHub Actions pipeline'ı geliştirerek beş servisin derlenmesini, Docker Compose üzerinden sağlık kontrollerinin yapılmasını ve Git SHA ile etiketlenen imajların GHCR'a gönderilmesini otomatikleştirdim. AWS Systems Manager üzerinden SSH kullanmadan AWS EC2'ye dağıtımı otomatikleştirdim; gizli bilgileri AWS Secrets Manager ile yönettim, servisleri sıralı başlattım ve sağlık kontrolleri başarısız olduğunda önceki imajlara otomatik geri dönüş sağladım."
+      },
+      {
+        "en": "**Engineering Experience:** Gained hands-on experience designing and building a distributed application, from defining service boundaries and data ownership to implementing asynchronous communication, handling failures, securing APIs, and automating deployments. Developed a broader understanding of how mobile clients, backend services, messaging infrastructure, and deployment workflows work together as a complete system.",
+        "tr": "**Mühendislik Deneyimi:** Servis sınırlarını ve veri sahipliğini belirlemekten asenkron iletişim kurmaya, hataları yönetmekten API güvenliğini sağlamaya ve dağıtımı otomatikleştirmeye kadar dağıtık bir uygulamanın tasarımı ve geliştirilmesi konusunda pratik deneyim kazandım. Mobil istemcinin, backend servislerinin, mesajlaşma altyapısının ve dağıtım süreçlerinin bütün bir sistem olarak nasıl çalıştığını kavradım."
       }
     ],
     "technologies": [
@@ -670,29 +674,6 @@
         ]
       }
     ],
-    "metrics": [
-      {
-        "value": "5",
-        "label": {
-          "en": "services",
-          "tr": "servis"
-        }
-      },
-      {
-        "value": "20+",
-        "label": {
-          "en": "Kafka topics",
-          "tr": "Kafka topic"
-        }
-      },
-      {
-        "value": "0",
-        "label": {
-          "en": "SSH keys in deploy",
-          "tr": "deploy'da SSH anahtarı"
-        }
-      }
-    ],
     "context": {
       "en": "Graduation project",
       "tr": "Bitirme projesi"
@@ -716,29 +697,33 @@
     "slug": "devops-todo-app",
     "name": "DevOps Todo App",
     "tagline": {
-      "en": "A to-do app that doubles as a complete CI/CD reference: test, build, release and deploy.",
-      "tr": "Test, build, release ve deploy adımlarını eksiksiz gösteren, CI/CD referansı niteliğinde bir todo uygulaması."
+      "en": "A learning project for exploring DevOps fundamentals through automated testing, Docker, CI/CD pipelines and secure AWS deployment.",
+      "tr": "Otomatik testler, Docker, CI/CD pipeline'ları ve AWS üzerinde güvenli dağıtım aracılığıyla DevOps temellerini öğrenmek için geliştirdiğim bir proje."
     },
     "points": [
       {
-        "en": "A small task app whose tasks fade: untouched tasks turn faded and then archived, and the app recommends one task that fits the time and energy you have left. The daily time budget stays in the browser's localStorage.",
-        "tr": "Görevlerin zamanla solduğu küçük bir görev uygulaması: dokunulmayan görevler önce soluyor, sonra arşivleniyor; uygulama kalan zamanına ve enerjine uyan tek bir görev öneriyor. Günlük süre bütçesi tarayıcının localStorage'ında duruyor."
+        "en": "**Task management:** Built a task app where untouched tasks gradually fade and are archived, with recommendations based on remaining time and energy. The daily time budget is stored in browser localStorage.",
+        "tr": "**Görev yönetimi:** Dokunulmayan görevlerin zamanla solup arşivlendiği ve kalan zamana ve enerjiye göre görev öneren bir uygulama geliştirdim. Günlük süre bütçesi tarayıcının localStorage alanında saklanıyor."
       },
       {
-        "en": "GitHub Actions with path filtering: on every pull request and push to main, pytest and ruff run only when the backend changed and Oxlint only when the frontend changed. A version tag then builds only the images that changed since the previous release.",
-        "tr": "Path filtering'li GitHub Actions: her pull request ve main push'unda backend değiştiyse pytest ve ruff, frontend değiştiyse Oxlint çalışıyor. Bir sürüm etiketi de önceki sürümden bu yana yalnızca değişen imajları build ediyor."
+        "en": "**CI/CD automation:** Configured GitHub Actions to run backend tests and linting only when backend files change, and frontend linting only when frontend files change. Version tags trigger builds only for images changed since the previous release.",
+        "tr": "**CI/CD otomasyonu:** Backend dosyaları değiştiğinde backend testlerini ve lint kontrollerini, frontend dosyaları değiştiğinde ise frontend lint kontrolünü çalıştıran GitHub Actions iş akışları oluşturdum. Sürüm etiketleri, önceki sürümden bu yana değişen imajların build edilmesini tetikliyor."
       },
       {
-        "en": "Multi-stage Dockerfiles keep the images small; they go to GHCR tagged with the Git SHA, the release version and latest.",
-        "tr": "Multi-stage Dockerfile'lar imajları küçük tutuyor; imajlar Git SHA, sürüm numarası ve latest etiketleriyle GHCR'a gönderiliyor."
+        "en": "**Containerization and releases:** Used multi-stage Docker builds to reduce image size and published images to GHCR with Git SHA, version, and latest tags.",
+        "tr": "**Konteynerleştirme ve sürümleme:** İmaj boyutlarını küçültmek için multi-stage Docker build kullandım. İmajları Git SHA, sürüm numarası ve latest etiketleriyle GHCR'a gönderdim."
       },
       {
-        "en": "Deploys to AWS EC2 through SSM Run Command with a short-lived IAM role from GitHub OIDC, so there are no SSH keys and no stored AWS credentials. The server reads its .env from SSM Parameter Store with its own IAM role.",
-        "tr": "AWS EC2'ye SSM Run Command ile, GitHub OIDC'den alınan kısa ömürlü bir IAM rolüyle deploy ediyor; SSH anahtarı da saklanan AWS kimlik bilgisi de yok. Sunucu .env dosyasını kendi IAM rolüyle SSM Parameter Store'dan çekiyor."
+        "en": "**Secure deployment:** Automated deployment to AWS EC2 through SSM Run Command using GitHub OIDC and short-lived IAM credentials, eliminating the need for SSH keys and stored AWS credentials. The server retrieves environment configuration from SSM Parameter Store using its own IAM role.",
+        "tr": "**Güvenli dağıtım:** GitHub OIDC ve kısa ömürlü IAM kimlik bilgileriyle SSM Run Command üzerinden AWS EC2 dağıtımını otomatikleştirdim. Böylece SSH anahtarı veya kalıcı AWS kimlik bilgisi saklama ihtiyacını ortadan kaldırdım. Sunucu, ortam yapılandırmasını kendi IAM rolüyle SSM Parameter Store'dan alıyor."
       },
       {
-        "en": "Docker Compose starts the app with health checks, startup order and a memory limit on the database. The deploy waits up to 180 seconds for every service to become healthy and fails the pipeline if one doesn't.",
-        "tr": "Docker Compose uygulamayı health check, başlatma sırası ve veritabanında bellek limitiyle ayağa kaldırıyor. Deploy her servisin sağlıklı olması için en fazla 180 saniye bekliyor; biri sağlıksızsa pipeline başarısız oluyor."
+        "en": "**Deployment reliability:** Configured Docker Compose health checks, service startup dependencies, and a database memory limit. The deployment pipeline waits up to 180 seconds for services to become healthy and fails if any service does not pass its health check.",
+        "tr": "**Dağıtım güvenilirliği:** Docker Compose ile sağlık kontrollerini, servislerin başlatılma sırasını ve veritabanı bellek limitini yapılandırdım. Dağıtım pipeline'ı servislerin sağlıklı duruma gelmesi için 180 saniyeye kadar bekliyor; herhangi bir servis sağlık kontrolünü geçemezse başarısız oluyor."
+      },
+      {
+        "en": "**Engineering Learnings:** Gained hands-on experience with the fundamentals of CI/CD, containerization, automated testing, image versioning, and secure cloud deployment. Learned how to automate delivery workflows, manage credentials using IAM, and validate deployments with health checks.",
+        "tr": "**Mühendislik Kazanımları:** CI/CD, konteynerleştirme, otomatik testler, imaj sürümleme ve güvenli bulut dağıtımının temellerini uygulamalı olarak öğrendim. Dağıtım süreçlerini otomatikleştirme, IAM ile kimlik bilgilerini yönetme ve sağlık kontrolleriyle dağıtımları doğrulama deneyimi kazandım."
       }
     ],
     "technologies": [
@@ -836,29 +821,6 @@
             }
           }
         ]
-      }
-    ],
-    "metrics": [
-      {
-        "value": "2",
-        "label": {
-          "en": "images, built only when they changed",
-          "tr": "imaj, yalnızca değiştiğinde build edilir"
-        }
-      },
-      {
-        "value": "0",
-        "label": {
-          "en": "SSH keys or stored AWS keys",
-          "tr": "SSH ya da saklı AWS anahtarı"
-        }
-      },
-      {
-        "value": "v*",
-        "label": {
-          "en": "only tagged releases deploy",
-          "tr": "sadece etiketli sürüm deploy olur"
-        }
       }
     ],
     "pipeline_note": {
@@ -985,29 +947,6 @@
         "bus": true
       }
     ],
-    "metrics": [
-      {
-        "value": "5",
-        "label": {
-          "en": "services",
-          "tr": "servis"
-        }
-      },
-      {
-        "value": "5",
-        "label": {
-          "en": "separate databases",
-          "tr": "ayrı veritabanı"
-        }
-      },
-      {
-        "value": "10/s",
-        "label": {
-          "en": "rate limit per path",
-          "tr": "path başına rate limit"
-        }
-      }
-    ],
     "architecture_style": [
       {
         "en": "Microservices",
@@ -1114,22 +1053,6 @@
             }
           }
         ]
-      }
-    ],
-    "metrics": [
-      {
-        "value": "4",
-        "label": {
-          "en": "services",
-          "tr": "servis"
-        }
-      },
-      {
-        "value": "2",
-        "label": {
-          "en": "database engines",
-          "tr": "veritabanı motoru"
-        }
       }
     ],
     "architecture_style": [

@@ -16,20 +16,24 @@
     "highlights": [
       {
         "en": "Researched GEO (Generative Engine Optimization) and designed the architecture: the same prompts go to several LLM providers again and again, and a company's visibility against its competitors is reported with a statistical margin of error.",
-        "tr": "GEO (Generative Engine Optimization) üzerine araştırma yapıp mimariyi tasarladım: aynı promptlar birden fazla LLM sağlayıcıya tekrar tekrar gönderiliyor ve bir şirketin rakiplerine göre görünürlüğü istatistiksel hata payıyla raporlanıyor."
+        "tr": "GEO (Generative Engine Optimization) üzerine araştırma yapıp mimariyi tasarladım: aynı promptlar birden fazla LLM sağlayıcıya tekrar tekrar gönderiliyor ve bir şirketin rakiplerine göre görünürlüğü istatistiksel hata payı göz önünde bulundurularak raporlanıyor."
       },
       {
-        "en": "Split the daily crawling and analysis into asynchronous Celery + Redis workers, and used a sliding-window approach to reduce the measurement error of repeated LLM queries.",
-        "tr": "Günlük tarama ve analiz işlerini Celery + Redis ile asenkron çalışan worker'lara böldüm; tekrarlı LLM sorgularındaki ölçüm hatasını azaltmak için sliding window yöntemi kullandım."
+        "en": "Split the daily crawling and analysis into independent tasks run by asynchronous Celery + Redis workers, and built a pipeline that collects data from several LLM providers, analyzes it and computes the metrics. Used a sliding-window approach to reduce the measurement error of repeated LLM queries.",
+        "tr": "Günlük tarama ve analiz işlerini Celery + Redis ile bağımsız görevlere bölüp asenkron çalışan worker'lara dağıttım; birden fazla LLM sağlayıcısından veri toplayan, analiz eden ve metrikleri hesaplayan bir pipeline geliştirdim. Tekrarlı LLM sorgularındaki ölçüm hatasını azaltmak için sliding window yöntemi kullandım."
       },
       {
-        "en": "Exposed the analysis pipeline as FastAPI services on PostgreSQL, connected them to a TypeScript/React frontend, and packaged the whole application with Docker Compose.",
-        "tr": "Analiz akışını PostgreSQL üzerinde çalışan FastAPI servislerine dönüştürdüm, TypeScript/React arayüzüne bağladım ve uygulamanın tamamını Docker Compose ile paketledim."
+        "en": "Exposed the analysis pipeline as FastAPI services on PostgreSQL and connected them to a TypeScript/React frontend, where the computed metrics can be viewed and the pipeline can be triggered manually. Packaged the whole application with Docker Compose so it runs as one setup.",
+        "tr": "Analiz akışını PostgreSQL üzerinde çalışan FastAPI servislerine dönüştürüp TypeScript/React arayüzüne bağladım; hesaplanan metrikler arayüzden görüntülenebiliyor ve analiz pipeline'ı manuel olarak tetiklenebiliyor. Uygulamanın tamamını Docker Compose ile çalıştırılabilir bir yapıda paketledim."
       }
     ],
     "summary": {
       "en": "Designed and built a system that measures how visible companies are in AI chatbot answers.",
       "tr": "Şirketlerin yapay zekâ sohbet yanıtlarında ne kadar göründüğünü ölçen bir sistemi tasarlayıp geliştirdim."
+    },
+    "gained": {
+      "en": "I carried a software project through its whole life cycle, from requirements analysis and architecture design to development and integration. I gained hands-on experience in asynchronous system design, modular backend architecture and multi-provider LLM integration.",
+      "tr": "Gereksinim analizinden mimari tasarıma, geliştirmeden entegrasyona kadar bir yazılım projesinin tüm yaşam döngüsünü yürüttüm. Asenkron sistem tasarımı, modüler backend mimarisi ve çoklu LLM sağlayıcı entegrasyonu konularında pratik deneyim kazandım."
     },
     "technologies": [
       "Python",
@@ -58,25 +62,29 @@
     },
     "highlights": [
       {
-        "en": "Reviewed production web applications at the code and API level to find vulnerabilities, and took part in web application penetration tests.",
-        "tr": "Canlıdaki web uygulamalarını kod ve API seviyesinde inceleyerek güvenlik açıkları buldum; web pentest çalışmalarında yer aldım."
+        "en": "**Web Application Security:** Analyzed production web applications at the code and API level, and found and reported security vulnerabilities as part of penetration tests.",
+        "tr": "**Web Application Security:** Canlı web uygulamalarını kod ve API seviyesinde analiz ederek penetrasyon testleri kapsamında güvenlik açıklarını tespit ettim ve raporladım."
       },
       {
-        "en": "Wrote internal Python tools that automated the team's repetitive security checks.",
-        "tr": "Ekibin tekrarlayan güvenlik kontrollerini otomatikleştiren dahili Python araçları yazdım."
+        "en": "**Security Automation:** Built Python tools that automated repetitive security checks and improved the team's technical workflows.",
+        "tr": "**Security Automation:** Tekrarlayan güvenlik kontrollerini otomatikleştiren ve ekibin teknik iş akışlarını iyileştiren Python araçları geliştirdim."
       },
       {
-        "en": "Found a stored XSS vulnerability in a commercial product and reported it through responsible disclosure; it was officially assigned CVE-2025-1301.",
-        "tr": "Ticari bir üründe stored XSS açığı buldum ve responsible disclosure ile bildirdim; bulgu resmen CVE-2025-1301 olarak kaydedildi."
+        "en": "**Remediation Support:** Worked with development teams to close the findings, proposing actionable, code-level fixes.",
+        "tr": "**Remediation Support:** Tespit edilen açıkların giderilmesi için geliştirme ekipleriyle iş birliği yaparak uygulanabilir, kod seviyesinde çözüm önerileri sundum."
       },
       {
-        "en": "Worked with development teams to close the findings, proposing concrete code-level fixes.",
-        "tr": "Bulguların kapatılması için geliştirme ekipleriyle çalışıp somut, kod seviyesinde düzeltmeler önerdim."
+        "en": "**Vulnerability Research and Disclosure:** Found a stored XSS vulnerability in a web application and reported it to USOM through responsible disclosure; it was recorded as CVE-2025-1301.",
+        "tr": "**Vulnerability Research and Disclosure:** Bir web uygulamasında stored XSS açığı tespit ettim; bulguyu sorumlu bildirim süreciyle USOM'a ilettim ve açık CVE-2025-1301 olarak kaydedildi."
       }
     ],
     "summary": {
       "en": "Tested real web applications for security holes and wrote tools that made the team faster.",
       "tr": "Gerçek web uygulamalarında güvenlik açığı aradım ve ekibi hızlandıran araçlar yazdım."
+    },
+    "gained": {
+      "en": "I went through the whole security process end to end, from code and API analysis to finding, reporting and fixing, and learned to write clear reports and communicate with customers. I learned to read code the way an attacker would (hacker mindset) and to write secure code.",
+      "tr": "Kod ve API analizinden zafiyet tespitine, raporlamadan düzeltmeye kadar güvenlik sürecini uçtan uca yaşadım; müşteriyle iletişim kurmayı ve anlaşılır rapor yazmayı öğrendim. Koda bir saldırgan gibi bakmayı (hacker mindset) ve güvenli kod geliştirmeyi öğrendim."
     },
     "technologies": [
       "Python",

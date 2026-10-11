@@ -23,7 +23,6 @@ interface Props {
 		link?: { kind: 'sync' | 'async'; label: string };
 	}[];
 	architecture_legend: Record<'sync' | 'async', string>;
-	metrics?: { value: string; label: string }[];
 	pipeline_steps?: string[];
 	pipeline_note?: string;
 	default_tab?: TabName;
@@ -49,7 +48,6 @@ const {
 	repository,
 	architecture_layers,
 	architecture_legend,
-	metrics = [],
 	pipeline_steps,
 	pipeline_note,
 	default_tab = 'architecture',
@@ -87,18 +85,6 @@ const tab_icon_paths: Record<TabName, string> = {
 				</ul>
 				<h3 class="project__name">{name}</h3>
 				<p class="project__tagline">{tagline}</p>
-				{
-					metrics.length > 0 && (
-						<dl class="project__metrics" style={`--metric-count:${metrics.length}`}>
-							{metrics.map((metric) => (
-								<div class="project__metric">
-									<dt>{metric.label}</dt>
-									<dd>{metric.value}</dd>
-								</div>
-							))}
-						</dl>
-					)
-				}
 				<ul class="project__points">
 					{
 						points.map((point) => {
@@ -313,43 +299,6 @@ const tab_icon_paths: Record<TabName, string> = {
 		margin-top: -0.45rem;
 		font-size: 1.02rem;
 		font-weight: 500;
-	}
-
-	.project__metrics {
-		display: grid;
-		grid-template-columns: repeat(var(--metric-count), minmax(0, 1fr));
-		border: 1px solid var(--border);
-		border-radius: 0.8rem;
-		background: color-mix(in srgb, var(--bg) 45%, transparent);
-		overflow: hidden;
-	}
-
-	.project__metric {
-		display: flex;
-		flex-direction: column-reverse;
-		justify-content: flex-end;
-		gap: 0.15rem;
-		padding: 0.7rem clamp(0.6rem, 2vw, 0.9rem);
-	}
-
-	.project__metric + .project__metric {
-		border-left: 1px solid var(--border);
-	}
-
-	.project__metric dd {
-		margin: 0;
-		background: var(--gradient);
-		-webkit-background-clip: text;
-		background-clip: text;
-		color: transparent;
-		font: 800 clamp(1.35rem, 4.5vw, 1.75rem)/1.1 var(--font-heading);
-		letter-spacing: -0.03em;
-	}
-
-	.project__metric dt {
-		color: var(--muted);
-		font-size: 0.74rem;
-		line-height: 1.35;
 	}
 
 	.project__points {

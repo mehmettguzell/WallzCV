@@ -6,12 +6,14 @@ interface Props {
 	location: string;
 	period: string;
 	highlights: string[];
+	gained?: string;
+	gained_label: string;
 	technologies: string[];
 	technologies_label: string;
 	proof?: { label: string; url: string; title: string };
 }
 
-const { role, summary, organization, location, period, highlights, technologies, technologies_label, proof } = Astro.props;
+const { role, summary, organization, location, period, highlights, gained, gained_label, technologies, technologies_label, proof } = Astro.props;
 ---
 
 <article class="experience glass spot" data-reveal>
@@ -37,8 +39,20 @@ const { role, summary, organization, location, period, highlights, technologies,
 	</div>
 	<p class="experience__summary">{summary}</p>
 	<ul class="experience__highlights">
-		{highlights.map((highlight) => <li>{highlight}</li>)}
+		{
+			highlights.map((highlight) => {
+				const [, highlight_label, highlight_text] = highlight.match(/^\*\*(.+?)\*\*\s*([\s\S]*)$/) ?? [];
+				return highlight_label ? <li><strong>{highlight_label}</strong> {highlight_text}</li> : <li>{highlight}</li>;
+			})
+		}
 	</ul>
+	{
+		gained && (
+			<p class="experience__gained">
+				<strong>{gained_label}</strong> {gained}
+			</p>
+		)
+	}
 	<ul class="experience__technologies" aria-label={technologies_label}>
 		{technologies.map((technology) => <li class="chip">{technology}</li>)}
 	</ul>
@@ -150,6 +164,16 @@ const { role, summary, organization, location, period, highlights, technologies,
 	.experience__highlights li {
 		position: relative;
 		padding-left: 1.4rem;
+	}
+
+	.experience__gained {
+		margin-top: 1.1rem;
+		color: var(--muted);
+	}
+
+	.experience__highlights strong,
+	.experience__gained strong {
+		color: var(--text);
 	}
 
 	.experience__highlights li::before {

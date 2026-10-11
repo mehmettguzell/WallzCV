@@ -60,7 +60,9 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 						location={item.location[lang]}
 						period={item.period[lang]}
 						highlights={item.highlights.map((highlight) => highlight[lang])}
-						technologies={item.technologies}
+						gained={'gained' in item ? item.gained[lang] : undefined}
+							gained_label={t(lang, 'experience.gained')}
+							technologies={item.technologies}
 						technologies_label={t(lang, 'experience.stack')}
 						proof={'proof' in item ? { ...item.proof, title: t(lang, 'experience.proof') } : undefined}
 					/>
@@ -112,7 +114,6 @@ const pillars = [1, 2, 3, 4].map((number) => ({
 							link: 'link' in layer ? { kind: layer.link.kind as 'sync' | 'async', label: layer.link.label[lang] } : undefined,
 						}))}
 						architecture_legend={{ sync: t(lang, 'projects.link_sync'), async: t(lang, 'projects.link_async') }}
-						metrics={'metrics' in project && Array.isArray(project.metrics) ? project.metrics.map((metric) => ({ value: metric.value, label: metric.label[lang] })) : undefined}
 						pipeline_steps={'pipeline' in project ? project.pipeline[lang] : undefined}
 						pipeline_note={'pipeline_note' in project ? project.pipeline_note[lang] : undefined}
 						default_tab={'default_tab' in project ? project.default_tab : undefined}
