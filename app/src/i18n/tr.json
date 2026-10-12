@@ -27,7 +27,7 @@
   "glance.education": "Eğitim",
   "glance.education_value": "Yazılım Mühendisliği (İngilizce), Maltepe Üniversitesi, 2026",
   "glance.experience": "Deneyim",
-  "glance.experience_value": "Backend Stajyeri, Codexist · AppSec Stajyeri, Privia Security",
+  "glance.experience_value": "Fullstack Stajyeri, Codexist · AppSec Stajyeri, Privia Security",
   "glance.stack": "Teknolojiler",
   "glance.stack_value": "Java, Spring Boot, Python, FastAPI, Kafka, Docker, AWS, LLM pipeline'ları",
   "glance.languages": "Diller",

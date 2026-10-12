@@ -27,7 +27,7 @@
   "glance.education": "Education",
   "glance.education_value": "B.Sc. Software Engineering (taught in English), Maltepe University, 2026",
   "glance.experience": "Experience",
-  "glance.experience_value": "Backend Intern, Codexist · AppSec Intern, Privia Security",
+  "glance.experience_value": "Fullstack Intern, Codexist · AppSec Intern, Privia Security",
   "glance.stack": "Core stack",
   "glance.stack_value": "Java, Spring Boot, Python, FastAPI, Kafka, Docker, AWS, LLM pipelines",
   "glance.languages": "Languages",
