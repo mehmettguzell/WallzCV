@@ -8,16 +8,17 @@ interface Props {
 	lang: Language;
 	title: string;
 	description: string;
+	canonical_path?: string;
 }
 
-const { lang, title, description } = Astro.props;
+const { lang, title, description, canonical_path } = Astro.props;
 
 const path_in_language = path_without_language_prefix(lang, Astro.url.pathname);
 const alternate_links = languages.map((alternate_lang) => ({
 	lang: alternate_lang,
 	href: new URL(localized_path(alternate_lang, path_in_language), Astro.site),
 }));
-const canonical_url = new URL(Astro.url.pathname, Astro.site);
+const canonical_url = new URL(canonical_path ?? Astro.url.pathname, Astro.site);
 const share_image_url = new URL('/og.png', Astro.site);
 const default_language_href = new URL(path_in_language, Astro.site);
 const open_graph_locales: Record<Language, string> = { en: 'en_US', tr: 'tr_TR' };

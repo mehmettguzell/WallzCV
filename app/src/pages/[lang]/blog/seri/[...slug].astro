@@ -1,0 +1,126 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../../../layouts/Layout.astro';
+import { languages, t, default_language, localized_path, type Language } from '../../../../i18n';
+import { get_published_posts_newest_first, get_series_posts_in_order } from '../../../../lib/blog';
+
+export async function getStaticPaths() {
+	const all_series = await getCollection('series');
+	return languages.filter((lang) => lang !== default_language).flatMap((lang) => all_series.map((series) => ({ params: { lang, slug: series.id }, props: { series } })));
+}
+
+const lang = (Astro.params.lang ?? default_language) as Language;
+const { series } = Astro.props;
+const { Content } = await render(series);
+const series_posts = get_series_posts_in_order(await get_published_posts_newest_first(), series.id);
+const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
+const unwritten_orders = Array.from({ length: series.data.total_posts }, (_, index) => index + 1).filter((order) => !series_posts.some((post) => post.data.order === order));
+---
+
+<Layout lang={lang} title={`${series.data.title} · Mehmet Güzel`} description={series.data.summary}>
+	<section class="series container">
+		<a class="series__back" href={localized_path(lang, '/blog/')}>← {t(lang, 'blog.title')}</a>
+		<p class="eyebrow">{t(lang, 'blog.series')} · {series_posts.length}/{series.data.total_posts} {t(lang, 'blog.series_written')}</p>
+		<h1 class="section__title" lang={series.data.lang}>{series.data.title}</h1>
+		<div class="series__intro" lang={series.data.lang}>
+			<p>{series.data.summary}</p>
+			<Content />
+		</div>
+		<ol class="series__posts">
+			{
+				series_posts.map((post) => (
+					<li class="series__post glass spot">
+						<span class="series__order">{post.data.order}</span>
+						<div>
+							<h2>
+								<a href={localized_path(lang, `/blog/${post.id}/`)} hreflang={post.data.lang}>{post.data.title}</a>
+							</h2>
+							<p class="series__meta">
+								<time datetime={post.data.date.toISOString()}>{date_format.format(post.data.date)}</time>
+							</p>
+						</div>
+					</li>
+				))
+			}
+			{
+				unwritten_orders.map((order) => (
+					<li class="series__post series__post--pending">
+						<span class="series__order">{order}</span>
+					</li>
+				))
+			}
+		</ol>
+	</section>
+</Layout>
+
+<style>
+	.series {
+		padding-block: clamp(3rem, 7vw, 5rem);
+	}
+
+	.series__back {
+		display: block;
+		margin-bottom: 1.25rem;
+		font-family: var(--font-heading);
+		font-size: 0.85rem;
+		text-decoration: none;
+	}
+
+	.series__intro {
+		margin-top: 1rem;
+		color: var(--muted);
+	}
+
+	.series__posts {
+		display: grid;
+		gap: 0.9rem;
+		margin-top: 2rem;
+		padding: 0;
+		list-style: none;
+	}
+
+	.series__post {
+		display: flex;
+		align-items: center;
+		gap: 1.1rem;
+		padding: 1.25rem 1.5rem;
+	}
+
+	.series__post--pending {
+		border: 1px dashed var(--border);
+		border-radius: 1rem;
+		opacity: 0.55;
+	}
+
+	.series__order {
+		min-width: 1.5rem;
+		color: var(--accent);
+		font-family: var(--font-heading);
+		font-weight: 700;
+	}
+
+	.series__post h2 {
+		font-size: 1.2rem;
+	}
+
+	.series__post h2 a {
+		color: var(--text);
+		text-decoration: none;
+	}
+
+	.series__post h2 a::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+	}
+
+	.series__post:hover h2 a {
+		color: var(--accent);
+	}
+
+	.series__meta {
+		color: var(--muted);
+		font-family: var(--font-heading);
+		font-size: 0.8rem;
+	}
+</style>

@@ -1,0 +1,13 @@
+---
+import SeriesPage from '../../[lang]/blog/seri/[...slug].astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+	const all_series = await getCollection('series');
+	return all_series.map((series) => ({ params: { slug: series.id }, props: { series } }));
+}
+
+const { series } = Astro.props;
+---
+
+<SeriesPage series={series} />

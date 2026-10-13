@@ -2,14 +2,15 @@
 import Layout from '../../../layouts/Layout.astro';
 import UpcomingTopics from '../../../components/UpcomingTopics.astro';
 import { languages, t, default_language, localized_path, type Language } from '../../../i18n';
-import { estimate_reading_minutes, get_published_posts_newest_first } from '../../../lib/blog';
+import { collect_tags_alphabetically, estimate_reading_minutes, get_blog_feed_newest_first } from '../../../lib/blog';
 
 export function getStaticPaths() {
 	return languages.filter((lang) => lang !== default_language).map((lang) => ({ params: { lang } }));
 }
 
 const lang = (Astro.params.lang ?? default_language) as Language;
-const posts = await get_published_posts_newest_first();
+const feed = await get_blog_feed_newest_first();
+const tags = collect_tags_alphabetically(feed);
 const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 ---
 
@@ -18,25 +19,61 @@ const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 		<p class="eyebrow">{t(lang, 'blog.eyebrow')}</p>
 		<h1 class="section__title">{t(lang, 'blog.heading')}</h1>
 		<UpcomingTopics lang={lang} />
-		{posts.length === 0 && <p>{t(lang, 'blog.empty')}</p>}
+		{feed.length === 0 && <p>{t(lang, 'blog.empty')}</p>}
+		{
+			tags.length > 0 && (
+				<div class="blog-list__filter" role="group" aria-label={t(lang, 'blog.filter_label')}>
+					<button type="button" class="blog-list__tag" data-tag="" aria-pressed="true">{t(lang, 'blog.all')}</button>
+					{tags.map((tag) => <button type="button" class="blog-list__tag" data-tag={tag} aria-pressed="false">{tag}</button>)}
+				</div>
+			)
+		}
 		<ul class="blog-list__posts">
 			{
-				posts.map((post) => (
-					<li class="blog-list__post glass spot">
-						<h2>
-							<a href={localized_path(lang, `/blog/${post.id}/`)} hreflang={post.data.lang}>{post.data.title}</a>
-						</h2>
-						<p class="blog-list__meta">
-							<time datetime={post.data.date.toISOString()}>{date_format.format(post.data.date)}</time>
-							· {post.data.lang.toUpperCase()} · {estimate_reading_minutes(post)} {t(lang, 'blog.reading_minutes')}
-						</p>
-						<p lang={post.data.lang}>{post.data.summary}</p>
-					</li>
-				))
+				feed.map((item) =>
+					item.kind === 'series' ? (
+						<li class="blog-list__post glass spot" data-tags={item.tags.join(' ')}>
+							<p class="blog-list__meta">
+								{t(lang, 'blog.series').toLocaleUpperCase(lang)} · {item.posts.length}/{item.series.data.total_posts} {t(lang, 'blog.series_written')}
+							</p>
+							<h2>
+								<a href={localized_path(lang, `/blog/seri/${item.series.id}/`)}>{item.series.data.title}</a>
+							</h2>
+							<p lang={item.series.data.lang}>{item.series.data.summary}</p>
+						</li>
+					) : (
+						<li class="blog-list__post glass spot" data-tags={item.tags.join(' ')}>
+							<h2>
+								<a href={localized_path(lang, `/blog/${item.post.id}/`)} hreflang={item.post.data.lang}>{item.post.data.title}</a>
+							</h2>
+							<p class="blog-list__meta">
+								<time datetime={item.post.data.date.toISOString()}>{date_format.format(item.post.data.date)}</time>
+								· {item.post.data.lang.toUpperCase()} · {estimate_reading_minutes(item.post)} {t(lang, 'blog.reading_minutes')}
+							</p>
+							<p lang={item.post.data.lang}>{item.post.data.summary}</p>
+						</li>
+					),
+				)
 			}
 		</ul>
 	</section>
 </Layout>
+
+<script>
+	const filter_buttons = document.querySelectorAll<HTMLButtonElement>('.blog-list__tag');
+	const feed_items = document.querySelectorAll<HTMLElement>('.blog-list__post');
+
+	filter_buttons.forEach((button) => {
+		button.addEventListener('click', () => {
+			const selected_tag = button.dataset.tag ?? '';
+			filter_buttons.forEach((other) => other.setAttribute('aria-pressed', String(other === button)));
+			feed_items.forEach((item) => {
+				const item_tags = (item.dataset.tags ?? '').split(' ');
+				item.hidden = selected_tag !== '' && !item_tags.includes(selected_tag);
+			});
+		});
+	});
+</script>
 
 <style>
 	.blog-list {
@@ -74,6 +111,33 @@ const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 
 	.blog-list__post:hover h2 a {
 		color: var(--accent);
+	}
+
+	.blog-list__filter {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-top: 2rem;
+	}
+
+	.blog-list__tag {
+		padding: 0.3rem 0.85rem;
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		background: var(--surface);
+		color: var(--muted);
+		font-family: var(--font-heading);
+		font-size: 0.8rem;
+		cursor: pointer;
+	}
+
+	.blog-list__tag[aria-pressed='true'] {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+
+	.blog-list__post[hidden] {
+		display: none;
 	}
 
 	.blog-list__meta {

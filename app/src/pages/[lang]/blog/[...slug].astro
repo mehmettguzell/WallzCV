@@ -2,7 +2,8 @@
 import { render } from 'astro:content';
 import Layout from '../../../layouts/Layout.astro';
 import { languages, t, default_language, localized_path, type Language } from '../../../i18n';
-import { estimate_reading_minutes, get_published_posts_newest_first } from '../../../lib/blog';
+import { getEntry } from 'astro:content';
+import { estimate_reading_minutes, get_adjacent_series_posts, get_published_posts_newest_first } from '../../../lib/blog';
 
 export async function getStaticPaths() {
 	const posts = await get_published_posts_newest_first();
@@ -13,9 +14,13 @@ const lang = (Astro.params.lang ?? default_language) as Language;
 const { post } = Astro.props;
 const { Content } = await render(post);
 const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
+const post_path = (target_post: typeof post) => localized_path(lang, `/blog/${target_post.id}/`);
+const series = post.data.series ? await getEntry(post.data.series) : undefined;
+const published_posts = series ? await get_published_posts_newest_first() : [];
+const { previous, next } = get_adjacent_series_posts(published_posts, post);
 ---
 
-<Layout lang={lang} title={`${post.data.title} · Mehmet Güzel`} description={post.data.summary}>
+<Layout lang={lang} title={`${post.data.title} · Mehmet Güzel`} description={post.data.summary} canonical_path={localized_path(post.data.lang, `/blog/${post.id}/`)}>
 	<article class="post" lang={post.data.lang}>
 		<a class="post__back" href={localized_path(lang, '/blog/')}>← {t(lang, 'blog.title')}</a>
 		<h1 class="gradient-text">{post.data.title}</h1>
@@ -24,9 +29,35 @@ const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
 			· {estimate_reading_minutes(post)} {t(lang, 'blog.reading_minutes')}
 			{post.data.tags.length > 0 && <>· {post.data.tags.join(', ')}</>}
 		</p>
+		{
+			series && (
+				<p class="post__series">
+					{t(lang, 'blog.series')}:{' '}
+					<a href={localized_path(lang, `/blog/seri/${series.id}/`)}>{series.data.title}</a> · {post.data.order}/{series.data.total_posts}
+				</p>
+			)
+		}
 		<div class="post__body">
 			<Content />
 		</div>
+		{
+			series && (previous || next) && (
+				<nav class="post__series-nav" aria-label={series.data.title}>
+					{previous ? (
+						<a href={post_path(previous)}>
+							← {t(lang, 'blog.previous')}: {previous.data.title}
+						</a>
+					) : (
+						<span />
+					)}
+					{next && (
+						<a href={post_path(next)}>
+							{t(lang, 'blog.next')}: {next.data.title} →
+						</a>
+					)}
+				</nav>
+			)
+		}
 	</article>
 </Layout>
 
@@ -56,6 +87,24 @@ const date_format = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
 		color: var(--muted);
 		font-family: var(--font-heading);
 		font-size: 0.82rem;
+	}
+
+	.post__series {
+		margin: -1.5rem 0 2rem;
+		color: var(--muted);
+		font-family: var(--font-heading);
+		font-size: 0.82rem;
+	}
+
+	.post__series-nav {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-top: 3rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--border);
+		font-family: var(--font-heading);
+		font-size: 0.9rem;
 	}
 
 	.post__body {
